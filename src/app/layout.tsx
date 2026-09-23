@@ -1,22 +1,16 @@
-
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Archivo } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: "Film Impostor",
-  description: "Juego social de deducción con películas.",
+  description:
+    "Juego de deducción con películas para jugar en grupo con un solo móvil.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -27,23 +21,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false, // Prevent zooming which feels more "app-like"
-  themeColor: "#030712",
+  themeColor: "#fff5c9",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="es">
+      <body className={`${archivo.variable} antialiased`}>{children}</body>
     </html>
   );
 }

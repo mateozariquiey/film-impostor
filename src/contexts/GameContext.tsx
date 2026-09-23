@@ -1,120 +1,99 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { GameState, Player, Role, GamePhase, Movie } from '@/types';
-import { getRandomMovie, Decade, Difficulty } from '@/lib/tmdb';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import type { GamePhase, Hint, Movie, Player } from '@/types';
+import { createPlayers, pickRandom } from '@/lib/game';
+import { fetchKeywords, fetchRandomMovie } from '@/lib/api';
+import { settingsToFilters, type GameSettings } from '@/lib/settings';
 
-interface GameContextType extends GameState {
-    startGame: (count: number, filters: { decade: Decade; difficulty: Difficulty; year?: number }, enabledHints?: string[]) => Promise<void>;
-    nextPlayer: () => void;
-    resetGame: () => void;
-    isLoading: boolean;
-    error: string | null;
-    customPool: Movie[];
-    setCustomPool: (movies: Movie[]) => void;
-    enabledHints: string[];
+interface GameState {
+    phase: GamePhase;
+    players: Player[];
+    currentPlayerIndex: number;
+    movie: Movie | null;
+    hints: Hint[];
 }
 
-const GameContext = createContext<GameContextType | undefined>(undefined);
+interface GameContextValue extends GameState {
+    isLoading: boolean;
+    error: string | null;
+    /** Películas elegidas a mano. Si está vacía, se busca una al azar en TMDB. */
+    customPool: Movie[];
+    setCustomPool: (movies: Movie[]) => void;
+    startGame: (settings: GameSettings) => Promise<void>;
+    nextPlayer: () => void;
+    resetGame: () => void;
+}
+
+const INITIAL_STATE: GameState = {
+    phase: 'SETUP',
+    players: [],
+    currentPlayerIndex: 0,
+    movie: null,
+    hints: [],
+};
+
+const GameContext = createContext<GameContextValue | null>(null);
+
+async function chooseMovie(settings: GameSettings, customPool: Movie[]): Promise<Movie> {
+    if (customPool.length === 0) return fetchRandomMovie(settingsToFilters(settings));
+
+    // Las películas de la selección no traen palabras clave: se piden solo si hacen falta.
+    const movie = pickRandom(customPool);
+    if (!settings.hints.includes('KEYWORDS')) return movie;
+    return { ...movie, keywords: await fetchKeywords(movie.id) };
+}
 
 export function GameProvider({ children }: { children: ReactNode }) {
-    const [gameState, setGameState] = useState<GameState>({
-        players: [],
-        playerCount: 0,
-        currentPlayerIndex: 0,
-        currentMovie: null,
-        phase: 'SETUP',
-    });
+    const [state, setState] = useState<GameState>(INITIAL_STATE);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [customPool, setCustomPool] = useState<Movie[]>([]);
-    const [enabledHints, setEnabledHints] = useState<string[]>(['GENRE']);
 
-    const startGame = async (
-        count: number,
-        filters: { decade: Decade; difficulty: Difficulty; year?: number },
-        hitsConfig: string[] = ['GENRE']
-    ) => {
+    const startGame = async (settings: GameSettings) => {
         setIsLoading(true);
         setError(null);
-        setEnabledHints(hitsConfig);
         try {
-            let movie: Movie;
-
-            if (customPool.length > 0) {
-                // Pick from custom pool
-                const randomIndex = Math.floor(Math.random() * customPool.length);
-                movie = customPool[randomIndex];
-            } else {
-                // Pick from API
-                movie = await getRandomMovie(filters);
-            }
-
-            // Create players
-            const newPlayers: Player[] = Array.from({ length: count }, (_, i) => ({
-                id: i,
-                role: 'Normal',
-                isRevealed: false,
-            }));
-
-            // Assign impostor
-            const impostorIndex = Math.floor(Math.random() * count);
-            newPlayers[impostorIndex].role = 'Impostor';
-
-            setGameState({
-                players: newPlayers,
-                playerCount: count,
-                currentPlayerIndex: 0,
-                currentMovie: movie,
+            const movie = await chooseMovie(settings, customPool);
+            setState({
                 phase: 'PASS_DEVICE',
+                players: createPlayers(settings.playerCount),
+                currentPlayerIndex: 0,
+                movie,
+                hints: settings.hints,
             });
         } catch (err) {
-            console.error(err);
-            setError('Error al cargar la película. Revisa tu conexión o API Key.');
+            setError(err instanceof Error ? err.message : 'No se ha podido cargar la película');
         } finally {
             setIsLoading(false);
         }
     };
 
     const nextPlayer = () => {
-        setGameState(prev => {
-            const nextIndex = prev.currentPlayerIndex + 1;
-            if (nextIndex >= prev.playerCount) {
-                return {
-                    ...prev,
-                    phase: 'PLAYING',
-                    currentPlayerIndex: 0,
-                };
-            }
-            return {
-                ...prev,
-                currentPlayerIndex: nextIndex,
-            };
+        setState((prev) => {
+            const next = prev.currentPlayerIndex + 1;
+            return next < prev.players.length
+                ? { ...prev, currentPlayerIndex: next }
+                : { ...prev, phase: 'PLAYING' };
         });
     };
 
     const resetGame = () => {
-        setGameState({
-            players: [],
-            playerCount: 0,
-            currentPlayerIndex: 0,
-            currentMovie: null,
-            phase: 'SETUP',
-        });
+        setState(INITIAL_STATE);
         setError(null);
     };
 
     return (
-        <GameContext.Provider value={{ ...gameState, startGame, nextPlayer, resetGame, isLoading, error, customPool, setCustomPool, enabledHints }}>
+        <GameContext.Provider
+            value={{ ...state, isLoading, error, customPool, setCustomPool, startGame, nextPlayer, resetGame }}
+        >
             {children}
         </GameContext.Provider>
     );
 }
 
-export function useGame() {
+export function useGame(): GameContextValue {
     const context = useContext(GameContext);
-    if (context === undefined) {
-        throw new Error('useGame must be used within a GameProvider');
-    }
+    if (!context) throw new Error('useGame debe usarse dentro de GameProvider');
     return context;
 }
