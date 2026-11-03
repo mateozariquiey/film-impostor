@@ -1,5 +1,46 @@
+/* El cartel llega hasta el borde. Si la pantalla es baja, se recorta por abajo y el título del cartel sigue a la vista. */
+.cartel {
+  position: relative;
+  flex: none;
+  aspect-ratio: 2 / 3;
+  max-height: max(220px, calc(100dvh - 300px));
+  width: calc(100% + var(--margin) * 2);
+  margin: calc((env(safe-area-inset-top) + 20px) * -1) calc(var(--margin) * -1) 0;
+  overflow: hidden;
+  background: var(--zona);
+  /* Se destapa en la misma dirección en la que se llenó el botón que lo ha pedido. */
+  animation: destapa 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.cartel img {
+  object-fit: cover;
+  object-position: top;
+}
+
+@keyframes destapa {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+.sinCartel {
+  display: flex;
+  align-items: flex-end;
+  flex: none;
+  min-height: 34dvh;
+  margin: calc((env(safe-area-inset-top) + 20px) * -1) calc(var(--margin) * -1) 0;
+  padding: 20px var(--margin);
+}
+
+.era {
+  margin: 18px 0 12px;
+}
+
 .peli {
-  margin-top: 8px;
+  margin-top: 12px;
   color: var(--ink-2);
 }
 
@@ -8,24 +49,9 @@
   font-weight: 500;
 }
 
-/* El alto sale de lo que dejan libre el texto y los botones, y el ancho sigue la proporción del cartel. */
-.cartel {
-  position: relative;
-  height: clamp(210px, calc(100dvh - 360px), 480px);
-  aspect-ratio: 2 / 3;
-  margin-top: 20px;
-  overflow: hidden;
-  border-radius: 6px;
-  background: var(--fill);
-}
-
-.cartel img {
-  object-fit: cover;
-}
-
 .acciones {
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 18px;
 }
 
 .acciones .enlace {

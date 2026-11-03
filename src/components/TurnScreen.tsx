@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { HoldButton } from "./HoldButton";
+import { PlayerDots } from "./PlayerDots";
 import { QuitButton } from "./QuitButton";
 import styles from "./TurnScreen.module.css";
 
 /** Lo que hay que mantener para contar como visto: basta para leer un título. */
 const SEEN_AFTER_MS = 500;
+const LONG_TITLE = 64;
 
 /**
  * El turno de un jugador. Toda la pantalla es la zona de mantener y el papel solo existe en la
- * página mientras dura el gesto. Todos los estados comparten el mismo esqueleto de texto: una
- * línea, un título y una nota, así que el impostor y el grupo no se distinguen de lejos.
+ * página mientras dura el gesto. Todos los estados comparten el mismo esqueleto: el número del
+ * jugador, un título en el mismo sitio y una nota, así que el impostor y el grupo no se distinguen
+ * de lejos.
  */
 export function TurnScreen() {
   const { players, currentPlayerIndex, movie, nextPlayer } = useGame();
@@ -32,16 +35,21 @@ export function TurnScreen() {
   return (
     <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
       <div className={styles.barra}>
+        <PlayerDots count={players.length} current={currentPlayerIndex} />
         <QuitButton />
       </div>
 
       <div className={styles.papel} aria-live="polite">
-        <h1 ref={heading} tabIndex={-1} className={`secundario ${styles.quien}`}>
-          Jugador {number} de {players.length}
+        <h1 ref={heading} tabIndex={-1} className={styles.quien}>
+          <span className="secundario">Jugador</span>{" "}
+          <span className={`numeral ${styles.numero}`}>{number}</span>{" "}
+          <span className="solo-lector">de {players.length}</span>
         </h1>
         {visible && movie ? (
           <div className={styles.revelado}>
-            <p className="titulo">{isImpostor ? "Eres el impostor" : movie.title}</p>
+            <p className={titleClass(isImpostor ? null : movie.title)}>
+              {isImpostor ? "Eres el impostor" : movie.title}
+            </p>
             {isImpostor ? (
               <ImpostorHints />
             ) : (
@@ -50,12 +58,12 @@ export function TurnScreen() {
           </div>
         ) : seen ? (
           <>
-            <p className="titulo">Ya está oculto</p>
+            <p className={titleClass(null)}>Ya está oculto</p>
             <p className={styles.nota}>Para verlo otra vez, mantén el dedo.</p>
           </>
         ) : (
           <>
-            <p className="titulo">Coge el móvil</p>
+            <p className={titleClass(null)}>Coge el móvil</p>
             <p className={styles.nota}>
               {tooShort
                 ? "Mantén un momento más, hasta que te dé tiempo a leerlo."
@@ -81,7 +89,7 @@ export function TurnScreen() {
           </button>
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.
-          <span className="accion" aria-hidden>
+          <span className="accion-sec" aria-hidden>
             Mantén para ver tu papel
           </span>
         )}
@@ -99,6 +107,12 @@ export function TurnScreen() {
       </button>
     </div>
   );
+}
+
+/** El mismo tamaño para todos los papeles. Solo cede un título que no cabría. */
+function titleClass(title: string | null) {
+  const tooLong = title !== null && title.length > LONG_TITLE;
+  return `${styles.titular} ${tooLong ? "titulo" : "enorme"}`;
 }
 
 function ImpostorHints() {

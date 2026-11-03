@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { Chivo } from "next/font/google";
 import "./globals.css";
+
+const fuente = Chivo({ subsets: ["latin"], variable: "--fuente" });
 
 const title = "Film Impostor";
 const description =
@@ -23,8 +26,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#1a1a1a" },
+    { media: "(prefers-color-scheme: light)", color: "#eeeee8" },
+    { media: "(prefers-color-scheme: dark)", color: "#1b2220" },
   ],
 };
 
@@ -32,7 +35,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
+    <html lang="es" className={fuente.variable}>
       <body>{children}</body>
     </html>
   );

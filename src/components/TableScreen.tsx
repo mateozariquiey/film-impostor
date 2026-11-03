@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { posterUrl } from "@/lib/posters";
 import { HoldButton } from "./HoldButton";
+import { PlayerDots } from "./PlayerDots";
 import { QuitButton } from "./QuitButton";
 import styles from "./TableScreen.module.css";
 
@@ -9,7 +10,7 @@ const REVEAL_IMPOSTOR_MS = 1200;
 
 /** La conversación. El móvil descansa hasta que el grupo decide ver el resultado. */
 export function TableScreen() {
-  const { movie, revealImpostor } = useGame();
+  const { players, movie, revealImpostor } = useGame();
   const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -22,12 +23,13 @@ export function TableScreen() {
   return (
     <div className="pantalla">
       <div className={styles.barra}>
+        <PlayerDots count={players.length} current={players.length} />
         <QuitButton />
       </div>
-      <h1 ref={heading} tabIndex={-1} className={`titulo ${styles.encabezado}`}>
+      <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.encabezado}`}>
         Ya lo habéis visto todos
       </h1>
-      <div className={styles.reglas}>
+      <div className={`franja ${styles.reglas}`}>
         <p>Cada uno da una pista, sin decir el título.</p>
         <p>Después, preguntad y votad quién disimula.</p>
         <p>Antes de ver el resultado, el impostor puede intentar adivinar la película.</p>

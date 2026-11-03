@@ -19,34 +19,67 @@
   -webkit-touch-callout: none;
 }
 
+/* Al mantener sube la luz de toda la pantalla, igual para todos los papeles y sin transición. */
+.turno[data-held]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--zona);
+}
+
 .barra {
   position: relative;
   z-index: 1;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   min-height: 34px;
 }
 
-.turno[data-held] .barra > *,
+.turno[data-held] .barra button,
 .turno[data-held] .pie {
   visibility: hidden;
 }
 
 .papel {
   position: relative;
-  margin-top: 20dvh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: 28px;
 }
 
 .quien {
-  margin-bottom: 10px;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.numero {
+  margin: 8px 0 0 -0.04em;
+}
+
+.turno[data-held] .numero {
+  color: var(--ink-3);
+}
+
+/* El título arranca siempre a la misma altura, sea cual sea el papel o lo que mida. */
+.titular {
+  margin-top: 14dvh;
 }
 
 .nota {
   margin-top: 12px;
+  color: var(--ink-2);
 }
 
 .revelado {
   animation: aparece 0.1s ease-out;
+}
+
+/* Las pistas son lo único que tiene el impostor: se leen como el resto del papel, sin apagarlas. */
+.revelado .nota {
+  color: var(--ink);
 }
 
 @keyframes aparece {
@@ -68,6 +101,12 @@
   pointer-events: auto;
 }
 
+.pie span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .lector:focus-visible {
   position: relative;
   width: auto;
@@ -79,8 +118,27 @@
   color: var(--ink-2);
 }
 
-@media (max-height: 480px) {
+@media (max-height: 700px) {
   .papel {
-    margin-top: 0;
+    margin-top: 12px;
+  }
+
+  .numero {
+    font-size: 96px;
+  }
+
+  .titular {
+    margin-top: 6dvh;
+  }
+}
+
+@media (max-height: 480px) {
+  .numero {
+    font-size: 56px;
+  }
+
+  .titular {
+    margin-top: 12px;
+    font-size: 28px;
   }
 }

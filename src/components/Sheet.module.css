@@ -5,8 +5,8 @@
   margin: auto auto 0;
   padding: 0;
   border: 0;
-  border-radius: 14px 14px 0 0;
-  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  background: var(--hoja);
   color: var(--ink);
   overscroll-behavior: contain;
 }
@@ -16,7 +16,7 @@
 }
 
 .hoja::backdrop {
-  background: rgb(0 0 0 / 0.4);
+  background: rgb(14 19 17 / 0.55);
 }
 
 @keyframes sube {

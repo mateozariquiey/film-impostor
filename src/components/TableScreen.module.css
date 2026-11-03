@@ -1,26 +1,28 @@
 .barra {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   min-height: 34px;
 }
 
 .encabezado {
-  margin-top: 20dvh;
+  margin-top: 8dvh;
 }
 
 .reglas {
   display: grid;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 14px;
+  margin-top: 24px;
+  padding-block: 22px;
 }
 
 .pie {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 20px;
 }
 
 .aviso {
-  min-height: 21px;
+  min-height: 22px;
   margin-bottom: 8px;
 }
 
@@ -37,14 +39,18 @@
   position: relative;
 }
 
-/* La barra se llena mientras se mantiene y vuelve de golpe al soltar. */
+/* El acento se llena de izquierda a derecha mientras se mantiene, y vuelve de golpe al soltar. */
 .mantener::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--fill-progress);
+  background: var(--relleno-acento);
   transform: scaleX(0);
   transform-origin: left;
+}
+
+.mantener[data-held] {
+  color: var(--tinta-acento);
 }
 
 .mantener[data-held]::before {
@@ -56,5 +62,18 @@
 @media (prefers-reduced-motion: reduce) {
   .mantener[data-held]::before {
     transition: transform var(--duracion) linear !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .encabezado {
+    margin-top: 12px;
+  }
+
+  .reglas {
+    gap: 10px;
+    margin-top: 14px;
+    padding-block: 14px;
+    font-size: 16px;
   }
 }

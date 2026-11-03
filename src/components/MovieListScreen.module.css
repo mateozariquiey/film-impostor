@@ -14,12 +14,8 @@
   margin: 6px 0 20px;
 }
 
-.filas {
+.filas > li + li {
   border-top: 1px solid var(--line);
-}
-
-.filas > li {
-  border-bottom: 1px solid var(--line);
 }
 
 .fila {
@@ -38,7 +34,7 @@
   height: 66px;
   overflow: hidden;
   border-radius: 3px;
-  background: var(--fill);
+  background: var(--zona);
 }
 
 .cartel img {
@@ -50,6 +46,7 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
@@ -76,6 +73,5 @@
   margin-top: auto;
   margin-inline: calc(var(--margin) * -1);
   padding: 12px var(--margin) calc(env(safe-area-inset-bottom) + 20px);
-  border-top: 1px solid var(--line);
-  background: var(--bg);
+  background: var(--zona);
 }

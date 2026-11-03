@@ -58,7 +58,7 @@ export function useDimScreen(active: boolean): void {
         const colors = bars.map((bar) => bar.content);
 
         root.dataset.luz = 'baja';
-        bars.forEach((bar) => (bar.content = '#000000'));
+        bars.forEach((bar) => (bar.content = '#141b19'));
         return () => {
             delete root.dataset.luz;
             bars.forEach((bar, index) => (bar.content = colors[index]));

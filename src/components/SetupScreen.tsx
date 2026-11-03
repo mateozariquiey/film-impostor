@@ -13,6 +13,7 @@ import type { Decade, Hint, Popularity } from "@/types";
 import { ChoiceSheet } from "./ChoiceSheet";
 import { MovieListScreen } from "./MovieListScreen";
 import { RulesSheet } from "./RulesSheet";
+import { PlayerDots } from "./PlayerDots";
 import styles from "./SetupScreen.module.css";
 
 const EXACT_YEAR = "YEAR";
@@ -99,47 +100,55 @@ export function SetupScreen() {
 
   return (
     <div className="pantalla">
-      <header className={styles.cabecera}>
-        <h1 className="titulo">Film Impostor</h1>
-        <p className="secundario">Todos ven la misma película, menos uno.</p>
-      </header>
+      <div className={`franja ${styles.portada}`}>
+        <header>
+          <h1 className={styles.nombre}>Film Impostor</h1>
+          <p className="secundario">Todos ven la misma película, menos uno.</p>
+        </header>
 
-      <ul className={styles.filas}>
-        <li>
-          <div className={styles.fila} role="group" aria-labelledby="jugadores">
-            <span id="jugadores">Cuántos jugáis</span>
-            <span className={styles.contador}>
+        <div className={styles.jugadores} role="group" aria-labelledby="jugadores">
+          <span id="jugadores" className="secundario">
+            Cuántos jugáis
+          </span>
+          <div className={styles.contador}>
+            <output aria-live="polite" aria-label={`${playerCount} jugadores`}>
+              <span key={playerCount} className={`numeral ${styles.cifra}`}>
+                {playerCount}
+              </span>
+            </output>
+            <span className={styles.botones}>
               <button
                 type="button"
                 aria-label="Un jugador menos"
                 disabled={playerCount <= MIN_PLAYERS}
                 onClick={() => update({ playerCount: playerCount - 1 })}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-                  <path d="M2 8h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
+                  <path d="M3 10h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </button>
-              <output aria-live="polite" aria-label={`${playerCount} jugadores`}>
-                {playerCount}
-              </output>
               <button
                 type="button"
                 aria-label="Un jugador más"
                 disabled={playerCount >= MAX_PLAYERS}
                 onClick={() => update({ playerCount: playerCount + 1 })}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+                <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
                   <path
-                    d="M2 8h12M8 2v12"
+                    d="M3 10h14M10 3v14"
                     stroke="currentColor"
-                    strokeWidth="1.5"
+                    strokeWidth="2"
                     strokeLinecap="round"
                   />
                 </svg>
               </button>
             </span>
           </div>
-        </li>
+          <PlayerDots count={playerCount} impostor={playerCount - 1} />
+        </div>
+      </div>
+
+      <ul className={styles.filas}>
         <Row label="De qué época" value={eraValue} sheet={eraSheet} />
         <Row
           label="Cómo de conocidas"
