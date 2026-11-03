@@ -1,4 +1,4 @@
-/* Ocupa toda la ventana por detrás del texto, que deja pasar los toques. */
+/* Ocupa toda la ventana. Va después del texto para que el foco llegue primero al jugador, y lo que se pulsa aparte se pone encima. */
 .superficie {
   position: fixed;
   inset: 0;
@@ -21,6 +21,7 @@
 
 .barra {
   position: relative;
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
   min-height: 34px;
@@ -33,8 +34,7 @@
 
 .papel {
   position: relative;
-  margin-top: 13dvh;
-  pointer-events: none;
+  margin-top: 20dvh;
 }
 
 .quien {
@@ -57,8 +57,15 @@
 
 .pie {
   position: relative;
+  z-index: 1;
   margin-top: auto;
   padding-top: 24px;
+  /* Deja pasar el toque a la superficie, salvo en el botón de pasar el móvil. */
+  pointer-events: none;
+}
+
+.pie button {
+  pointer-events: auto;
 }
 
 .lector:focus-visible {

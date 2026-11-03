@@ -38,8 +38,8 @@ Abre [localhost:3000](http://localhost:3000). Sin la clave, la interfaz carga y 
 
 Next.js, React y TypeScript, con CSS Modules para los estilos y Vitest para las pruebas.
 
-- `src/components/`: pantallas (`SetupScreen`, `ContactSheet`, `TurnScreen`, `TableScreen`, `ResultScreen`) y sus piezas. `HoldButton` es el gesto de mantener pulsado.
-- `src/app/globals.css`: tokens de color y estilos comunes. El tema `dia` y la pantalla de resultado reutilizan los mismos tokens.
+- `src/components/`: pantallas (`SetupScreen`, `MovieListScreen`, `TurnScreen`, `TableScreen`, `ResultScreen`) y sus piezas. `HoldButton` es el gesto de mantener pulsado y `ChoiceSheet`, el selector en hoja inferior.
+- `src/app/globals.css`: tokens de color y estilos comunes. Claro y oscuro siguen al sistema, y `data-luz="baja"` atenúa la pantalla durante los turnos.
 - `src/contexts/GameContext.tsx`: estado de la partida y transiciones entre turnos.
 - `src/lib/`: reparto de roles, filtros, ajustes guardados en el navegador y lista de reserva.
 - `src/lib/server/`: consultas a TMDB y tratamiento de errores.
@@ -47,11 +47,11 @@ Next.js, React y TypeScript, con CSS Modules para los estilos y Vitest para las 
 
 ## Diseño
 
-La identidad es un cuarto oscuro, porque aquí «revelar» es también revelar una foto. Tres decisiones sostienen el secreto y conviene conservarlas:
+Una app pequeña y sin decoración: la fuente del sistema, neutros, filas con líneas finas y una sola acción por pantalla. El único color de la partida lo ponen los carteles. Tres decisiones sostienen el secreto y conviene conservarlas:
 
 - El papel solo está en la página mientras se mantiene el dedo, y desaparece sin transición al soltar, al cancelarse el gesto o al pasar la app a segundo plano.
-- El papel del impostor ocupa lo mismo y da la misma luz que el título, para que no se distingan desde lejos. Por eso tampoco se enseña el cartel durante el turno: se reconoce de lejos mucho antes que un texto.
-- La luz roja y tenue apenas ilumina caras con poca luz. La pantalla de resultado es la única en blanco y con color, y por eso se nota.
+- Todos los estados del turno comparten el mismo esqueleto de texto, y el papel del impostor tiene el mismo sitio, tamaño y color que el título, para que no se distingan desde lejos. Por eso tampoco se enseña el cartel durante el turno: se reconoce de lejos mucho antes que un texto.
+- Durante los turnos y la conversación la pantalla pasa a negro, también en tema claro, para que no ilumine caras. La luz normal vuelve en el resultado.
 
 ```sh
 npm test
@@ -61,7 +61,7 @@ npm run build
 npm start
 ```
 
-Los ajustes y el tema se conservan en `localStorage`. La partida y la selección manual solo duran hasta recargar la página. Al cambiar los filtros se borra la selección manual.
+Los ajustes se conservan en `localStorage`. La partida y la selección manual solo duran hasta recargar la página. Al cambiar los filtros se borra la selección manual.
 
 Si TMDB no responde o no hay conexión, se puede jugar con la lista de reserva de `src/lib/reserve.ts`, que no lleva carteles ni palabras clave y no aplica los filtros.
 

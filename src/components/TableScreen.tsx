@@ -25,15 +25,13 @@ export function TableScreen() {
         <QuitButton />
       </div>
       <h1 ref={heading} tabIndex={-1} className={`titulo ${styles.encabezado}`}>
-        Móvil a la mesa
+        Ya lo habéis visto todos
       </h1>
       <div className={styles.reglas}>
         <p>Cada uno da una pista, sin decir el título.</p>
         <p>Después, preguntad y votad quién disimula.</p>
         <p>Antes de ver el resultado, el impostor puede intentar adivinar la película.</p>
-        <p className="secundario">
-          Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.
-        </p>
+        <p>Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.</p>
       </div>
       <div className={styles.pie}>
         <p className={`secundario ${styles.aviso}`} role="status">
@@ -42,6 +40,7 @@ export function TableScreen() {
         <HoldButton
           className={`accion ${styles.mantener}`}
           durationMs={REVEAL_IMPOSTOR_MS}
+          onHoldChange={(held) => held && setTooShort(false)}
           onRelease={(completed) => setTooShort(!completed)}
           onComplete={revealImpostor}
         >

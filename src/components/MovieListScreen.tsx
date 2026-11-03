@@ -68,17 +68,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
   return (
     <div className={`pantalla ${styles.lista}`}>
       <button type="button" className={styles.volver} onClick={onClose}>
-        <svg width="7" height="12" viewBox="0 0 7 12" aria-hidden>
-          <path
-            d="M6 1L1 6l5 5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        Volver sin cambios
+        Cancelar
       </button>
       <h1 ref={heading} tabIndex={-1} className="titulo">
         Tachad las que no conozcáis

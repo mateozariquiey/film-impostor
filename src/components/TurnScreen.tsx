@@ -31,15 +31,6 @@ export function TurnScreen() {
 
   return (
     <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
-      <HoldButton
-        className={styles.superficie}
-        ariaLabel="Mantén pulsado para ver tu papel"
-        durationMs={SEEN_AFTER_MS}
-        onHoldChange={setHeld}
-        onRelease={(completed) => setTooShort(!completed && !seen)}
-        onComplete={() => setSeen(true)}
-      />
-
       <div className={styles.barra}>
         <QuitButton />
       </div>
@@ -64,23 +55,37 @@ export function TurnScreen() {
           </>
         ) : (
           <>
-            <p className="titulo">Mantén el dedo en la pantalla</p>
+            <p className="titulo">Coge el móvil</p>
             <p className={styles.nota}>
               {tooShort
-                ? "Un momento más, hasta que te dé tiempo a leerlo."
-                : "Tu papel se ve mientras lo mantienes. Que no mire nadie más."}
+                ? "Mantén un momento más, hasta que te dé tiempo a leerlo."
+                : "Tu papel se ve solo mientras mantienes el dedo. Que no mire nadie más."}
             </p>
           </>
         )}
       </div>
 
-      {seen && (
-        <div className={styles.pie}>
+      <HoldButton
+        className={styles.superficie}
+        ariaLabel="Mantén pulsado para ver tu papel"
+        durationMs={SEEN_AFTER_MS}
+        onHoldChange={setHeld}
+        onRelease={(completed) => setTooShort(!completed && !seen)}
+        onComplete={() => setSeen(true)}
+      />
+
+      <div className={styles.pie}>
+        {seen ? (
           <button type="button" className="accion" onClick={nextPlayer}>
             {isLast ? "Dejar el móvil en la mesa" : `Pasar el móvil al jugador ${number + 1}`}
           </button>
-        </div>
-      )}
+        ) : (
+          // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.
+          <span className="accion" aria-hidden>
+            Mantén para ver tu papel
+          </span>
+        )}
+      </div>
 
       <button
         type="button"

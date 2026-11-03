@@ -3,9 +3,6 @@
 }
 
 .volver {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   min-height: 44px;
   margin: -10px 0 12px;
   align-self: flex-start;
@@ -77,6 +74,8 @@
   position: sticky;
   bottom: 0;
   margin-top: auto;
-  padding: 12px 0 calc(env(safe-area-inset-bottom) + 20px);
+  margin-inline: calc(var(--margin) * -1);
+  padding: 12px var(--margin) calc(env(safe-area-inset-bottom) + 20px);
+  border-top: 1px solid var(--line);
   background: var(--bg);
 }

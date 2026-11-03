@@ -23,7 +23,7 @@
   text-align: left;
 }
 
-.fila:active:not(:disabled) {
+button.fila:active:not(:disabled) {
   opacity: 0.6;
 }
 

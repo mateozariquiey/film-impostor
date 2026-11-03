@@ -87,6 +87,8 @@ export function HoldButton({
         start();
       }}
       onPointerUp={stop}
+      // Sin esto, al soltar salta un clic en lo que haya aparecido bajo el dedo, como «Pasar el móvil».
+      onTouchEnd={(event) => event.preventDefault()}
       onPointerCancel={stop}
       onLostPointerCapture={stop}
       onContextMenu={(event) => event.preventDefault()}

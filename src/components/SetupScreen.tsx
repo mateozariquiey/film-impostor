@@ -105,38 +105,40 @@ export function SetupScreen() {
       </header>
 
       <ul className={styles.filas}>
-        <li className={styles.fila} role="group" aria-labelledby="jugadores">
-          <span id="jugadores">Cuántos jugáis</span>
-          <span className={styles.contador}>
-            <button
-              type="button"
-              aria-label="Un jugador menos"
-              disabled={playerCount <= MIN_PLAYERS}
-              onClick={() => update({ playerCount: playerCount - 1 })}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-                <path d="M2 8h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </button>
-            <output aria-live="polite" aria-label={`${playerCount} jugadores`}>
-              {playerCount}
-            </output>
-            <button
-              type="button"
-              aria-label="Un jugador más"
-              disabled={playerCount >= MAX_PLAYERS}
-              onClick={() => update({ playerCount: playerCount + 1 })}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
-                <path
-                  d="M2 8h12M8 2v12"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-          </span>
+        <li>
+          <div className={styles.fila} role="group" aria-labelledby="jugadores">
+            <span id="jugadores">Cuántos jugáis</span>
+            <span className={styles.contador}>
+              <button
+                type="button"
+                aria-label="Un jugador menos"
+                disabled={playerCount <= MIN_PLAYERS}
+                onClick={() => update({ playerCount: playerCount - 1 })}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+                  <path d="M2 8h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+              <output aria-live="polite" aria-label={`${playerCount} jugadores`}>
+                {playerCount}
+              </output>
+              <button
+                type="button"
+                aria-label="Un jugador más"
+                disabled={playerCount >= MAX_PLAYERS}
+                onClick={() => update({ playerCount: playerCount + 1 })}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+                  <path
+                    d="M2 8h12M8 2v12"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </span>
+          </div>
         </li>
         <Row label="De qué época" value={eraValue} sheet={eraSheet} />
         <Row
@@ -160,8 +162,8 @@ export function SetupScreen() {
             {canUseReserve && (
               <>
                 <p className="secundario">
-                  Podéis jugar con {RESERVE_MOVIES.length} películas muy conocidas que lleva la
-                  app, sin carteles y sin aplicar vuestros filtros.
+                  La lista de reserva son {RESERVE_MOVIES.length} películas muy conocidas, sin
+                  carteles ni filtros.
                 </p>
                 <button
                   type="button"
@@ -183,9 +185,15 @@ export function SetupScreen() {
         >
           {isLoading ? "Buscando película…" : canUseReserve ? "Reintentar" : "Empezar"}
         </button>
-        <button type="button" className={`enlace ${styles.reglas}`} onClick={() => rules.current?.showModal()}>
-          Cómo se juega
-        </button>
+        {!error && (
+          <button
+            type="button"
+            className={`enlace ${styles.reglas}`}
+            onClick={() => rules.current?.showModal()}
+          >
+            Cómo se juega
+          </button>
+        )}
       </div>
 
       <ChoiceSheet<EraChoice>
