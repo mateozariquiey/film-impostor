@@ -51,6 +51,8 @@ export function ContactSheet({ filters, onClose }: Props) {
   }, [filters, attempt]);
 
   useEffect(() => {
+    // Se llega desde abajo del todo de los ajustes.
+    window.scrollTo(0, 0);
     heading.current?.focus({ preventScroll: true });
   }, []);
 
@@ -158,6 +160,8 @@ function Frame({
   onToggle: () => void;
 }) {
   const [failed, setFailed] = useState(false);
+  // Hasta que carga, el fondo de duotono sería un bloque de luz.
+  const [loaded, setLoaded] = useState(false);
   return (
     <button
       type="button"
@@ -167,7 +171,7 @@ function Frame({
       data-fuera={!selected || undefined}
       onClick={onToggle}
     >
-      <span className={styles.imagen}>
+      <span className={styles.imagen} data-vacia={!loaded || undefined}>
         {movie.posterPath && !failed && (
           <Image
             src={posterUrl(movie.posterPath, "w342")}
@@ -175,6 +179,7 @@ function Frame({
             fill
             sizes="(min-width: 480px) 150px, 33vw"
             unoptimized
+            onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
           />
         )}

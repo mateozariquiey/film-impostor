@@ -1,12 +1,16 @@
 .setup {
+  position: relative;
   padding-bottom: 0;
 }
 
+/* En la misma línea que «Film», la primera palabra de la marca. */
 .cabecera {
+  position: absolute;
+  top: max(4px, calc(env(safe-area-inset-top) - 10px));
+  right: var(--margen);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
+  gap: 8px;
 }
 
 .luz {

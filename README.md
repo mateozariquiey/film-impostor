@@ -4,8 +4,8 @@ Un juego de deducción para jugar en grupo con un solo móvil. Todos reciben el 
 
 ## Cómo se juega
 
-1. Elegid entre 3 y 12 jugadores y ajustad las películas por década o año. Podéis revisar una lista de hasta 60 títulos y descartar los que no conozcáis.
-2. Pasad el móvil por turnos. Cada jugador revela su rol en privado y lo oculta antes de pasárselo al siguiente.
+1. Elegid entre 3 y 12 jugadores y ajustad las películas por década o año. Podéis revisar una hoja de hasta 60 títulos y tachar los que no conozcáis.
+2. Pasaos el móvil. Cada jugador mantiene el dedo para revelar su papel y, al soltar, desaparece.
 3. Dad pistas, haced preguntas y votad quién creéis que es el impostor. Antes de revelar el resultado, el impostor puede intentar adivinar el título.
 4. Si adivina la película, gana. Si no, el grupo gana al acertar la votación; una votación incorrecta da la victoria al impostor.
 
@@ -32,17 +32,26 @@ TMDB_API_KEY=tu_clave
 npm run dev
 ```
 
-Abre [localhost:3000](http://localhost:3000). Sin la clave, la interfaz carga, pero no se pueden obtener películas. Las pruebas automatizadas usan respuestas simuladas y no necesitan credenciales.
+Abre [localhost:3000](http://localhost:3000). Sin la clave, la interfaz carga y avisa de que TMDB no responde, y se puede jugar con la lista de reserva. Las pruebas automatizadas usan respuestas simuladas y no necesitan credenciales.
 
 ## Desarrollo
 
-Next.js, React y TypeScript, con Tailwind para los estilos y Vitest para las pruebas.
+Next.js, React y TypeScript, con CSS Modules para los estilos y Vitest para las pruebas.
 
-- `src/components/`: pantallas de configuración, selección y partida.
+- `src/components/`: pantallas (`SetupScreen`, `ContactSheet`, `TurnScreen`, `TableScreen`, `ResultScreen`) y sus piezas. `HoldButton` es el gesto de mantener pulsado.
+- `src/app/globals.css`: tokens de color y estilos comunes. El tema `dia` y la pantalla de resultado reutilizan los mismos tokens.
 - `src/contexts/GameContext.tsx`: estado de la partida y transiciones entre turnos.
-- `src/lib/`: reparto de roles, filtros y ajustes guardados en el navegador.
+- `src/lib/`: reparto de roles, filtros, ajustes guardados en el navegador y lista de reserva.
 - `src/lib/server/`: consultas a TMDB y tratamiento de errores.
 - `src/app/api/movies/`: rutas que consulta el navegador. La clave de TMDB se utiliza en el servidor.
+
+## Diseño
+
+La identidad es un cuarto oscuro, porque aquí «revelar» es también revelar una foto. Tres decisiones sostienen el secreto y conviene conservarlas:
+
+- El papel solo está en la página mientras se mantiene el dedo, y desaparece sin transición al soltar, al cancelarse el gesto o al pasar la app a segundo plano.
+- El papel del impostor ocupa lo mismo y da la misma luz que el título, para que no se distingan desde lejos. Por eso tampoco se enseña el cartel durante el turno: se reconoce de lejos mucho antes que un texto.
+- La luz roja y tenue apenas ilumina caras con poca luz. La pantalla de resultado es la única en blanco y con color, y por eso se nota.
 
 ```sh
 npm test
@@ -52,7 +61,9 @@ npm run build
 npm start
 ```
 
-Los ajustes se conservan en `localStorage`. La partida y la selección manual solo duran hasta recargar la página. Al cambiar los filtros se borra la selección manual.
+Los ajustes y el tema se conservan en `localStorage`. La partida y la selección manual solo duran hasta recargar la página. Al cambiar los filtros se borra la selección manual.
+
+Si TMDB no responde o no hay conexión, se puede jugar con la lista de reserva de `src/lib/reserve.ts`, que no lleva carteles ni palabras clave y no aplica los filtros.
 
 Los modos Top 100 y Top 500 acotan las páginas de resultados ordenados por popularidad dentro de los filtros elegidos. Cinéfilo amplía la búsqueda y Clásicos ordena por número de votos. No son listas editoriales; los resultados cambian con TMDB.
 

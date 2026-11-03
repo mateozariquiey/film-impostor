@@ -56,6 +56,17 @@
   color: var(--tenue);
 }
 
+/* En pantallas bajas, los botones importan más que el tamaño del cartel. */
+@media (max-height: 700px) {
+  .resultado {
+    --poster: 26dvh;
+  }
+
+  .frase {
+    font-size: 38px;
+  }
+}
+
 /* Se enciende la luz de la sala. */
 .destello {
   position: fixed;

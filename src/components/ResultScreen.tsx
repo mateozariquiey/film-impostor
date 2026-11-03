@@ -6,14 +6,34 @@ import { FilmStrip } from "./FilmStrip";
 import { FitTitle } from "./FitTitle";
 import styles from "./ResultScreen.module.css";
 
+const ARM_AFTER_RELEASE_MS = 350;
+const ARM_FALLBACK_MS = 3000;
+
 /** Se enciende la luz: la única pantalla en blanco y con color de toda la partida. */
 export function ResultScreen() {
   const { players, movie, playAgain, resetGame, isLoading } = useGame();
   const [posterFailed, setPosterFailed] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  // Se llega con el dedo aún pulsado justo donde quedan estos botones: al levantarlo no deben saltar.
+  const [armed, setArmed] = useState(false);
 
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
+  }, []);
+
+  useEffect(() => {
+    let timer: number | undefined;
+    const arm = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setArmed(true), ARM_AFTER_RELEASE_MS);
+    };
+    const releases = ["pointerup", "pointercancel", "keyup"];
+    releases.forEach((type) => window.addEventListener(type, arm, { once: true }));
+    timer = window.setTimeout(() => setArmed(true), ARM_FALLBACK_MS);
+    return () => {
+      window.clearTimeout(timer);
+      releases.forEach((type) => window.removeEventListener(type, arm));
+    };
   }, []);
 
   if (!movie) return null;
@@ -50,7 +70,7 @@ export function ResultScreen() {
       </p>
       <FilmStrip count={players.length} current={impostor} inverted />
 
-      <div className={styles.acciones}>
+      <div className={styles.acciones} inert={!armed}>
         <button
           type="button"
           className="accion"

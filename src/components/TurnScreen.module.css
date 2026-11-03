@@ -119,6 +119,13 @@
   }
 }
 
+/* Sin movimiento, el papel aparece sin más. */
+@media (prefers-reduced-motion: reduce) {
+  .revelado {
+    display: none;
+  }
+}
+
 /* A la luz blanca es al revés: el papel es claro y la tinta aparece sobre él. */
 :root[data-theme="dia"] .revelado {
   mix-blend-mode: screen;

@@ -292,7 +292,7 @@ export function SetupScreen({ theme, onToggleTheme }: Props) {
           aria-busy={isLoading}
           onClick={() => void startGame(settings)}
         >
-          {isLoading ? "Buscando película…" : error ? "Reintentar" : "Empezar"}
+          {isLoading ? "Buscando película…" : canUseReserve ? "Reintentar" : "Empezar"}
         </button>
       </div>
 

@@ -28,6 +28,10 @@ function Screens() {
     applyTheme(theme, phase === "RESULT");
   }, [theme, phase]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [phase]);
+
   if (phase === "SETUP")
     return (
       <SetupScreen

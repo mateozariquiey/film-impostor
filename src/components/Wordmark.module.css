@@ -2,6 +2,8 @@
   display: block;
   font: 800 24px/1 var(--anybody);
   font-stretch: 80%;
+  /* Deja sitio a la línea de «Cómo se juega», que es táctil. */
+  padding-block: 8px 4px;
 }
 
 /* Las perforaciones son dos filas de rectángulos pintados sobre la tira. */

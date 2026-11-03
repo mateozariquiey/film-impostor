@@ -32,6 +32,11 @@
   --duotono: #ffffff;
 }
 
+/* El color de texto se hereda ya calculado: hay que volver a pedirlo con los tokens de aquí. */
+.positivo {
+  color: var(--papel);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -50,6 +55,7 @@ body {
   background: var(--sala);
   color: var(--papel);
   font: 400 16px/1.4 var(--anybody);
+  font-stretch: 90%;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }

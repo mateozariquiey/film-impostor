@@ -77,7 +77,8 @@
   }
 }
 
-.cuadro[data-fuera] .imagen {
+.cuadro[data-fuera] .imagen,
+.imagen[data-vacia] {
   background: var(--bandeja);
 }
 
