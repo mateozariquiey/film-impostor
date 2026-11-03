@@ -1,167 +1,79 @@
-.turno {
-  height: 100dvh;
-  min-height: 560px;
+/* Ocupa toda la ventana por detrás del texto, que deja pasar los toques. */
+.superficie {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
 
-.arriba {
+.superficie:focus-visible {
+  outline-offset: -6px;
+}
+
+.turno {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.barra {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  justify-content: flex-end;
+  min-height: 34px;
+}
+
+.turno[data-held] .barra > *,
+.turno[data-held] .pie {
+  visibility: hidden;
+}
+
+.papel {
+  position: relative;
+  margin-top: 13dvh;
+  pointer-events: none;
 }
 
 .quien {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  margin-top: 16px;
-  animation: avance 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes avance {
-  from {
-    transform: translateY(46px);
-    opacity: 0;
-  }
-}
-
-.numero {
-  flex: none;
-  font: 900 clamp(84px, 27vw, 112px)/0.8 var(--anybody);
-  font-stretch: 100%;
-}
-
-.quien h1 {
-  font: 700 21px/1.08 var(--anybody);
-  font-stretch: 80%;
-}
-
-/* Mientras se revela, todo lo demás se atenúa para que la pantalla dé la menor luz posible. */
-.turno[data-held] .quien,
-.turno[data-held] .arriba {
-  opacity: 0.22;
-}
-
-.fotograma {
-  position: relative;
-  isolation: isolate;
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
-  padding: 18px;
-  /* Las esquinas de un fotograma de 35 mm. */
-  border-radius: 14px / 18px;
-  background: var(--fotograma);
-  box-shadow: inset 0 0 0 2px var(--bandeja);
-  color: var(--luz);
-  overflow: hidden;
-}
-
-.vacio {
-  margin-block: auto;
-  max-width: 24ch;
-  color: var(--tenue);
+  margin-bottom: 10px;
 }
 
 .nota {
-  flex: none;
-  font-size: 15px;
-  line-height: 1.3;
+  margin-top: 12px;
 }
 
-.pistas {
-  flex: none;
-  display: grid;
-  gap: 3px;
-  font-size: 16px;
-  line-height: 1.25;
-}
-
-.pistas div {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 6px;
-}
-
-.pistas dd {
-  margin: 0;
-  font-weight: 700;
-}
-
-/* El revelado: un grano que, al subir el umbral, deja ver el papel punto a punto.
-   Con «multiply», el negro tapa y el blanco deja pasar. */
 .revelado {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: url("/grano.png");
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  animation: revelar var(--duracion) ease-in forwards;
+  animation: aparece 0.1s ease-out;
 }
 
-@keyframes revelar {
+@keyframes aparece {
   from {
-    filter: brightness(0.42) contrast(14);
-  }
-  92% {
-    filter: brightness(1.6) contrast(14);
-    opacity: 1;
-  }
-  to {
-    filter: brightness(1.6) contrast(14);
     opacity: 0;
   }
 }
 
-/* Sin movimiento, el papel aparece sin más. */
-@media (prefers-reduced-motion: reduce) {
-  .revelado {
-    display: none;
-  }
+.pie {
+  position: relative;
+  margin-top: auto;
+  padding-top: 24px;
 }
 
-/* A la luz blanca es al revés: el papel es claro y la tinta aparece sobre él. */
-:root[data-theme="dia"] .revelado {
-  mix-blend-mode: screen;
-  animation-name: revelar-dia;
-}
-
-@keyframes revelar-dia {
-  from {
-    filter: brightness(0.42) contrast(14) invert(1);
-  }
-  92% {
-    filter: brightness(1.6) contrast(14) invert(1);
-    opacity: 1;
-  }
-  to {
-    filter: brightness(1.6) contrast(14) invert(1);
-    opacity: 0;
-  }
-}
-
-.siguiente {
-  flex: none;
-  display: flex;
-  align-items: center;
-  min-height: 52px;
-  margin-block: 10px;
-}
-
-/* Solo visible al llegar con el teclado. */
 .lector:focus-visible {
-  position: static;
+  position: relative;
   width: auto;
   height: auto;
+  margin: 16px 0 0;
   clip-path: none;
-  padding: 10px 0;
-  border: 0;
-  background: none;
-  text-decoration: underline;
+  white-space: normal;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+@media (max-height: 480px) {
+  .papel {
+    margin-top: 0;
+  }
 }

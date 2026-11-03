@@ -1,85 +1,33 @@
-.resultado {
-  --poster: clamp(190px, 44dvh, 420px);
-  background: var(--sala);
+.peli {
+  margin-top: 8px;
+  color: var(--ink-2);
 }
 
+.peli strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* El alto sale de lo que dejan libre el texto y los botones, y el ancho sigue la proporción del cartel. */
 .cartel {
   position: relative;
-  flex: none;
-  height: var(--poster);
-  margin: calc(max(14px, env(safe-area-inset-top)) * -1) calc(var(--margen) * -1) 0;
+  height: clamp(210px, calc(100dvh - 360px), 480px);
+  aspect-ratio: 2 / 3;
+  margin-top: 20px;
   overflow: hidden;
-  background: var(--bandeja);
+  border-radius: 6px;
+  background: var(--fill);
 }
 
-/* El negativo pasa a positivo una sola vez, al llegar. */
-.imagen {
+.cartel img {
   object-fit: cover;
-  object-position: 50% 14%;
-  animation: positivar 900ms ease-out;
-}
-
-@keyframes positivar {
-  from {
-    filter: invert(1) contrast(1.1);
-  }
-}
-
-.sinCartel {
-  display: flex;
-  height: 100%;
-  padding: 20px var(--margen);
-  background: var(--papel);
-  color: var(--sala);
-}
-
-.frase {
-  margin-top: 16px;
-  font: 900 clamp(42px, 13.8vw, 56px)/0.94 var(--anybody);
-  font-stretch: 72%;
-}
-
-.peli {
-  margin-block: 8px 12px;
-  font-size: 17px;
-  line-height: 1.28;
 }
 
 .acciones {
   margin-top: auto;
-  padding-top: 14px;
-  text-align: center;
+  padding-top: 20px;
 }
 
-.credito {
-  font-size: 13px;
-  color: var(--tenue);
-}
-
-/* En pantallas bajas, los botones importan más que el tamaño del cartel. */
-@media (max-height: 700px) {
-  .resultado {
-    --poster: 26dvh;
-  }
-
-  .frase {
-    font-size: 38px;
-  }
-}
-
-/* Se enciende la luz de la sala. */
-.destello {
-  position: fixed;
-  inset: 0;
-  z-index: 5;
-  background: #fff;
-  pointer-events: none;
-  opacity: 0;
-  animation: encender 520ms ease-out;
-}
-
-@keyframes encender {
-  from {
-    opacity: 0.95;
-  }
+.acciones .enlace {
+  margin-top: 4px;
 }

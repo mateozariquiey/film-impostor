@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 
-// Los ajustes y el tema viven en el navegador, así que el juego solo se pinta allí.
+// Los ajustes viven en el navegador, así que el juego solo se pinta allí.
 const Game = dynamic(
   () => import("@/components/Game").then((mod) => mod.Game),
   {
     ssr: false,
     loading: () => (
       <p className="preparando" role="status">
-        Apagando las luces…
+        Cargando…
       </p>
     ),
   },

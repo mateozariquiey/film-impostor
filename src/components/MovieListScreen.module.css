@@ -1,0 +1,82 @@
+.lista {
+  padding-bottom: 0;
+}
+
+.volver {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: -10px 0 12px;
+  align-self: flex-start;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.estado {
+  margin: 6px 0 20px;
+}
+
+.filas {
+  border-top: 1px solid var(--line);
+}
+
+.filas > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 0;
+  text-align: left;
+}
+
+.cartel {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 66px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--fill);
+}
+
+.cartel img {
+  object-fit: cover;
+}
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Tachar es literal: el título queda rayado y el cartel pierde el color. */
+.fila[data-tachada] .titulo {
+  color: var(--ink-2);
+  text-decoration: line-through;
+}
+
+.fila[data-tachada] .cartel {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.error {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pie {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: 12px 0 calc(env(safe-area-inset-bottom) + 20px);
+  background: var(--bg);
+}

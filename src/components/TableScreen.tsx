@@ -1,16 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { posterUrl } from "@/lib/posters";
-import { FilmStrip } from "./FilmStrip";
 import { HoldButton } from "./HoldButton";
 import { QuitButton } from "./QuitButton";
 import styles from "./TableScreen.module.css";
 
-const REVEAL_IMPOSTOR_MS = 1400;
+const REVEAL_IMPOSTOR_MS = 1200;
 
 /** La conversación. El móvil descansa hasta que el grupo decide ver el resultado. */
 export function TableScreen() {
-  const { players, movie, revealImpostor } = useGame();
+  const { movie, revealImpostor } = useGame();
+  const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -21,29 +21,33 @@ export function TableScreen() {
 
   return (
     <div className="pantalla">
-      <div className={styles.arriba}>
-        <FilmStrip count={players.length} done={players.length} />
+      <div className={styles.barra}>
         <QuitButton />
       </div>
-      <h1 ref={heading} tabIndex={-1} className={styles.grande}>
-        Móvil a la mesa.
+      <h1 ref={heading} tabIndex={-1} className={`titulo ${styles.encabezado}`}>
+        Móvil a la mesa
       </h1>
-      <ol className={styles.pasos}>
-        <li>Cada uno da una pista, sin decir el título.</li>
-        <li>Preguntad y votad quién disimula.</li>
-        <li>Antes de revelar, el impostor puede intentar adivinar la película.</li>
-      </ol>
-      <p className={styles.regla}>
-        Si adivina el título o falla la votación, gana el impostor. Si no, ganáis
-        los demás.
-      </p>
-      <HoldButton
-        label="Mantén para revelar al impostor"
-        tooShort="Deja el dedo hasta que se cierre el círculo"
-        durationMs={REVEAL_IMPOSTOR_MS}
-        showProgress
-        onComplete={revealImpostor}
-      />
+      <div className={styles.reglas}>
+        <p>Cada uno da una pista, sin decir el título.</p>
+        <p>Después, preguntad y votad quién disimula.</p>
+        <p>Antes de ver el resultado, el impostor puede intentar adivinar la película.</p>
+        <p className="secundario">
+          Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.
+        </p>
+      </div>
+      <div className={styles.pie}>
+        <p className={`secundario ${styles.aviso}`} role="status">
+          {tooShort ? "Deja el dedo hasta que se llene el botón." : ""}
+        </p>
+        <HoldButton
+          className={`accion ${styles.mantener}`}
+          durationMs={REVEAL_IMPOSTOR_MS}
+          onRelease={(completed) => setTooShort(!completed)}
+          onComplete={revealImpostor}
+        >
+          <span>Mantén para ver quién era</span>
+        </HoldButton>
+      </div>
     </div>
   );
 }

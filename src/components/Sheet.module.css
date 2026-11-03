@@ -1,21 +1,31 @@
 .hoja {
-  width: min(100%, 480px);
-  max-width: none;
-  max-height: 92dvh;
+  width: 100%;
+  max-width: 480px;
+  max-height: 88dvh;
   margin: auto auto 0;
   padding: 0;
   border: 0;
-  border-top: 2px solid var(--filtro);
-  background: var(--sala);
-  color: var(--papel);
+  border-radius: 14px 14px 0 0;
+  background: var(--bg);
+  color: var(--ink);
+  overscroll-behavior: contain;
+}
+
+.hoja[open] {
+  animation: sube 0.2s ease-out;
 }
 
 .hoja::backdrop {
-  background: rgb(0 0 0 / 0.72);
+  background: rgb(0 0 0 / 0.4);
+}
+
+@keyframes sube {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
 }
 
 .contenido {
-  display: grid;
-  gap: 14px;
-  padding: 22px var(--margen) max(18px, env(safe-area-inset-bottom));
+  padding: 20px var(--margin) calc(env(safe-area-inset-bottom) + 20px);
 }

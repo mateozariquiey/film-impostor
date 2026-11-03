@@ -1,27 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { prefersReducedMotion } from "@/lib/browser";
-import { FilmStrip } from "./FilmStrip";
-import { FitTitle } from "./FitTitle";
 import { HoldButton } from "./HoldButton";
 import { QuitButton } from "./QuitButton";
 import styles from "./TurnScreen.module.css";
 
-const REVEAL_MS = 700;
-const REVEAL_REDUCED_MS = 150;
+/** Lo que hay que mantener para contar como visto: basta para leer un título. */
+const SEEN_AFTER_MS = 500;
 
 /**
- * El turno de un jugador. El papel solo existe en la página mientras se mantiene el dedo,
- * y el del impostor ocupa lo mismo y brilla igual que el título: desde lejos no se distinguen.
+ * El turno de un jugador. Toda la pantalla es la zona de mantener y el papel solo existe en la
+ * página mientras dura el gesto. Todos los estados comparten el mismo esqueleto de texto: una
+ * línea, un título y una nota, así que el impostor y el grupo no se distinguen de lejos.
  */
 export function TurnScreen() {
   const { players, currentPlayerIndex, movie, nextPlayer } = useGame();
   const [held, setHeld] = useState(false);
   const [readerOpen, setReaderOpen] = useState(false);
   const [seen, setSeen] = useState(false);
-  const [revealMs] = useState(() =>
-    prefersReducedMotion() ? REVEAL_REDUCED_MS : REVEAL_MS,
-  );
+  const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -34,75 +30,58 @@ export function TurnScreen() {
   const visible = held || readerOpen;
 
   return (
-    <div
-      className={`pantalla ${styles.turno}`}
-      data-held={visible || undefined}
-    >
-      <div className={styles.arriba}>
-        <FilmStrip count={players.length} done={currentPlayerIndex} current={currentPlayerIndex} />
+    <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
+      <HoldButton
+        className={styles.superficie}
+        ariaLabel="Mantén pulsado para ver tu papel"
+        durationMs={SEEN_AFTER_MS}
+        onHoldChange={setHeld}
+        onRelease={(completed) => setTooShort(!completed && !seen)}
+        onComplete={() => setSeen(true)}
+      />
+
+      <div className={styles.barra}>
         <QuitButton />
       </div>
-      <p className="solo-lector">
-        Turno {number} de {players.length}
-      </p>
 
-      <div className={styles.quien}>
-        <span className={styles.numero} aria-hidden>
-          {number}
-        </span>
-        <h1 ref={heading} tabIndex={-1}>
-          Jugador {number}, coge el móvil. Es solo para tus ojos.
+      <div className={styles.papel} aria-live="polite">
+        <h1 ref={heading} tabIndex={-1} className={`secundario ${styles.quien}`}>
+          Jugador {number} de {players.length}
         </h1>
-      </div>
-
-      <div className={styles.fotograma} aria-live="polite">
         {visible && movie ? (
-          <>
-            <FitTitle text={isImpostor ? "Eres el impostor" : movie.title} />
+          <div className={styles.revelado}>
+            <p className="titulo">{isImpostor ? "Eres el impostor" : movie.title}</p>
             {isImpostor ? (
               <ImpostorHints />
             ) : (
-              <p className={styles.nota}>
-                Esta es tu película. Da pistas sin regalársela al impostor.
-              </p>
+              <p className={styles.nota}>Da pistas sin regalársela al impostor.</p>
             )}
-            <span
-              className={styles.revelado}
-              style={{ "--duracion": `${revealMs}ms` } as React.CSSProperties}
-              aria-hidden
-            />
+          </div>
+        ) : seen ? (
+          <>
+            <p className="titulo">Ya está oculto</p>
+            <p className={styles.nota}>Para verlo otra vez, mantén el dedo.</p>
           </>
         ) : (
-          <p className={styles.vacio}>
-            Tu papel se revela aquí mientras mantienes el dedo.
-          </p>
+          <>
+            <p className="titulo">Mantén el dedo en la pantalla</p>
+            <p className={styles.nota}>
+              {tooShort
+                ? "Un momento más, hasta que te dé tiempo a leerlo."
+                : "Tu papel se ve mientras lo mantienes. Que no mire nadie más."}
+            </p>
+          </>
         )}
       </div>
 
-      <div className={styles.siguiente}>
-        {seen ? (
-          <button
-            type="button"
-            className="accion-sec"
-            style={{ visibility: visible ? "hidden" : undefined }}
-            onClick={nextPlayer}
-          >
-            {isLast ? "Ya lo he visto, a jugar" : `Ya lo he visto, le toca al ${number + 1}`}
+      {seen && (
+        <div className={styles.pie}>
+          <button type="button" className="accion" onClick={nextPlayer}>
+            {isLast ? "Dejar el móvil en la mesa" : `Pasar el móvil al jugador ${number + 1}`}
           </button>
-        ) : (
-          <p className="texto-tenue">Cuando lo veas, podrás pasar el móvil.</p>
-        )}
-      </div>
+        </div>
+      )}
 
-      <HoldButton
-        label="Mantén para revelar"
-        heldLabel="Suelta para ocultar"
-        hint="Al soltar desaparece al instante"
-        tooShort="Deja el dedo un momento, hasta que aparezca"
-        durationMs={revealMs}
-        onHoldChange={setHeld}
-        onComplete={() => setSeen(true)}
-      />
       <button
         type="button"
         className={`solo-lector ${styles.lector}`}
@@ -121,35 +100,17 @@ function ImpostorHints() {
   const { movie, hints } = useGame();
   if (!movie) return null;
   if (hints.length === 0)
-    return (
-      <p className={styles.nota}>
-        Sin pistas esta vez. Escucha a los demás y sigue la conversación.
-      </p>
-    );
+    return <p className={styles.nota}>Sin pistas esta vez. Escucha y disimula.</p>;
   return (
-    <dl className={styles.pistas}>
-      {hints.includes("GENRE") && (
-        <div>
-          <dt>Género</dt>
-          <dd>{movie.genre}</dd>
-        </div>
-      )}
-      {hints.includes("YEAR") && (
-        <div>
-          <dt>Año</dt>
-          <dd>{movie.releaseYear ?? "Desconocido"}</dd>
-        </div>
-      )}
+    <div className={styles.nota}>
+      {hints.includes("GENRE") && <p>Género: {movie.genre}</p>}
+      {hints.includes("YEAR") && <p>Año: {movie.releaseYear ?? "desconocido"}</p>}
       {hints.includes("KEYWORDS") && (
-        <div>
-          <dt>Claves</dt>
-          <dd>
-            {movie.keywords.length
-              ? movie.keywords.slice(0, 3).join(", ")
-              : "Sin palabras clave"}
-          </dd>
-        </div>
+        <p>
+          Palabras clave:{" "}
+          {movie.keywords.length ? movie.keywords.slice(0, 3).join(", ") : "ninguna"}
+        </p>
       )}
-    </dl>
+    </div>
   );
 }

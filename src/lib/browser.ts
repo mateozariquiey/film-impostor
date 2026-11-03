@@ -45,3 +45,23 @@ export function useWarnBeforeLeaving(active: boolean): void {
         return () => window.removeEventListener('beforeunload', warn);
     }, [active]);
 }
+
+/**
+ * Baja la luz de la pantalla (y de la barra del navegador) mientras el móvil pasa de mano,
+ * para que no ilumine la cara de quien lo mira. Se ve igual en tema claro y oscuro.
+ */
+export function useDimScreen(active: boolean): void {
+    useEffect(() => {
+        if (!active) return;
+        const root = document.documentElement;
+        const bars = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
+        const colors = bars.map((bar) => bar.content);
+
+        root.dataset.luz = 'baja';
+        bars.forEach((bar) => (bar.content = '#000000'));
+        return () => {
+            delete root.dataset.luz;
+            bars.forEach((bar, index) => (bar.content = colors[index]));
+        };
+    }, [active]);
+}

@@ -1,74 +1,80 @@
-/* Cuarto oscuro: toda la app se ve bajo una luz de seguridad roja.
-   El tema «dia» y la pantalla de resultado usan los mismos tokens, como una copia a la luz blanca. */
 :root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --ink: #161616;
+  --ink-2: #6a6a6a;
+  --line: #e3e3e3;
+  --fill: #f1f1f1;
+  --on-ink: #ffffff;
+  --fill-progress: #6a6a6a;
+  --radius: 10px;
+  --margin: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --ink: #f0f0f0;
+    --ink-2: #a3a3a3;
+    --line: #323232;
+    --fill: #2a2a2a;
+    --on-ink: #161616;
+    --fill-progress: #a3a3a3;
+  }
+}
+
+/* Mientras el móvil pasa de mano, la pantalla apenas da luz, sea cual sea el tema. */
+:root[data-luz="baja"] {
   color-scheme: dark;
-  --sala: #140302;
-  --bandeja: #2a0a06;
-  --fotograma: #0a0100;
-  --filtro: #7a1f11;
-  --tenue: #d9634a;
-  --luz: #ff5b36;
-  --papel: #ffd3bd;
-  --sobre-luz: #140302;
-  --halo: #4a0f07;
-  --duotono: #ff5b36;
-  --anybody: var(--font-anybody), system-ui, sans-serif;
-  --doto: var(--font-doto), ui-monospace, monospace;
-  --margen: 18px;
+  --bg: #000000;
+  --ink: #cfcfcf;
+  --ink-2: #8c8c8c;
+  --line: #2b2b2b;
+  --fill: #1c1c1c;
+  --on-ink: #000000;
+  --fill-progress: #8c8c8c;
 }
 
-:root[data-theme="dia"],
-.positivo {
-  color-scheme: light;
-  --sala: #eef0ee;
-  --bandeja: #d9dcd9;
-  --fotograma: #fafbfa;
-  --filtro: #8d938f;
-  --tenue: #4a4f4c;
-  --luz: #101211;
-  --papel: #0c0d0d;
-  --sobre-luz: #eef0ee;
-  --halo: transparent;
-  --duotono: #ffffff;
-}
-
-/* El color de texto se hereda ya calculado: hay que volver a pedirlo con los tokens de aquí. */
-.positivo {
-  color: var(--papel);
-}
-
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  margin: 0;
 }
 
-html,
-body {
-  /* Sin «tirar para recargar»: recargar a media partida la perdería. */
-  overscroll-behavior: none;
+html {
   -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100dvh;
-  background: var(--sala);
-  color: var(--papel);
-  font: 400 16px/1.4 var(--anybody);
-  font-stretch: 90%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 17px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease;
 }
 
-/* Grano de la película sobre toda la interfaz. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-  pointer-events: none;
-  background: url("/grano.png");
-  opacity: 0.05;
+h1,
+h2,
+p,
+ol,
+ul,
+dl,
+dd,
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+fieldset {
+  border: 0;
+  min-width: 0;
 }
 
 button,
@@ -78,112 +84,115 @@ input {
 }
 
 button {
+  background: none;
+  border: 0;
+  padding: 0;
   cursor: pointer;
   touch-action: manipulation;
 }
 
+button:disabled {
+  cursor: default;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
 :focus-visible {
-  outline: 3px solid var(--papel);
-  outline-offset: 3px;
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 [tabindex="-1"]:focus {
   outline: none;
 }
 
-.preparando {
-  padding: 40px var(--margen);
-  color: var(--tenue);
+/* Cada pantalla es una columna: el contenido arriba y la acción abajo, al alcance del pulgar. */
+.pantalla {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 20px) var(--margin) calc(env(safe-area-inset-bottom) + 20px);
+}
+
+.titulo {
+  font-size: 28px;
+  line-height: 1.18;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.secundario {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.accion,
+.accion-sec {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-align: center;
+}
+
+.accion {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.accion-sec {
+  background: var(--fill);
+  color: var(--ink);
+}
+
+.accion:active:not(:disabled),
+.accion-sec:active:not(:disabled) {
+  opacity: 0.75;
+}
+
+.accion:disabled,
+.accion-sec:disabled {
+  opacity: 0.4;
+}
+
+.enlace {
+  display: block;
+  min-height: 44px;
+  padding: 0 12px;
+  margin: 0 auto;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.enlace:active {
+  color: var(--ink);
 }
 
 .solo-lector {
   position: absolute;
   width: 1px;
   height: 1px;
+  margin: -1px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
 }
 
-/* Una pantalla: columna de móvil, centrada si la ventana es más ancha. */
-.pantalla {
-  display: flex;
-  flex-direction: column;
-  width: min(100%, 480px);
-  min-height: 100dvh;
-  margin-inline: auto;
-  padding: max(14px, env(safe-area-inset-top)) var(--margen) max(16px, env(safe-area-inset-bottom));
-  background: radial-gradient(120% 340px at 50% -60px, var(--halo), transparent 70%);
-}
-
-.titular {
-  font: 900 40px/0.98 var(--anybody);
-  font-stretch: 72%;
-}
-
-.texto-tenue {
-  color: var(--tenue);
-}
-
-/* Acción principal: un bloque de luz, recto como un papel fotográfico. */
-.accion {
-  display: block;
-  width: 100%;
-  min-height: 60px;
-  padding: 12px 16px;
-  border: 0;
-  border-radius: 3px;
-  background: var(--luz);
-  color: var(--sobre-luz);
-  font: 800 26px/1.05 var(--anybody);
-  font-stretch: 80%;
+.preparando {
+  padding: 40vh var(--margin) 0;
   text-align: center;
-}
-
-.accion:disabled {
-  background: var(--bandeja);
-  color: var(--tenue);
-  cursor: default;
-}
-
-.accion[aria-busy="true"] {
-  background-image: repeating-linear-gradient(90deg, transparent 0 14px, #0002 14px 28px);
-  background-size: 200% 100%;
-  animation: avanzar 1s linear infinite;
-}
-
-@keyframes avanzar {
-  to {
-    background-position: 56px 0;
-  }
-}
-
-/* Acción secundaria: contorno. */
-.accion-sec {
-  display: block;
-  width: 100%;
-  min-height: 52px;
-  padding: 10px 14px;
-  border: 2px solid var(--luz);
-  border-radius: 3px;
-  background: none;
-  color: var(--luz);
-  font: 700 18px/1.1 var(--anybody);
-  font-stretch: 86%;
-  text-align: center;
-}
-
-.enlace {
-  display: inline-block;
-  min-height: 44px;
-  padding: 10px 0;
-  border: 0;
-  background: none;
-  color: var(--luz);
-  font-weight: 600;
-  text-align: left;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  font-size: 15px;
+  color: var(--ink-2);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -192,12 +201,5 @@ button {
   *::after {
     animation: none !important;
     transition: none !important;
-  }
-}
-
-@media (forced-colors: active) {
-  .accion,
-  .accion-sec {
-    border: 2px solid ButtonText;
   }
 }

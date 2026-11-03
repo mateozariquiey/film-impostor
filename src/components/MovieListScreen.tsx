@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { ApiError, fetchMoviePool, type ApiErrorKind } from "@/lib/api";
 import { posterUrl } from "@/lib/posters";
 import type { Movie, MovieFilters } from "@/types";
-import styles from "./ContactSheet.module.css";
+import styles from "./MovieListScreen.module.css";
 
 interface Props {
   filters: MovieFilters;
@@ -19,8 +19,8 @@ const ERRORS: Record<ApiErrorKind, string> = {
   "no-movies": "No hay películas con estos filtros. Vuelve y prueba con otra época.",
 };
 
-/** La hoja de contactos: se tachan a lápiz graso las películas que el grupo no conoce. */
-export function ContactSheet({ filters, onClose }: Props) {
+/** Lista de películas candidatas: se tachan las que el grupo no conoce. */
+export function MovieListScreen({ filters, onClose }: Props) {
   const { customPool, setCustomPool } = useGame();
   const [candidates, setCandidates] = useState<Movie[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -51,7 +51,6 @@ export function ContactSheet({ filters, onClose }: Props) {
   }, [filters, attempt]);
 
   useEffect(() => {
-    // Se llega desde abajo del todo de los ajustes.
     window.scrollTo(0, 0);
     heading.current?.focus({ preventScroll: true });
   }, []);
@@ -67,26 +66,36 @@ export function ContactSheet({ filters, onClose }: Props) {
 
   const count = selectedIds.size;
   return (
-    <div className={`pantalla ${styles.hojaPantalla}`}>
-      <button type="button" className={`enlace ${styles.volver}`} onClick={onClose}>
+    <div className={`pantalla ${styles.lista}`}>
+      <button type="button" className={styles.volver} onClick={onClose}>
+        <svg width="7" height="12" viewBox="0 0 7 12" aria-hidden>
+          <path
+            d="M6 1L1 6l5 5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         Volver sin cambios
       </button>
-      <h1 ref={heading} tabIndex={-1} className="titular">
+      <h1 ref={heading} tabIndex={-1} className="titulo">
         Tachad las que no conozcáis
       </h1>
 
       {load === "loading" && (
         <>
-          <p className={styles.estado} role="status">
-            Cargando la hoja de contactos…
+          <p className={`secundario ${styles.estado}`} role="status">
+            Cargando películas…
           </p>
-          <div className={styles.hoja} aria-hidden>
-            {Array.from({ length: 12 }, (_, index) => (
-              <div key={index} className={styles.cuadro}>
-                <span className={`${styles.imagen} ${styles.vacia}`} />
-              </div>
+          <ul className={styles.filas} aria-hidden>
+            {Array.from({ length: 8 }, (_, index) => (
+              <li key={index} className={styles.fila}>
+                <span className={styles.cartel} />
+              </li>
             ))}
-          </div>
+          </ul>
         </>
       )}
 
@@ -96,7 +105,7 @@ export function ContactSheet({ filters, onClose }: Props) {
           {load !== "no-movies" && (
             <button
               type="button"
-              className="accion"
+              className="accion-sec"
               onClick={() => {
                 setLoad("loading");
                 setAttempt(attempt + 1);
@@ -110,15 +119,14 @@ export function ContactSheet({ filters, onClose }: Props) {
 
       {load === "ready" && (
         <>
-          <p className={styles.estado} aria-live="polite">
+          <p className={`secundario ${styles.estado}`} aria-live="polite">
             {count} de {candidates.length} en juego
           </p>
-          <ul className={styles.hoja}>
-            {candidates.map((movie, index) => (
+          <ul className={styles.filas}>
+            {candidates.map((movie) => (
               <li key={movie.id}>
-                <Frame
+                <MovieRow
                   movie={movie}
-                  number={index + 1}
                   selected={selectedIds.has(movie.id)}
                   onToggle={() => toggle(movie.id)}
                 />
@@ -138,8 +146,8 @@ export function ContactSheet({ filters, onClose }: Props) {
               {count === 0
                 ? "Deja al menos una"
                 : count === 1
-                  ? "Jugar con esta"
-                  : `Jugar con estas ${count}`}
+                  ? "Usar solo esta"
+                  : `Usar estas ${count}`}
             </button>
           </div>
         </>
@@ -148,50 +156,40 @@ export function ContactSheet({ filters, onClose }: Props) {
   );
 }
 
-function Frame({
+function MovieRow({
   movie,
-  number,
   selected,
   onToggle,
 }: {
   movie: Movie;
-  number: number;
   selected: boolean;
   onToggle: () => void;
 }) {
   const [failed, setFailed] = useState(false);
-  // Hasta que carga, el fondo de duotono sería un bloque de luz.
-  const [loaded, setLoaded] = useState(false);
   return (
     <button
       type="button"
-      className={styles.cuadro}
+      className={styles.fila}
       aria-pressed={!selected}
       aria-label={`Tachar ${movie.title}`}
-      data-fuera={!selected || undefined}
+      data-tachada={!selected || undefined}
       onClick={onToggle}
     >
-      <span className={styles.imagen} data-vacia={!loaded || undefined}>
+      <span className={styles.cartel}>
         {movie.posterPath && !failed && (
           <Image
             src={posterUrl(movie.posterPath, "w342")}
             alt=""
             fill
-            sizes="(min-width: 480px) 150px, 33vw"
+            sizes="44px"
             unoptimized
-            onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
           />
         )}
-        {!selected && (
-          <svg viewBox="0 0 100 150" preserveAspectRatio="none" aria-hidden>
-            <path d="M12 22C34 55 62 92 88 130M86 18C60 58 34 96 10 134" />
-          </svg>
-        )}
       </span>
-      <span className={styles.titulo}>{movie.title}</span>
-      <span className={styles.codigo} aria-hidden>
-        {number}A
+      <span className={styles.texto}>
+        <span className={styles.titulo}>{movie.title}</span>
+        {movie.releaseYear && <span className="secundario"> {movie.releaseYear}</span>}
       </span>
     </button>
   );

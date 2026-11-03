@@ -1,11 +1,22 @@
 .salir {
-  flex: none;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
-  margin-right: -10px;
-  border: 0;
-  background: none;
-  color: var(--tenue);
+  margin: -10px -13px 0 0;
+  color: var(--ink-2);
+}
+
+.titulo {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.texto {
+  margin: 8px 0 20px;
+  color: var(--ink-2);
+}
+
+.seguir {
+  margin-top: 8px;
 }

@@ -1,0 +1,50 @@
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cabecera h2 {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.listo {
+  min-width: 44px;
+  min-height: 44px;
+  margin-right: -4px;
+  padding: 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.filas {
+  border-top: 1px solid var(--line);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 50px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.fila svg {
+  visibility: hidden;
+}
+
+.fila input:checked ~ svg {
+  visibility: visible;
+}
+
+.fila input:checked ~ span {
+  font-weight: 500;
+}
+
+.fila:has(input:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}

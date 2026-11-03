@@ -1,28 +1,22 @@
+.titulo {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.intro {
+  margin-top: 8px;
+  color: var(--ink-2);
+}
+
 .pasos {
   display: grid;
   gap: 12px;
-  padding: 0;
-  list-style: none;
-  counter-reset: paso;
-}
-
-.pasos li {
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  counter-increment: paso;
-}
-
-.pasos li::before {
-  content: counter(paso);
-  font: 800 28px/1 var(--doto);
-  color: var(--luz);
+  margin-top: 16px;
+  padding-left: 22px;
+  list-style: decimal;
 }
 
 .credito {
-  font-size: 14px;
-  color: var(--tenue);
-}
-
-.credito a {
-  color: inherit;
+  margin: 16px 0 20px;
+  font-size: 13px;
 }

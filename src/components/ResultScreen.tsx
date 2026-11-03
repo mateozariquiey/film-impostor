@@ -2,14 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useGame } from "@/contexts/GameContext";
 import { posterUrl } from "@/lib/posters";
-import { FilmStrip } from "./FilmStrip";
-import { FitTitle } from "./FitTitle";
 import styles from "./ResultScreen.module.css";
 
 const ARM_AFTER_RELEASE_MS = 350;
 const ARM_FALLBACK_MS = 3000;
 
-/** Se enciende la luz: la única pantalla en blanco y con color de toda la partida. */
+/** Vuelve la luz normal de la app, y el cartel es lo único con color de toda la partida. */
 export function ResultScreen() {
   const { players, movie, playAgain, resetGame, isLoading } = useGame();
   const [posterFailed, setPosterFailed] = useState(false);
@@ -41,34 +39,28 @@ export function ResultScreen() {
   const hasPoster = movie.posterPath !== null && !posterFailed;
 
   return (
-    <div className={`pantalla positivo ${styles.resultado}`}>
-      <div className={styles.cartel}>
-        {hasPoster ? (
-          <Image
-            src={posterUrl(movie.posterPath!, "w500")}
-            alt={`Cartel de ${movie.title}`}
-            fill
-            sizes="(min-width: 480px) 480px, 100vw"
-            unoptimized
-            priority
-            className={styles.imagen}
-            onError={() => setPosterFailed(true)}
-          />
-        ) : (
-          <div className={styles.sinCartel} aria-hidden>
-            <FitTitle text={movie.title} />
-          </div>
-        )}
-      </div>
-
-      <h1 ref={heading} tabIndex={-1} className={styles.frase}>
-        Jugador {impostor + 1} era el impostor.
+    <div className="pantalla">
+      <h1 ref={heading} tabIndex={-1} className="titulo">
+        Era el jugador {impostor + 1}
       </h1>
       <p className={styles.peli}>
         La película era <strong>{movie.title}</strong>
         {movie.releaseYear && ` (${movie.releaseYear})`}.
       </p>
-      <FilmStrip count={players.length} current={impostor} inverted />
+
+      {hasPoster && (
+        <div className={styles.cartel}>
+          <Image
+            src={posterUrl(movie.posterPath!, "w500")}
+            alt={`Cartel de ${movie.title}`}
+            fill
+            sizes="320px"
+            unoptimized
+            priority
+            onError={() => setPosterFailed(true)}
+          />
+        </div>
+      )}
 
       <div className={styles.acciones} inert={!armed}>
         <button
@@ -83,9 +75,7 @@ export function ResultScreen() {
         <button type="button" className="enlace" onClick={resetGame}>
           Cambiar ajustes
         </button>
-        <p className={styles.credito}>Datos y carteles de TMDB.</p>
       </div>
-      <span className={styles.destello} aria-hidden />
     </div>
   );
 }
