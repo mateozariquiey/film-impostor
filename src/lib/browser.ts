@@ -1,0 +1,47 @@
+import { useEffect } from 'react';
+
+export function prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/** Evita que la pantalla se apague durante la partida, si el navegador lo permite. */
+export function useKeepScreenOn(active: boolean): void {
+    useEffect(() => {
+        if (!active || !('wakeLock' in navigator)) return;
+
+        let lock: WakeLockSentinel | null = null;
+        let stopped = false;
+
+        const acquire = async () => {
+            try {
+                const next = await navigator.wakeLock.request('screen');
+                if (stopped) void next.release();
+                else lock = next;
+            } catch {
+                // Lo normal si hay ahorro de batería: la partida sigue igual.
+            }
+        };
+        // El bloqueo se pierde al cambiar de app, así que se pide otra vez al volver.
+        const onVisibility = () => {
+            if (document.visibilityState === 'visible') void acquire();
+        };
+
+        void acquire();
+        document.addEventListener('visibilitychange', onVisibility);
+        return () => {
+            stopped = true;
+            document.removeEventListener('visibilitychange', onVisibility);
+            void lock?.release();
+        };
+    }, [active]);
+}
+
+/** Pide confirmación antes de recargar o cerrar: la partida no se guarda. */
+export function useWarnBeforeLeaving(active: boolean): void {
+    useEffect(() => {
+        if (!active) return;
+        const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+        window.addEventListener('beforeunload', warn);
+        return () => window.removeEventListener('beforeunload', warn);
+    }, [active]);
+}

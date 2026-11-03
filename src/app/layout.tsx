@@ -1,35 +1,56 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo } from "next/font/google";
+import { Anybody, Doto } from "next/font/google";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+const anybody = Anybody({
+  variable: "--font-anybody",
   subsets: ["latin"],
+  axes: ["wdth"],
 });
 
+// Solo para los números de fotograma, que imitan la impresión del borde de la película.
+const doto = Doto({
+  variable: "--font-doto",
+  subsets: ["latin"],
+  weight: ["800"],
+});
+
+const title = "Film Impostor";
+const description =
+  "Todos ven la misma película, menos uno. Un juego de deducción para jugar en grupo con un solo móvil.";
+
 export const metadata: Metadata = {
-  title: "Film Impostor",
-  description:
-    "Juego de deducción con películas para jugar en grupo con un solo móvil.",
+  title,
+  description,
+  applicationName: title,
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Film Impostor",
+    title,
   },
+  openGraph: { title, description, type: "website", locale: "es_ES", siteName: title },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#fff5c9",
+  viewportFit: "cover",
+  themeColor: "#140302",
 };
+
+// Aplica el tema guardado antes de pintar, para que no parpadee la luz roja.
+const THEME_SCRIPT = `try{if(localStorage.getItem("film-impostor-theme")==="dia")document.documentElement.dataset.theme="dia"}catch{}`;
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
-      <body className={`${archivo.variable} antialiased`}>{children}</body>
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
+      <body className={`${anybody.variable} ${doto.variable}`}>{children}</body>
     </html>
   );
 }

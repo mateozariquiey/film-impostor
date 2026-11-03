@@ -1,0 +1,38 @@
+.tira {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 3px;
+  flex: 1;
+  padding: 0;
+  list-style: none;
+}
+
+.tira li {
+  display: grid;
+  place-items: center;
+  height: 30px;
+  border-radius: 2px;
+  background: var(--bandeja);
+  color: var(--tenue);
+  font: 800 13px/1 var(--doto);
+}
+
+.tira[data-grande] li {
+  height: 42px;
+}
+
+.tira li[data-estado="hecho"] {
+  background: var(--filtro);
+  color: var(--papel);
+}
+
+.tira li[data-estado="ahora"] {
+  background: var(--luz);
+  color: var(--sobre-luz);
+}
+
+.tira li[data-estado="negativo"] {
+  background: var(--papel);
+  color: var(--sala);
+}

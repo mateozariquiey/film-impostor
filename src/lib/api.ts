@@ -3,12 +3,28 @@ import { filtersToSearchParams } from '@/lib/filters';
 
 // Cliente de la API propia (/api/movies). El navegador nunca habla directamente con TMDB.
 
-async function getJson<T>(url: string): Promise<T> {
-    const res = await fetch(url);
-    if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error ?? `Error ${res.status}`);
+/** Qué ha fallado, para que la interfaz pueda proponer la salida adecuada. */
+export type ApiErrorKind = 'offline' | 'no-movies' | 'server';
+
+export class ApiError extends Error {
+    constructor(public readonly kind: ApiErrorKind) {
+        super(kind);
     }
+}
+
+export function errorKindFromStatus(status: number): ApiErrorKind {
+    return status === 404 ? 'no-movies' : 'server';
+}
+
+async function getJson<T>(url: string): Promise<T> {
+    let res: Response;
+    try {
+        res = await fetch(url);
+    } catch {
+        // fetch solo rechaza si la petición no llega a ningún servidor.
+        throw new ApiError('offline');
+    }
+    if (!res.ok) throw new ApiError(errorKindFromStatus(res.status));
     return res.json() as Promise<T>;
 }
 

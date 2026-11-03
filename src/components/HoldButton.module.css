@@ -1,0 +1,85 @@
+/* Toda la fila es la zona táctil, para que llegue el pulgar de cualquier mano. */
+.hold {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  min-height: 116px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: var(--papel);
+  text-align: left;
+  /* Sin scroll, selección ni menú al mantener el dedo. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.disco {
+  position: relative;
+  flex: none;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--luz) 82%, white), var(--luz) 48%, color-mix(in srgb, var(--luz) 78%, black));
+  box-shadow:
+    0 0 0 5px var(--sala),
+    0 0 0 7px var(--filtro),
+    0 0 40px color-mix(in srgb, var(--luz) 34%, transparent);
+}
+
+/* Al pulsar, el disco se apaga: toda la luz que quede debe ser el papel, y la menos posible. */
+.hold[data-held] .disco {
+  transform: scale(0.94);
+  background: var(--filtro);
+  box-shadow:
+    0 0 0 5px var(--sala),
+    0 0 0 7px var(--filtro);
+}
+
+.anillo {
+  position: absolute;
+  inset: -7px;
+  width: calc(100% + 14px);
+  height: calc(100% + 14px);
+  transform: rotate(-90deg);
+  fill: none;
+  stroke: var(--papel);
+  stroke-width: 4;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: llenar var(--duracion) linear forwards;
+}
+
+@keyframes llenar {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* El anillo es información, no adorno: se mantiene aunque se reduzca el movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  .anillo {
+    animation: llenar var(--duracion) linear forwards !important;
+  }
+}
+
+.texto {
+  min-width: 0;
+}
+
+.texto strong {
+  display: block;
+  font: 800 25px/1.04 var(--anybody);
+  font-stretch: 78%;
+}
+
+.texto small {
+  display: block;
+  margin-top: 5px;
+  font-size: 15px;
+  line-height: 1.25;
+  color: var(--tenue);
+}

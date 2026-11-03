@@ -1,52 +1,70 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { DECADES, POPULARITIES, isValidYear, MIN_YEAR } from "@/lib/filters";
+import { isValidYear, MIN_YEAR } from "@/lib/filters";
 import { MAX_PLAYERS, MIN_PLAYERS } from "@/lib/game";
+import { RESERVE_MOVIES } from "@/lib/reserve";
 import {
   loadSettings,
   saveSettings,
   settingsToFilters,
   type GameSettings,
 } from "@/lib/settings";
+import type { Theme } from "@/lib/theme";
 import type { Decade, Hint, Popularity } from "@/types";
-import { Button } from "./ui/Button";
-import { PoolSelectionScreen } from "./PoolSelectionScreen";
+import { ContactSheet } from "./ContactSheet";
+import { RulesSheet } from "./RulesSheet";
+import { Wordmark } from "./Wordmark";
+import styles from "./SetupScreen.module.css";
 
-const DECADE_LABELS: Record<Decade, string> = {
-  ALL: "Cualquier época",
-  "80s": "Los 80",
-  "90s": "Los 90",
-  "00s": "Los 2000",
-  "10s": "Los 2010",
-  "20s": "Los 2020",
-};
-const POPULARITY_LABELS: Record<Popularity, string> = {
-  TOP_100: "Muy conocidas",
-  TOP_500: "Un poco de todo",
-  HARDCORE: "Para cinéfilos",
-  CLASSICS: "Clásicos populares",
-};
+const DECADE_OPTIONS: { value: Decade; label: string }[] = [
+  { value: "ALL", label: "Cualquiera" },
+  { value: "80s", label: "Los 80" },
+  { value: "90s", label: "Los 90" },
+  { value: "00s", label: "2000" },
+  { value: "10s", label: "2010" },
+  { value: "20s", label: "2020" },
+];
+const POPULARITY_OPTIONS: { value: Popularity; label: string }[] = [
+  { value: "TOP_100", label: "Muy conocidas" },
+  { value: "TOP_500", label: "Un poco de todo" },
+  { value: "HARDCORE", label: "Para cinéfilos" },
+  { value: "CLASSICS", label: "Clásicos populares" },
+];
 const HINT_OPTIONS: { value: Hint; label: string }[] = [
-  { value: "GENRE", label: "El género" },
-  { value: "YEAR", label: "El año" },
+  { value: "GENRE", label: "Género" },
+  { value: "YEAR", label: "Año" },
   { value: "KEYWORDS", label: "Palabras clave" },
 ];
 
-export function SetupScreen() {
-  const { startGame, isLoading, error, customPool, setCustomPool } = useGame();
+interface Props {
+  theme: Theme;
+  onToggleTheme: () => void;
+}
+
+export function SetupScreen({ theme, onToggleTheme }: Props) {
+  const {
+    startGame,
+    startWithReserve,
+    isLoading,
+    error,
+    clearError,
+    customPool,
+    setCustomPool,
+  } = useGame();
   const [settings, setSettings] = useState<GameSettings>(loadSettings);
-  const [showPoolSelection, setShowPoolSelection] = useState(false);
+  const [showSheet, setShowSheet] = useState(false);
   const [exactYear, setExactYear] = useState(() => settings.year !== "");
+  const rules = useRef<HTMLDialogElement>(null);
+
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
 
   const update = (changes: Partial<GameSettings>) => {
-    if ("decade" in changes || "popularity" in changes || "year" in changes)
+    if ("decade" in changes || "popularity" in changes || "year" in changes) {
       setCustomPool([]);
+      clearError();
+    }
     setSettings((prev) => ({ ...prev, ...changes }));
   };
   const filters = useMemo(() => settingsToFilters(settings), [settings]);
@@ -54,190 +72,258 @@ export function SetupScreen() {
     !exactYear ||
     (settings.year.trim() !== "" && isValidYear(Number(settings.year)));
 
-  if (showPoolSelection)
+  if (showSheet)
     return (
-      <PoolSelectionScreen
-        filters={filters}
-        onClose={() => setShowPoolSelection(false)}
-      />
+      <ContactSheet filters={filters} onClose={() => setShowSheet(false)} />
     );
 
+  const { playerCount } = settings;
+  const canStart = !isLoading && yearIsValid;
+  const canUseReserve = error === "offline" || error === "server";
+
   return (
-    <div className="setup-layout">
-      <div className="setup-intro">
-        <h1 className="headline">
-          Uno de
-          <br />
-          vosotros
-          <br />
-          no la ha visto.
-        </h1>
-        <p className="lead">
-          Una película, un móvil y alguien que tendrá que disimular.
-        </p>
+    <div className={`pantalla ${styles.setup}`}>
+      <div className={styles.cabecera}>
+        <button
+          type="button"
+          className="enlace"
+          onClick={() => rules.current?.showModal()}
+        >
+          Cómo se juega
+        </button>
+        <button
+          type="button"
+          className={styles.luz}
+          aria-pressed={theme === "dia"}
+          aria-label="Encender la luz de la sala"
+          onClick={onToggleTheme}
+        >
+          <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden>
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" />
+          </svg>
+        </button>
       </div>
-      <form
-        className="setup-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (yearIsValid && !isLoading) void startGame(settings);
-        }}
-      >
-        <fieldset disabled={isLoading} className="settings-fields">
-          <legend className="sr-only">Configurar la partida</legend>
-          <div className="ticket player-counter">
-            <div>
-              <span>¿Cuántos jugáis?</span>
-              <small>
-                Entre {MIN_PLAYERS} y {MAX_PLAYERS}
-              </small>
-            </div>
-            <div className="counter-controls">
-              <button
-                type="button"
-                aria-label="Quitar jugador"
-                disabled={settings.playerCount <= MIN_PLAYERS}
-                onClick={() =>
-                  update({ playerCount: settings.playerCount - 1 })
-                }
-              >
-                −
-              </button>
-              <output aria-label="Número de jugadores" aria-live="polite">
-                {settings.playerCount}
-              </output>
-              <button
-                type="button"
-                aria-label="Añadir jugador"
-                disabled={settings.playerCount >= MAX_PLAYERS}
-                onClick={() =>
-                  update({ playerCount: settings.playerCount + 1 })
-                }
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div className="setting-row">
-            <label htmlFor="decade">Películas de</label>
-            <select
-              id="decade"
-              value={exactYear ? "EXACT" : settings.decade}
-              onChange={(event) => {
-                const exact = event.target.value === "EXACT";
-                setExactYear(exact);
-                update(
-                  exact
-                    ? { year: settings.year }
-                    : { decade: event.target.value as Decade, year: "" },
-                );
-              }}
-            >
-              {DECADES.map((decade) => (
-                <option key={decade} value={decade}>
-                  {DECADE_LABELS[decade]}
-                </option>
-              ))}
-              <option value="EXACT">Un año concreto</option>
-            </select>
-          </div>
-          {exactYear && (
-            <div className="year-setting">
-              <div className="setting-row">
-                <label htmlFor="year">Año exacto</label>
-                <input
-                  id="year"
-                  type="number"
-                  inputMode="numeric"
-                  min={MIN_YEAR}
-                  max={new Date().getFullYear()}
-                  placeholder="2001"
-                  value={settings.year}
-                  aria-invalid={!yearIsValid}
-                  aria-describedby={!yearIsValid ? "year-error" : undefined}
-                  onChange={(event) => update({ year: event.target.value })}
-                />
-              </div>
-              {!yearIsValid && (
-                <p className="field-error" id="year-error">
-                  Elige un año entre {MIN_YEAR} y {new Date().getFullYear()}.
-                </p>
-              )}
-            </div>
-          )}
-          <div className="setting-row">
-            <label htmlFor="popularity">Qué tan conocidas</label>
-            <select
-              id="popularity"
-              value={settings.popularity}
-              onChange={(event) =>
-                update({ popularity: event.target.value as Popularity })
-              }
-            >
-              {POPULARITIES.map((popularity) => (
-                <option key={popularity} value={popularity}>
-                  {POPULARITY_LABELS[popularity]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <fieldset className="hint-options">
-            <legend>El impostor puede saber…</legend>
-            <div className="pills">
-              {HINT_OPTIONS.map(({ value, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  aria-pressed={settings.hints.includes(value)}
-                  onClick={() =>
-                    update({
-                      hints: settings.hints.includes(value)
-                        ? settings.hints.filter((hint) => hint !== value)
-                        : [...settings.hints, value],
-                    })
-                  }
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </fieldset>
+
+      <Wordmark />
+      <p className={styles.lema}>Todos ven la misma película, menos uno.</p>
+
+      <section aria-labelledby="jugadores">
+        <h2 id="jugadores" className={styles.seccion}>
+          Cuántos jugáis
+        </h2>
+        <div className={styles.contador}>
           <button
             type="button"
-            className="review-link"
-            disabled={!yearIsValid}
-            onClick={() => setShowPoolSelection(true)}
+            aria-label="Un jugador menos"
+            disabled={playerCount <= MIN_PLAYERS}
+            onClick={() => update({ playerCount: playerCount - 1 })}
           >
-            <span>
-              {customPool.length
-                ? `Tu selección (${customPool.length})`
-                : "Revisar las películas"}
-            </span>
-            <ArrowUpRight size={20} aria-hidden />
+            <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden>
+              <path d="M4 12h16" stroke="currentColor" strokeWidth="2.5" />
+            </svg>
           </button>
-          {customPool.length > 0 && (
-            <div className="selection-note">
-              <p>Cambiar los filtros borra esta selección.</p>
+          <output aria-live="polite" aria-label={`${playerCount} jugadores`}>
+            {playerCount}
+          </output>
+          <button
+            type="button"
+            aria-label="Un jugador más"
+            disabled={playerCount >= MAX_PLAYERS}
+            onClick={() => update({ playerCount: playerCount + 1 })}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden>
+              <path d="M4 12h16M12 4v16" stroke="currentColor" strokeWidth="2.5" />
+            </svg>
+          </button>
+        </div>
+        {/* Atajo táctil: el contador de arriba ya cubre el teclado y los lectores. */}
+        <div className={styles.fotos} aria-hidden>
+          {Array.from({ length: MAX_PLAYERS }, (_, index) => (
+            <button
+              type="button"
+              key={index}
+              tabIndex={-1}
+              data-on={index < playerCount || undefined}
+              onClick={() =>
+                update({ playerCount: Math.max(index + 1, MIN_PLAYERS) })
+              }
+            />
+          ))}
+        </div>
+      </section>
+
+      <fieldset className={styles.grupo}>
+        <legend className={styles.seccion}>De qué época</legend>
+        <div className={styles.opciones}>
+          {DECADE_OPTIONS.map(({ value, label }) => (
+            <Option
+              key={value}
+              name="decada"
+              checked={!exactYear && settings.decade === value}
+              onChange={() => {
+                setExactYear(false);
+                update({ decade: value, year: "" });
+              }}
+            >
+              {label}
+            </Option>
+          ))}
+          <Option
+            name="decada"
+            checked={exactYear}
+            onChange={() => {
+              setExactYear(true);
+              setCustomPool([]);
+            }}
+          >
+            Un año
+          </Option>
+        </div>
+        {exactYear && (
+          <label className={styles.anio}>
+            <span>Año exacto</span>
+            <input
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={4}
+              placeholder="1994"
+              aria-invalid={!yearIsValid}
+              value={settings.year}
+              onChange={(event) => update({ year: event.target.value })}
+            />
+            {!yearIsValid && (
+              <small>
+                Escribe un año entre {MIN_YEAR} y {new Date().getFullYear()}.
+              </small>
+            )}
+          </label>
+        )}
+      </fieldset>
+
+      <fieldset className={styles.grupo}>
+        <legend className={styles.seccion}>Cómo de conocidas</legend>
+        <div className={styles.opciones}>
+          {POPULARITY_OPTIONS.map(({ value, label }) => (
+            <Option
+              key={value}
+              name="fama"
+              checked={settings.popularity === value}
+              onChange={() => update({ popularity: value })}
+            >
+              {label}
+            </Option>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className={styles.grupo}>
+        <legend className={styles.seccion}>Pistas para el impostor</legend>
+        <div className={styles.opciones}>
+          {HINT_OPTIONS.map(({ value, label }) => (
+            <Option
+              key={value}
+              type="checkbox"
+              name="pistas"
+              checked={settings.hints.includes(value)}
+              onChange={() =>
+                update({
+                  hints: settings.hints.includes(value)
+                    ? settings.hints.filter((hint) => hint !== value)
+                    : [...settings.hints, value],
+                })
+              }
+            >
+              {label}
+            </Option>
+          ))}
+        </div>
+      </fieldset>
+
+      <div className={styles.lista}>
+        {customPool.length > 0 ? (
+          <>
+            <p>Jugáis con {customPool.length} películas de vuestra lista.</p>
+            <button
+              type="button"
+              className="enlace"
+              onClick={() => setShowSheet(true)}
+            >
+              Cambiar la lista
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            className="enlace"
+            disabled={!yearIsValid}
+            onClick={() => setShowSheet(true)}
+          >
+            Revisar la lista de películas
+          </button>
+        )}
+      </div>
+
+      <div className={styles.pie}>
+        {error && (
+          <div className={styles.error} role="alert">
+            <p>{ERROR_MESSAGES[error]}</p>
+            {canUseReserve && (
               <button
                 type="button"
-                className="text-button"
-                onClick={() => setCustomPool([])}
+                className="accion-sec"
+                onClick={() => startWithReserve(settings)}
               >
-                Borrar la selección y usar todas
+                Jugar con la lista de reserva
               </button>
-            </div>
-          )}
-        </fieldset>
-        {error && (
-          <p role="alert" className="error-message">
-            {error}. Vuelve a intentarlo en un momento.
-          </p>
+            )}
+            {canUseReserve && (
+              <small>
+                {RESERVE_MOVIES.length} películas muy conocidas, sin carteles. No
+                se aplican vuestros filtros.
+              </small>
+            )}
+          </div>
         )}
-        <Button type="submit" disabled={isLoading || !yearIsValid}>
-          {isLoading ? "Buscando la película…" : "Repartir los papeles"}
-        </Button>
-        <p className="footnote">Después, pasad el móvil de uno en uno.</p>
-      </form>
+        <button
+          type="button"
+          className="accion"
+          disabled={!canStart}
+          aria-busy={isLoading}
+          onClick={() => void startGame(settings)}
+        >
+          {isLoading ? "Buscando película…" : error ? "Reintentar" : "Empezar"}
+        </button>
+      </div>
+
+      <RulesSheet ref={rules} />
     </div>
+  );
+}
+
+const ERROR_MESSAGES = {
+  offline: "No hay conexión, así que no se puede buscar una película.",
+  server: "TMDB no responde, así que no se puede buscar una película.",
+  "no-movies": "No hay películas con estos filtros. Prueba con otra época.",
+};
+
+function Option({
+  type = "radio",
+  name,
+  checked,
+  onChange,
+  children,
+}: {
+  type?: "radio" | "checkbox";
+  name: string;
+  checked: boolean;
+  onChange: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <label className={styles.opcion}>
+      <input type={type} name={name} checked={checked} onChange={onChange} />
+      <span>{children}</span>
+    </label>
   );
 }

@@ -1,0 +1,16 @@
+.caja {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.titulo {
+  width: 100%;
+  font-family: var(--anybody);
+  font-weight: 900;
+  font-stretch: 74%;
+  line-height: 0.98;
+  text-wrap: balance;
+}

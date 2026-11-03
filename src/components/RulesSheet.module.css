@@ -1,0 +1,28 @@
+.pasos {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+}
+
+.pasos li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  counter-increment: paso;
+}
+
+.pasos li::before {
+  content: counter(paso);
+  font: 800 28px/1 var(--doto);
+  color: var(--luz);
+}
+
+.credito {
+  font-size: 14px;
+  color: var(--tenue);
+}
+
+.credito a {
+  color: inherit;
+}

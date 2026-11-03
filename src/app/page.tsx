@@ -2,13 +2,14 @@
 
 import dynamic from "next/dynamic";
 
+// Los ajustes y el tema viven en el navegador, así que el juego solo se pinta allí.
 const Game = dynamic(
   () => import("@/components/Game").then((mod) => mod.Game),
   {
     ssr: false,
     loading: () => (
-      <p className="loading-message" role="status">
-        Preparando la sesión…
+      <p className="preparando" role="status">
+        Apagando las luces…
       </p>
     ),
   },
@@ -16,7 +17,7 @@ const Game = dynamic(
 
 export default function Home() {
   return (
-    <main className="app-shell">
+    <main>
       <Game />
     </main>
   );

@@ -1,0 +1,21 @@
+.hoja {
+  width: min(100%, 480px);
+  max-width: none;
+  max-height: 92dvh;
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-top: 2px solid var(--filtro);
+  background: var(--sala);
+  color: var(--papel);
+}
+
+.hoja::backdrop {
+  background: rgb(0 0 0 / 0.72);
+}
+
+.contenido {
+  display: grid;
+  gap: 14px;
+  padding: 22px var(--margen) max(18px, env(safe-area-inset-bottom));
+}

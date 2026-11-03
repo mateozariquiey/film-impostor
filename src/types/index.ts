@@ -25,4 +25,4 @@ export interface Movie {
     keywords: string[];
 }
 
-export type GamePhase = 'SETUP' | 'PASS_DEVICE' | 'PLAYING';
+export type GamePhase = 'SETUP' | 'TURN' | 'TABLE' | 'RESULT';

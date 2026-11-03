@@ -1,0 +1,40 @@
+.arriba {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.grande {
+  margin-block: 20px;
+  font: 900 clamp(60px, 20vw, 78px)/0.92 var(--anybody);
+  font-stretch: 72%;
+}
+
+.pasos {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.pasos li {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  counter-increment: paso;
+}
+
+.pasos li::before {
+  content: counter(paso);
+  font: 800 30px/1 var(--doto);
+  color: var(--luz);
+}
+
+.regla {
+  margin-block: 16px auto;
+  padding-bottom: 16px;
+  font-size: 15px;
+  color: var(--tenue);
+}

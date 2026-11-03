@@ -1,71 +1,42 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { GameProvider, useGame } from "@/contexts/GameContext";
+import { useKeepScreenOn, useWarnBeforeLeaving } from "@/lib/browser";
+import { applyTheme, currentTheme, type Theme } from "@/lib/theme";
+import { ResultScreen } from "./ResultScreen";
 import { SetupScreen } from "./SetupScreen";
-import { PassDeviceScreen } from "./PassDeviceScreen";
-import { RevealScreen } from "./RevealScreen";
-import { PlayingScreen } from "./PlayingScreen";
+import { TableScreen } from "./TableScreen";
+import { TurnScreen } from "./TurnScreen";
 
 export function Game() {
-  const rules = useRef<HTMLDialogElement>(null);
   return (
     <GameProvider>
-      <header className="site-header">
-        <span className="brand">Film Impostor</span>
-        <button
-          className="help-button"
-          onClick={() => rules.current?.showModal()}
-        >
-          Cómo jugar
-        </button>
-      </header>
-      <GameScreens />
-      <dialog
-        className="rules-dialog"
-        ref={rules}
-        aria-labelledby="rules-title"
-        onClick={(event) => {
-          if (event.target === event.currentTarget) rules.current?.close();
-        }}
-      >
-        <h2 id="rules-title">El arte de disimular.</h2>
-        <p>De 3 a 12 personas, un solo móvil y una película secreta.</p>
-        <ol>
-          <li>
-            Pasad el móvil. Cada persona mira su papel en privado. Todos ven el
-            título salvo el impostor.
-          </li>
-          <li>
-            Dad pistas y haced preguntas sin decir el título. Después, votad
-            quién está disimulando.
-          </li>
-          <li>
-            Antes de revelar, el impostor puede intentar adivinar la película.
-            Si acierta, gana. Si no, el grupo gana al acertar la votación.
-          </li>
-        </ol>
-        <p>La conversación y la votación se hacen en persona.</p>
-        <form method="dialog">
-          <button className="button button-primary">Entendido</button>
-        </form>
-      </dialog>
+      <Screens />
     </GameProvider>
   );
 }
 
-function GameScreens() {
+function Screens() {
   const { phase, currentPlayerIndex } = useGame();
-  if (phase === "SETUP") return <SetupScreen />;
-  if (phase === "PLAYING") return <PlayingScreen />;
-  return <PlayerTurn key={currentPlayerIndex} />;
-}
+  const [theme, setTheme] = useState<Theme>(currentTheme);
 
-function PlayerTurn() {
-  const [ready, setReady] = useState(false);
-  return ready ? (
-    <RevealScreen />
-  ) : (
-    <PassDeviceScreen onReady={() => setReady(true)} />
-  );
+  useKeepScreenOn(phase !== "SETUP");
+  useWarnBeforeLeaving(phase === "TURN" || phase === "TABLE");
+
+  useEffect(() => {
+    applyTheme(theme, phase === "RESULT");
+  }, [theme, phase]);
+
+  if (phase === "SETUP")
+    return (
+      <SetupScreen
+        theme={theme}
+        onToggleTheme={() => setTheme(theme === "dia" ? "rojo" : "dia")}
+      />
+    );
+  if (phase === "TABLE") return <TableScreen />;
+  if (phase === "RESULT") return <ResultScreen />;
+  // La clave reinicia el estado del turno: lo que vio un jugador no pasa al siguiente.
+  return <TurnScreen key={currentPlayerIndex} />;
 }
