@@ -13,7 +13,11 @@ export function PlayerDots({ count, current, impostor }: Props) {
   return (
     <div className={styles.puntos} aria-hidden>
       {Array.from({ length: count }, (_, index) => (
-        <i key={index} data-estado={stateOf(index, current, impostor)} />
+        <i
+          key={index}
+          data-estado={stateOf(index, current, impostor)}
+          style={{ "--i": index, "--n": count } as React.CSSProperties}
+        />
       ))}
     </div>
   );

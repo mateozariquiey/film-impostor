@@ -5,6 +5,12 @@
   min-height: 34px;
 }
 
+/* Mientras se mantiene, los puntos se llenan uno a uno sin señalar a nadie. Al soltar vuelven de golpe. */
+.mesa:has(.mantener[data-held]) .barra i {
+  background: var(--relleno-acento);
+  transition: background-color 0.08s linear calc(var(--duracion) * var(--i) / var(--n));
+}
+
 .encabezado {
   margin-top: 8dvh;
 }
@@ -62,6 +68,10 @@
 @media (prefers-reduced-motion: reduce) {
   .mantener[data-held]::before {
     transition: transform var(--duracion) linear !important;
+  }
+
+  .mesa:has(.mantener[data-held]) .barra i {
+    transition: background-color 0.08s linear calc(var(--duracion) * var(--i) / var(--n)) !important;
   }
 }
 

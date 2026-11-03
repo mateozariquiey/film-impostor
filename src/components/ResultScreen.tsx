@@ -41,7 +41,7 @@ export function ResultScreen() {
 
   return (
     <div className={`pantalla ${styles.resultado}`}>
-      {hasPoster ? (
+      {hasPoster && (
         <div className={styles.cartel}>
           <Image
             src={posterUrl(movie.posterPath!, "w500")}
@@ -53,17 +53,13 @@ export function ResultScreen() {
             onError={() => setPosterFailed(true)}
           />
         </div>
-      ) : (
-        <div className={`franja ${styles.sinCartel}`}>
-          <p className="enorme">{movie.title}</p>
-        </div>
       )}
 
       <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.era}`}>
         Era el jugador {impostor + 1}
       </h1>
       <PlayerDots count={players.length} impostor={impostor} />
-      <p className={styles.peli}>
+      <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>
         La película era <strong>{movie.title}</strong>
         {movie.releaseYear && ` (${movie.releaseYear})`}.
       </p>

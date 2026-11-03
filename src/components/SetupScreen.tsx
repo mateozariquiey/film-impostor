@@ -100,7 +100,7 @@ export function SetupScreen() {
 
   return (
     <div className="pantalla">
-      <div className={`franja ${styles.portada}`}>
+      <div className={`franja ${styles.portada}`} data-compacta={error ? true : undefined}>
         <header>
           <h1 className={styles.nombre}>Film Impostor</h1>
           <p className="secundario">Todos ven la misma película, menos uno.</p>

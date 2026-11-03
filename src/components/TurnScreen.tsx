@@ -48,7 +48,7 @@ export function TurnScreen() {
         {visible && movie ? (
           <div className={styles.revelado}>
             <p className={titleClass(isImpostor ? null : movie.title)}>
-              {isImpostor ? "Eres el impostor" : movie.title}
+              {isImpostor ? "Eres el impostor" : <TitleLines title={movie.title} />}
             </p>
             {isImpostor ? (
               <ImpostorHints />
@@ -113,6 +113,15 @@ export function TurnScreen() {
 function titleClass(title: string | null) {
   const tooLong = title !== null && title.length > LONG_TITLE;
   return `${styles.titular} ${tooLong ? "titulo" : "enorme"}`;
+}
+
+/** Un título con subtítulo corta la línea tras los dos puntos, donde se leería en un cartel. */
+function TitleLines({ title }: { title: string }) {
+  return title.split(/(?<=: )/).map((part, index) => (
+    <span key={index} className={styles.parte}>
+      {part}
+    </span>
+  ));
 }
 
 function ImpostorHints() {

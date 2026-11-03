@@ -21,7 +21,10 @@ export function TableScreen() {
   }, [movie]);
 
   return (
-    <div className="pantalla">
+    <div
+      className={`pantalla ${styles.mesa}`}
+      style={{ "--duracion": `${REVEAL_IMPOSTOR_MS}ms` } as React.CSSProperties}
+    >
       <div className={styles.barra}>
         <PlayerDots count={players.length} current={players.length} />
         <QuitButton />

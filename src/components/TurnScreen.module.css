@@ -68,6 +68,10 @@
   margin-top: 14dvh;
 }
 
+.parte {
+  display: block;
+}
+
 .nota {
   margin-top: 12px;
   color: var(--ink-2);

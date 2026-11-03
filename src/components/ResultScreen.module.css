@@ -26,15 +26,6 @@
   }
 }
 
-.sinCartel {
-  display: flex;
-  align-items: flex-end;
-  flex: none;
-  min-height: 34dvh;
-  margin: calc((env(safe-area-inset-top) + 20px) * -1) calc(var(--margin) * -1) 0;
-  padding: 20px var(--margin);
-}
-
 .era {
   margin: 18px 0 12px;
 }
@@ -49,11 +40,38 @@
   font-weight: 500;
 }
 
+/* Sin cartel, el título ocupa su lugar: el resultado no se queda sin nada que mirar. */
+.resultado:not(:has(.cartel)) .era {
+  margin-top: 8dvh;
+}
+
+.peli[data-sin-cartel] {
+  margin-top: 8dvh;
+}
+
+.peli[data-sin-cartel] strong {
+  display: block;
+  margin: 6px 0;
+  font-size: var(--enorme);
+  line-height: 1.03;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+/* El aro aparece cuando el cartel ya está destapado. */
+.resultado i[data-estado="impostor"] {
+  animation: aro 0.26s ease-out 0.42s backwards;
+}
+
+@keyframes aro {
+  from {
+    transform: scale(0);
+  }
+}
+
 .acciones {
   margin-top: auto;
   padding-top: 18px;
-}
-
-.acciones .enlace {
-  margin-top: 4px;
 }

@@ -47,11 +47,16 @@ Next.js, React y TypeScript, con CSS Modules para los estilos y Vitest para las 
 
 ## Diseño
 
-Una app pequeña y sin decoración: la fuente del sistema, neutros, filas con líneas finas y una sola acción por pantalla. El único color de la partida lo ponen los carteles. Tres decisiones sostienen el secreto y conviene conservarlas:
+Sobria, pero con presión donde importa: una sola familia (Chivo), neutros con sombras algo verdosas y luces cálidas, y un único color, el ocre, reservado para el jugador al que le toca, lo que se está llenando y el impostor. El resto de la jerarquía la llevan dos tamaños: `.numeral` para las cifras y `.enorme` para los títulos que revela la partida.
 
 - El papel solo está en la página mientras se mantiene el dedo, y desaparece sin transición al soltar, al cancelarse el gesto o al pasar la app a segundo plano.
-- Todos los estados del turno comparten el mismo esqueleto de texto, y el papel del impostor tiene el mismo sitio, tamaño y color que el título, para que no se distingan desde lejos. Por eso tampoco se enseña el cartel durante el turno: se reconoce de lejos mucho antes que un texto.
-- Durante los turnos y la conversación la pantalla pasa a negro, también en tema claro, para que no ilumine caras. La luz normal vuelve en el resultado.
+- Todos los estados del turno comparten el mismo esqueleto (número de jugador, título y nota), y el papel del impostor tiene el mismo sitio, tamaño y color que el título de la película, para que no se distingan desde lejos. Solo un título de más de 64 caracteres baja de tamaño, porque no cabría.
+- Durante los turnos y la conversación la pantalla pasa a un tono muy oscuro, también en tema claro, para que no ilumine caras. Al mantener sube un poco la luz de toda la pantalla. La luz normal vuelve en el resultado.
+
+Hay dos gestos propios, y conviene no añadir más:
+
+- `PlayerDots`: un punto por jugador, la misma forma del icono. El punto hueco significa siempre «impostor», así que no se usa para nada más.
+- El llenado de izquierda a derecha: el botón de la mesa se llena, los puntos se llenan con él y el cartel se destapa en la misma dirección.
 
 ```sh
 npm test
