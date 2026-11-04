@@ -4,6 +4,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
 import { PlayerDots } from "./PlayerDots";
 import { QuitButton } from "./QuitButton";
+import { TitleLines } from "./TitleLines";
 import styles from "./TurnScreen.module.css";
 
 /** Lo que hay que mantener para contar como visto: basta para leer un título. */
@@ -66,7 +67,7 @@ export function TurnScreen() {
         {visible && movie ? (
           <div className={styles.revelado}>
             <p className={titleClass(isImpostor ? null : movie.title)}>
-              {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} />}
+              {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
             </p>
             {isImpostor ? (
               <ImpostorHints />
@@ -127,15 +128,6 @@ export function TurnScreen() {
 function titleClass(title: string | null) {
   const tooLong = title !== null && title.length > LONG_TITLE;
   return `${styles.titular} ${tooLong ? "titulo" : "enorme"}`;
-}
-
-/** Un título con subtítulo corta la línea tras los dos puntos, donde se leería en un cartel. */
-function TitleLines({ title }: { title: string }) {
-  return title.split(/(?<=: )/).map((part, index) => (
-    <span key={index} className={styles.parte}>
-      {part}
-    </span>
-  ));
 }
 
 function ImpostorHints() {

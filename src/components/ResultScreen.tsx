@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
 import { PlayerDots } from "./PlayerDots";
+import { TitleLines } from "./TitleLines";
 import styles from "./ResultScreen.module.css";
 
 const ARM_AFTER_RELEASE_MS = 350;
@@ -62,8 +63,11 @@ export function ResultScreen() {
       </h1>
       <PlayerDots count={players.length} impostor={impostor} />
       <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>
-        {t.result.movieWas}<strong>{movie.title}</strong>
-        {movie.releaseYear && ` (${movie.releaseYear})`}.
+        {t.result.movieWas}
+        <strong>{hasPoster ? movie.title : <TitleLines title={movie.title} partClassName={styles.parte} />}</strong>
+        {movie.releaseYear && ` (${movie.releaseYear})`}
+        {/* Con cartel es una frase. Sin él, el título va grande y el año queda en su propia línea. */}
+        {hasPoster && "."}
       </p>
 
       <div className={styles.acciones} inert={!armed}>

@@ -202,3 +202,28 @@ test.describe('la pista de género, con el grupo filtrando por Terror', () => {
         expect(text).toContain('Sin pistas esta vez');
     });
 });
+
+test('si falla «Otra película», el aviso y sus salidas quedan a la vista en una pantalla pequeña', async ({ page }) => {
+    let fail = false;
+    await page.route('**/api/movies/random**', (route) => (fail ? route.fulfill({ status: 500, json: {} }) : route.fulfill({ json: fakeMovie(1, SECRET) })));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Un jugador menos' }).tap();
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+
+    for (const player of [1, 2, 3]) {
+        await expect(page.getByRole('heading', { level: 1 })).toContainText(`Jugador ${player}`);
+        const finger = await touchHold(page, TURN_SURFACE);
+        await page.waitForTimeout(600);
+        await finger.release();
+        await page.getByRole('button', { name: player === 3 ? 'Dejar el móvil en la mesa' : `Pásale el móvil al jugador ${player + 1}` }).tap();
+    }
+    const finger = await touchHold(page, 'button:has-text("Mantén para ver quién era")');
+    await expect(page.getByRole('heading', { name: /^Era el jugador \d$/ })).toBeVisible({ timeout: 3000 });
+    await finger.release();
+
+    fail = true;
+    await page.getByRole('button', { name: 'Otra película' }).tap();
+    await expect(page.getByRole('button', { name: 'Jugar con la lista de reserva' })).toBeInViewport();
+    await expect(page.getByRole('button', { name: 'Reintentar' })).toBeInViewport();
+    await expect(page.getByRole('button', { name: 'English' })).toBeInViewport();
+});

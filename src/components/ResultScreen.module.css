@@ -60,6 +60,10 @@
   overflow-wrap: anywhere;
 }
 
+.parte {
+  display: block;
+}
+
 /* El aro aparece cuando el cartel ya está destapado. */
 .resultado i[data-estado="impostor"] {
   animation: aro 0.26s ease-out 0.42s backwards;

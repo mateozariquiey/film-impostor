@@ -63,9 +63,12 @@ export function SetupScreen() {
     saveSettings(settings);
   }, [settings]);
 
-  // En un móvil pequeño el aviso no cabe entero: se lleva a la vista con sus salidas.
+  // En un móvil pequeño el aviso no cabe entero: se lleva a la vista con sus salidas. Espera a
+  // dibujar porque, si se llega desde el resultado, `Screens` sube al principio justo después.
   useEffect(() => {
-    if (error) foot.current?.scrollIntoView({ block: "end" });
+    if (!error) return;
+    const frame = requestAnimationFrame(() => foot.current?.scrollIntoView({ block: "end" }));
+    return () => cancelAnimationFrame(frame);
   }, [error]);
 
   const update = (changes: Partial<GameSettings>) => {
