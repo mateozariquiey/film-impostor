@@ -76,7 +76,7 @@
 }
 
 .turno[data-held] .etiqueta {
-  color: #000;
+  color: #2c2d30;
 }
 
 /* Llena el ancho del cartel si puede: lo grande es el nombre porque no es secreto. */
@@ -90,12 +90,12 @@
 }
 
 .turno[data-held] .nombre {
-  color: #000;
+  color: #5d5f64;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */
 .titular {
-  font-size: 28px;
+  font-size: 30px;
   line-height: 1.02;
   letter-spacing: 0;
   overflow-wrap: anywhere;

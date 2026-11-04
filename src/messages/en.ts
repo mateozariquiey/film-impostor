@@ -42,6 +42,8 @@ export const en: Messages = {
         hintOptions: { GENRE: 'Genre', YEAR: 'Year', KEYWORDS: 'Keywords' },
         hintShort: { GENRE: 'genre', YEAR: 'year', KEYWORDS: 'keywords' },
         noHints: 'None',
+        noneRemoved: 'None',
+        noNames: 'No names',
         removeMovies: 'Remove movies',
         moviesLeft: (count) => `${count} left`,
         addNames: 'Add names',

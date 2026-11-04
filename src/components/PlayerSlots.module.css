@@ -1,13 +1,14 @@
 .huecos {
   display: flex;
-  gap: 4px;
-  align-items: center;
+  gap: 3px;
+  align-items: flex-end;
+  min-height: 24px;
 }
 
 /* Cada jugador es un cartel en miniatura. */
 .huecos i {
-  width: 10px;
-  height: 15px;
+  width: 12px;
+  height: 18px;
   background: var(--ink);
   flex: none;
 }
@@ -20,20 +21,15 @@
   background: var(--ink-3);
 }
 
+/* A quien le toca sobresale de la fila. */
 .huecos i[data-estado="turno"] {
+  height: 24px;
   background: var(--ink);
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
 }
 
 /* El hueco sin relleno significa siempre «impostor», y por eso no se usa para nada más. */
 .huecos i[data-estado="impostor"] {
+  height: 24px;
   background: none;
   box-shadow: inset 0 0 0 2px var(--ink);
-}
-
-@media (max-width: 400px) {
-  .huecos {
-    gap: 3px;
-  }
 }

@@ -47,6 +47,8 @@ export const es = {
         /** Más cortas, para que quepan en la fila. */
         hintShort: { GENRE: 'género', YEAR: 'año', KEYWORDS: 'claves' },
         noHints: 'Ninguna',
+        noneRemoved: 'Ninguna',
+        noNames: 'Sin nombres',
         removeMovies: 'Quitar películas',
         moviesLeft: (count: number) => `Quedan ${count}`,
         addNames: 'Poner nombres',

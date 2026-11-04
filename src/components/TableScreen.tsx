@@ -32,7 +32,7 @@ export function TableScreen() {
       className={`pantalla ${styles.mesa}`}
       style={{ "--duracion": `${REVEAL_IMPOSTOR_MS}ms` } as React.CSSProperties}
     >
-      <PosterWall className={styles.pared} />
+      <PosterWall players={players.length} className={styles.pared} />
       <div className={styles.barra}>
         <PlayerSlots count={players.length} current={players.length} starts={firstPlayer} />
         <QuitButton />

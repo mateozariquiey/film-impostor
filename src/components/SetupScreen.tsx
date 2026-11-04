@@ -153,13 +153,13 @@ export function SetupScreen() {
         <Row label={t.setup.hints} value={hintsSummary(settings.hints, t)} sheet={hintsSheet} />
         <Row
           label={t.setup.removeMovies}
-          value={customPool.length > 0 ? t.setup.moviesLeft(customPool.length) : undefined}
+          value={customPool.length > 0 ? t.setup.moviesLeft(customPool.length) : t.setup.noneRemoved}
           disabled={!yearIsValid}
           onClick={() => setShowList(true)}
         />
         <Row
           label={t.setup.addNames}
-          value={namedPlayers > 0 ? t.setup.namedCount(namedPlayers, playerCount) : undefined}
+          value={namedPlayers > 0 ? t.setup.namedCount(namedPlayers, playerCount) : t.setup.noNames}
           sheet={namesSheet}
         />
       </ul>
@@ -329,17 +329,12 @@ function Row({
         onClick={onClick ?? (() => sheet?.current?.showModal())}
       >
         <span className={styles.rotulo}>{label}</span>
-        <span className={styles.valor}>{value}</span>
-        <svg width="7" height="12" viewBox="0 0 7 12" aria-hidden>
-          <path
-            d="M1 1l5 5-5 5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <span className={styles.valor}>
+          {value}
+          <svg width="7" height="12" viewBox="0 0 7 12" aria-hidden>
+            <path d="M1 1l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+          </svg>
+        </span>
       </button>
     </li>
   );
