@@ -269,7 +269,8 @@
   }
 
   .nombre {
-    font-size: 72px;
+    /* Sin saltar de línea en un móvil alto pero estrecho. */
+    font-size: min(72px, 18.5vw);
   }
 
   .lema {
