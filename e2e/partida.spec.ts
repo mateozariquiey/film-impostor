@@ -78,7 +78,10 @@ test('soltar antes de tiempo oculta el papel y pide mantener un poco más', asyn
     await expect(page.getByRole('button', { name: /Pásale el móvil/ })).toHaveCount(0);
 });
 
-test('al soltar sobre el sitio donde aparece «Pasar el móvil» no se pasa solo', async ({ page }) => {
+test('al soltar sobre el sitio donde aparece «Pasar el móvil» no se pasa solo', async ({ page, browserName }) => {
+    // En WebKit no se puede dejar un dedo apoyado, y con ratón el clic nunca caería en el botón nuevo,
+    // de modo que pasaría sin comprobar nada. Lo que sí se comprueba allí es la prueba siguiente.
+    test.skip(browserName === 'webkit', 'Requiere mantener un dedo de verdad, y Playwright solo lo permite en Chromium');
     await fakeApi(page, () => fakeMovie(1, SECRET));
     await page.goto('/');
     await page.getByRole('button', { name: 'Empezar' }).tap();
@@ -93,6 +96,31 @@ test('al soltar sobre el sitio donde aparece «Pasar el móvil» no se pasa solo
     await page.waitForTimeout(400);
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Jugador 1');
     await expect(page.getByText('Ya está oculto')).toBeVisible();
+});
+
+test('un toque en la zona de mantener no deja ningún clic detrás, que es lo que evita el salto', async ({ page }) => {
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    await expect(page.getByText('Coge el móvil')).toBeVisible();
+
+    const surface = page.locator(TURN_SURFACE);
+    await expect(surface).toHaveCSS('touch-action', 'none');
+    await page.evaluate(() => {
+        const seen: string[] = [];
+        Object.assign(window, { seen });
+        for (const type of ['pointerdown', 'touchend', 'click']) document.addEventListener(type, () => seen.push(type), true);
+    });
+
+    await page.touchscreen.tap(180, 320);
+    await expect(page.getByText('Mantén un momento más')).toBeVisible();
+    await page.waitForTimeout(400);
+
+    // El dedo tiene que haber llegado de verdad: sin esto, la prueba pasaría aunque no hubiera toque.
+    const seen = await page.evaluate(() => (window as unknown as { seen: string[] }).seen);
+    expect(seen).toContain('pointerdown');
+    expect(seen).toContain('touchend');
+    expect(seen).not.toContain('click');
 });
 
 test('que el móvil pase a segundo plano o pierda el foco oculta el papel', async ({ page }) => {

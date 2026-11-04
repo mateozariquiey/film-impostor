@@ -70,7 +70,9 @@ npm start
 npm run test:e2e
 ```
 
-Las pruebas de navegador corren sobre la compilación, así que van después de `npm run build`. La primera vez hay que descargar el navegador con `npx playwright install chromium`. También se ejecutan en la integración continua, y son las que avisan si se rompe el secreto o el gesto: el papel no puede estar en la página fuera del gesto, ni siquiera oculto, y al soltar no debe saltar el botón que aparece bajo el dedo.
+Las pruebas de navegador corren sobre la compilación, así que van después de `npm run build`. La primera vez hay que descargar los navegadores con `npx playwright install chromium webkit`. También se ejecutan en la integración continua, y son las que avisan si se rompe el secreto o el gesto: el papel no puede estar en la página fuera del gesto, ni siquiera oculto, y al soltar no debe saltar el botón que aparece bajo el dedo.
+
+Corren en Chromium y en WebKit, pero WebKit aquí es el motor de Safari y no un iPhone. Playwright no sabe dejar un dedo apoyado en él, así que allí el gesto se mantiene con el ratón (mismos eventos de puntero y misma captura, sin `touchstart` ni `touchend`), y los toques cortos sí son de dedo. Las dos pruebas que necesitan un dedo apoyado o arrastrándose se saltan en WebKit, con el motivo escrito. Lo propio de iOS, como la lupa, el menú al mantener o el gesto del sistema que cancela el toque, solo se puede ver en un iPhone.
 
 Los ajustes y los nombres se conservan en `localStorage`. Al cambiar los filtros se borra la selección manual.
 

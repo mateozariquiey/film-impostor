@@ -75,10 +75,10 @@ test.describe('en español', () => {
         await expect(sheet.getByRole('heading', { name: 'Instalarla' })).toHaveCount(0);
     });
 
-    test('deslizar el dedo por la hoja la desplaza sin elegir nada, y el teclado la recorre sin cerrarla', async ({ page }) => {
+    test('deslizar el dedo por la hoja la desplaza sin elegir nada', async ({ page, browserName }) => {
+        test.skip(browserName === 'webkit', 'Requiere arrastrar un dedo de verdad, y Playwright solo lo permite en Chromium');
         await page.goto('/');
-        const row = page.getByRole('button', { name: /De qué género/ });
-        await row.tap();
+        await page.getByRole('button', { name: /De qué género/ }).tap();
         const sheet = page.getByRole('dialog', { name: 'De qué género' });
         await expect(sheet).toBeVisible();
         await page.waitForTimeout(300);
@@ -94,6 +94,14 @@ test.describe('en español', () => {
         await expect.poll(() => sheet.evaluate((element) => element.scrollTop)).toBeGreaterThan(100);
         await expect(sheet).toBeVisible();
         await expect(sheet.getByRole('radio', { name: 'Cualquiera' })).toBeChecked();
+    });
+
+    test('el teclado recorre la hoja sin cerrarla', async ({ page }) => {
+        await page.goto('/');
+        const row = page.getByRole('button', { name: /De qué género/ });
+        await row.tap();
+        const sheet = page.getByRole('dialog', { name: 'De qué género' });
+        await expect(sheet).toBeVisible();
 
         await sheet.getByRole('radio', { name: 'Cualquiera' }).focus();
         await page.keyboard.press('ArrowDown');
