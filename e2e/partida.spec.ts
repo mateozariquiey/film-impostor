@@ -93,8 +93,8 @@ test('el papel mide lo mismo con cualquier papel y no se lee desde lejos', async
     expect(secret, 'alguien ve la película').toBeTruthy();
     expect(impostor, 'alguien es el impostor').toBeTruthy();
     expect(impostor).toEqual(secret);
-    // A partir de unos 30 px, un OCR lo lee a 2,5 m simulados.
-    expect(secret!.size).toBeLessThanOrEqual(30);
+    // A 30 px, un OCR ya lo lee a veces a 2,5 m simulados.
+    expect(secret!.size).toBeLessThanOrEqual(28);
 });
 
 test('en una pantalla baja y con todas las pistas, el nombre y el cartel no dependen del papel', async ({ page }) => {

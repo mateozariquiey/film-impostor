@@ -14,7 +14,7 @@ const SEEN_AFTER_MS = 500;
  * El turno de un jugador. Toda la pantalla es la zona de mantener y el papel solo existe en la
  * página mientras dura el gesto. Todos los estados son el mismo cartel: un rectángulo que se enciende
  * igual para todos. Lo grande es el nombre, que no es secreto, y el papel va a un tamaño que se lee
- * de cerca pero no desde el sofá: medido con hill/herramientas/sofa.py, a partir de unos 30 px se lee a 2,5 m.
+ * de cerca pero no desde el sofá: en una simulación con OCR, a 30 px ya se lee a veces a 2,5 m, y a 28 no.
  */
 export function TurnScreen() {
   const { players, currentPlayerIndex, movie, names, nextPlayer } = useGame();

@@ -103,7 +103,7 @@
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */
 .titular {
-  font-size: 30px;
+  font-size: 28px;
   line-height: 1.02;
   letter-spacing: 0;
   overflow-wrap: anywhere;
