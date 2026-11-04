@@ -61,14 +61,11 @@
   font-size: var(--cifra);
 }
 
-/* Un nombre pesa como la cifra si cabe, y si no baja hasta llenar el ancho. Ocupa el mismo alto, y el título no se mueve. */
+/* Un nombre pesa como la cifra si cabe, y si no baja hasta llenar el ancho. Reserva el alto de la cifra, y el título no se mueve. */
 .nombre {
-  display: flex;
-  align-items: flex-end;
   min-height: calc(var(--cifra) * 0.86);
   margin-left: -0.02em;
   font-size: min(var(--cifra), calc((min(100vw, 480px) - var(--margin) * 2) / (var(--letras) * 0.6)));
-  line-height: 1;
   letter-spacing: -0.04em;
   overflow-wrap: anywhere;
 }

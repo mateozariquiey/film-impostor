@@ -26,9 +26,9 @@
   font-weight: 400;
 }
 
-.fila:has(input:focus-visible) {
-  outline: 2px solid var(--ink);
-  outline-offset: -2px;
+/* El campo activo se subraya: un recuadro pesaría más que el propio texto. */
+.fila:has(input:focus) {
+  box-shadow: inset 0 -2px 0 var(--ink);
 }
 
 .borrar {

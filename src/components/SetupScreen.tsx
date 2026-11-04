@@ -176,7 +176,7 @@ export function SetupScreen() {
       <div className={styles.pie}>
         {gameExpired && !error && (
           <p className={`secundario ${styles.caducada}`} role="status">
-            La partida anterior ha caducado. Podéis empezar otra.
+            La partida anterior ha caducado.
           </p>
         )}
         {error && (
