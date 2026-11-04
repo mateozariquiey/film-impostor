@@ -258,7 +258,7 @@
 /* El móvil más pequeño: la pared se queda en una tira para que «Empezar» siga a la vista. */
 @media (max-height: 600px) {
   .pared {
-    max-height: 22dvh;
+    max-height: 20dvh;
   }
 }
 
@@ -279,7 +279,7 @@
 
   .jugadores {
     margin-top: 24px;
-    padding-bottom: 16px;
+    padding-bottom: 12px;
   }
 
   .filas {
@@ -291,7 +291,7 @@
   .filas .fila {
     grid-template-columns: auto minmax(0, 1fr) 20px;
     column-gap: 12px;
-    min-height: 60px;
+    min-height: 56px;
   }
 
   .filas .fila svg {
@@ -305,6 +305,6 @@
   }
 
   .filas .ancha .valor {
-    max-width: none;
+    font-stretch: 85%;
   }
 }

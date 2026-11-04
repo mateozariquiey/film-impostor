@@ -4,7 +4,7 @@
 
 .volver {
   min-height: 44px;
-  margin: -8px 0 8px;
+  margin: 0 0 8px -12px;
   align-self: flex-start;
   font-size: 15px;
   color: var(--ink-2);
