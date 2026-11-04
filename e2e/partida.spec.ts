@@ -29,7 +29,8 @@ test('la partida completa con el dedo, sin que el secreto esté en la página fu
         roles.push((await role.textContent()) ?? '');
         await page.waitForTimeout(600);
 
-        // Al soltar, desaparece del todo y no hay clic fantasma en el botón de pasar.
+        // Al soltar, desaparece del todo y no se pasa el móvil. El clic fantasma del dedo no se ve en
+        // WebKit, donde aquí se mantiene con ratón: lo cubre la prueba de «no deja ningún clic detrás».
         await finger.release();
         await expect(page.getByText('Ya está oculto')).toBeVisible();
         expect(await domText(page)).not.toContain(SECRET);
