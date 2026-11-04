@@ -1,4 +1,5 @@
 .mesa {
+  position: relative;
   padding-block: 0;
 }
 
@@ -14,6 +15,11 @@
   opacity: 0.75;
   -webkit-mask-image: linear-gradient(#000 calc(100% - 32px), transparent);
   mask-image: linear-gradient(#000 calc(100% - 32px), transparent);
+}
+
+/* «Mantén para ver quiénes eran» debe caber en una línea también en el móvil más estrecho. */
+.mantener.larga {
+  font-size: min(22px, 7.4vw);
 }
 
 /* Siempre en la misma esquina, la misma que en el turno. */
