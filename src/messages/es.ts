@@ -53,6 +53,8 @@ export const es = {
         moviesLeft: (count: number) => `Quedan ${count}`,
         hintsAre: (hints: string) => `${hints.includes(',') ? 'Pistas' : 'Pista'}: ${hints}`,
         impostorCount: (count: number): string => (count === 2 ? '2 impostores' : '1 impostor'),
+        moreDefault: 'Por defecto',
+        noHintsShort: 'Sin pistas',
         more: 'Más ajustes',
         addNames: 'Poner nombres',
         impostors: 'Impostores',
@@ -162,7 +164,7 @@ export const es = {
         shortRule: (impostors: number): string =>
             impostors === 2
                 ? 'Hay dos impostores y no saben quién es el otro. Tras las pistas, votad a una persona.'
-                : 'Una pista cada uno, sin decir el título. Después, votad quién disimula.',
+                : 'Sin decir el título. Después, votad quién disimula.',
         howItEnds: 'Cómo acaba',
         starter: 'Para arrancar',
         anotherQuestion: 'Otra pregunta',

@@ -203,6 +203,12 @@ a {
   color: var(--on-ink);
 }
 
+/* La penumbra es para la pantalla, y la acción no debe parecer apagada: es la única luz mientras el móvil pasa de mano. */
+:root[data-luz="baja"] .accion-pie {
+  background: #fff;
+  color: #000;
+}
+
 /* Un nombre largo no debe partir el botón en dos líneas, que empujaría la pantalla entera. */
 .accion[data-largo] {
   padding-inline: 12px;

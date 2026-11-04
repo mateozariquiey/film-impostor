@@ -11,9 +11,9 @@
   overflow: hidden;
   grid-template-columns: repeat(6, 1fr);
   align-content: start;
-  opacity: 0.6;
-  -webkit-mask-image: linear-gradient(#000 30%, transparent);
-  mask-image: linear-gradient(#000 30%, transparent);
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 32px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 32px), transparent);
 }
 
 /* Siempre en la misma esquina, la misma que en el turno. */
@@ -166,6 +166,17 @@
 @media (max-height: 700px) {
   .mesa:has(.orden li:nth-child(7)) .orden {
     font-size: 24px;
+  }
+}
+
+/* En un móvil alto, el sitio que sobra va al aire entre bloques. */
+@media (min-height: 840px) {
+  .orden {
+    margin-top: 16px;
+  }
+
+  .pregunta {
+    margin-top: 24px;
   }
 }
 

@@ -90,15 +90,8 @@
   grid-column: 1 / -1;
 }
 
-/* Es un resumen, no un valor: va con la letra de leer. */
 .ancha .valor {
-  margin-top: 4px;
   overflow: hidden;
-  font-size: 15px;
-  font-stretch: 100%;
-  font-weight: 500;
-  line-height: 1.25;
-  word-spacing: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -263,7 +256,7 @@
 }
 
 /* En un móvil alto sobra sitio: lo aprovechan el aire y el tamaño, no un hueco antes del botón. */
-@media (min-height: 830px) {
+@media (min-height: 840px) {
   .cabecera {
     padding-top: 24px;
   }
@@ -305,7 +298,4 @@
     text-align: right;
   }
 
-  .filas .ancha .valor {
-    font-stretch: 85%;
-  }
 }

@@ -48,6 +48,8 @@ export const en: Messages = {
         moviesLeft: (count) => `${count} left`,
         hintsAre: (hints: string) => `${hints.includes(',') ? 'Clues' : 'Clue'}: ${hints}`,
         impostorCount: (count: number) => (count === 2 ? '2 impostors' : '1 impostor'),
+        moreDefault: 'Default',
+        noHintsShort: 'No clues',
         more: 'More settings',
         addNames: 'Add names',
         impostors: 'Impostors',
@@ -154,7 +156,7 @@ export const en: Messages = {
         shortRule: (impostors: number) =>
             impostors === 2
                 ? 'There are two impostors, and neither knows the other. After the clues, vote for one person.'
-                : "One clue each, without saying the title. Then vote on who's faking.",
+                : "Don't say the title. Then vote on who's faking.",
         howItEnds: 'How it ends',
         starter: 'To get you started',
         anotherQuestion: 'Another question',

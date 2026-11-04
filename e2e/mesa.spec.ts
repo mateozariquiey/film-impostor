@@ -138,7 +138,7 @@ test.describe('el tiempo para hablar', () => {
         await fakeApi(page, () => fakeMovie(1, SECRET));
         await setSettings(page, { playerCount: 3 });
         await page.goto('/');
-        await expect(page.getByRole('button', { name: /Más ajustes.*Sin límite/ })).toBeVisible();
+        await expect(page.getByRole('button', { name: /Más ajustes.*Por defecto/ })).toBeVisible();
         await page.getByRole('button', { name: 'Empezar' }).tap();
         await playToTable(page, 3);
         await expect(page.getByRole('heading', { name: 'Pistas, en este orden' })).toBeVisible();

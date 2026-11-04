@@ -102,6 +102,15 @@ export function SetupScreen() {
       ? t.setup.twoImpostors
       : t.setup.twoImpostorsFrom(MIN_PLAYERS_FOR_TWO_IMPOSTORS);
   const moviesValue = customPool.length > 0 ? t.setup.moviesLeft(customPool.length) : t.setup.noneRemoved;
+  // Lo que se aparta de lo normal, y nada más: lo que está como siempre no hace falta repetirlo.
+  const moreChanged = [
+    settings.hints.length === 0 && t.setup.noHintsShort,
+    settings.hints.length > 0 && hintsValue !== hintsSummary(["GENRE"], t) && t.setup.hintsAre(hintsValue.toLowerCase()),
+    settings.talkMinutes > 0 && talkValue,
+    settings.twoImpostors &&
+      (impostorCountFor(playerCount, true) === 2 ? t.setup.impostorCount(2) : impostorsValue),
+    customPool.length > 0 && moviesValue,
+  ].filter(Boolean);
   const namedPlayers = settings.names.slice(0, playerCount).filter((name) => name.trim() !== "").length;
   const otherLocale = locale === "es" ? "en" : "es";
   const canUseReserve = error === "offline" || error === "server";
@@ -168,12 +177,7 @@ export function SetupScreen() {
         />
         <Row
           label={t.setup.more}
-          value={[
-            settings.hints.length === 0 ? t.setup.noHints : t.setup.hintsAre(hintsValue.toLowerCase()),
-            talkValue,
-            t.setup.impostorCount(impostorCountFor(playerCount, settings.twoImpostors)),
-            ...(customPool.length > 0 ? [moviesValue] : []),
-          ].join(" · ")}
+          value={moreChanged.length > 0 ? moreChanged.join(" · ") : t.setup.moreDefault}
           sheet={moreSheet}
           wide
         />
