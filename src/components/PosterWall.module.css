@@ -34,9 +34,9 @@
   transition: opacity 0.18s ease-out, filter 0.18s ease-out;
 }
 
-/* El hueco: falta un cartel, y es lo único de la pared que no se ve. */
+/* El hueco: falta un cartel, y en su sitio está el color de lo secreto. */
 .cartel[data-estado="hueco"] {
-  background-color: var(--hueco) !important;
+  background-color: var(--cobalto) !important;
 }
 
 .cartel[data-estado="hueco"] img {

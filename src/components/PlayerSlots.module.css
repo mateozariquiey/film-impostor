@@ -1,14 +1,14 @@
 .huecos {
   display: flex;
-  gap: 3px;
+  gap: 4px;
   align-items: flex-end;
-  min-height: 24px;
+  min-height: 28px;
 }
 
 /* Cada jugador es un cartel en miniatura. */
 .huecos i {
-  width: 12px;
-  height: 18px;
+  width: 14px;
+  height: 21px;
   background: var(--ink);
   flex: none;
 }
@@ -23,13 +23,21 @@
 
 /* A quien le toca sobresale de la fila. */
 .huecos i[data-estado="turno"] {
-  height: 24px;
+  height: 28px;
   background: var(--ink);
 }
 
-/* El hueco sin relleno significa siempre «impostor», y por eso no se usa para nada más. */
+/* El cobalto en la fila significa siempre «impostor», y por eso no se usa aquí para nada más. */
 .huecos i[data-estado="impostor"] {
-  height: 24px;
-  background: none;
-  box-shadow: inset 0 0 0 2px var(--ink);
+  height: 28px;
+  background: var(--cobalto);
+}
+
+/* Con doce no caben a este tamaño en un móvil estrecho. */
+.huecos:has(i:nth-child(10)) {
+  gap: 3px;
+}
+
+.huecos:has(i:nth-child(10)) i {
+  width: 11px;
 }

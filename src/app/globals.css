@@ -1,6 +1,7 @@
 :root {
   color-scheme: light dark;
-  /* Sin color propio: el color lo ponen los carteles. Papel frío y negro de verdad, como un pase en una sala blanca. */
+  /* Papel frío y negro de verdad, y el color lo ponen los carteles. El único propio es el cobalto, la luz de una pantalla
+     en la oscuridad, y marca solo lo secreto: el papel de cada uno, el hueco del impostor y lo que se está llenando. */
   --bg: #f2f3f5;
   --zona: #e5e7ea;
   --relleno: #d8dade;
@@ -10,9 +11,8 @@
   --ink-3: #b4b7bd;
   --line: #d3d5da;
   --on-ink: #ffffff;
-  --hueco: var(--bg);
+  --cobalto: #4f74e0;
   --apagado: 0.34;
-  --cartel: #77797e;
   --margin: 16px;
 }
 
@@ -27,7 +27,6 @@
     --ink-3: #55575c;
     --line: #2a2b2e;
     --on-ink: #000000;
-    --hueco: #000000;
     --apagado: 0.3;
   }
 }
@@ -44,7 +43,6 @@
   --ink-3: #3f4144;
   --line: #2c2d30;
   --on-ink: #000000;
-  --hueco: #000000;
   --apagado: 0.3;
 }
 

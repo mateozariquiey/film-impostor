@@ -57,8 +57,8 @@
 
 /* Revelado: sube la luz del cartel, sin transición, y las letras son negras. De cerca se lee bien, y de lejos no hay contraste. */
 .turno[data-held] .cartel {
-  background: var(--cartel);
-  border-color: var(--cartel);
+  background: var(--cobalto);
+  border-color: var(--cobalto);
   color: #000;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .turno[data-held] .etiqueta {
-  color: #2c2d30;
+  color: #0c1a4a;
 }
 
 /* Llena el ancho del cartel si puede: lo grande es el nombre porque no es secreto. */
@@ -90,7 +90,7 @@
 }
 
 .turno[data-held] .nombre {
-  color: #5d5f64;
+  color: #2a439a;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */

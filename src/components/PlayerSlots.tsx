@@ -4,13 +4,13 @@ interface Props {
   count: number;
   /** A quién le toca: los anteriores salen vistos y el acento es suyo. */
   current?: number;
-  /** Quién es el impostor: el único hueco de la app. */
+  /** Quién es el impostor: el único de color de la fila. */
   impostor?: number;
   /** Quién da la primera pista en la mesa: también es «a quien le toca». */
   starts?: number;
 }
 
-/** Un cartel en miniatura por jugador, como la pared del inicio: el vacío es siempre el impostor. */
+/** Un cartel en miniatura por jugador, como la pared del inicio: el de color es siempre el impostor. */
 export function PlayerSlots({ count, current, impostor, starts }: Props) {
   return (
     <div className={styles.huecos} aria-hidden>

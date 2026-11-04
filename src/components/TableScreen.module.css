@@ -104,14 +104,13 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--ink);
+  background: var(--cobalto);
   transform: scaleX(0);
   transform-origin: left;
 }
 
 .mantener[data-held] span {
-  color: var(--on-ink);
-  mix-blend-mode: normal;
+  color: #000;
 }
 
 .mantener[data-held]::before {
