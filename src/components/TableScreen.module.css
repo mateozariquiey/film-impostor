@@ -40,7 +40,7 @@
   grid-template-rows: repeat(var(--filas), auto);
   grid-template-columns: repeat(var(--columnas), minmax(0, 1fr));
   column-gap: 16px;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: var(--tam-orden);
 }
 
@@ -102,12 +102,24 @@
 
 .reglas {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 16px;
   font-size: 16px;
   line-height: 1.3;
   color: var(--ink-2);
+}
+
+.reglas button {
+  flex: none;
+  margin: -12px -12px -12px 0;
+}
+
+.todasReglas {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 24px;
 }
 
 .pie {
@@ -132,17 +144,8 @@
   -webkit-touch-callout: none;
 }
 
-/* Se llena de izquierda a derecha mientras se mantiene, y vuelve de golpe al soltar. */
-.mantener[data-held] span::after {
-  animation: llenar var(--duracion) linear forwards;
-}
-
 /* Aquí la barra es información, no adorno: dice cuánto falta, también con movimiento reducido. */
 @media (prefers-reduced-motion: reduce) {
-  .mantener[data-held] span::after {
-    animation: llenar var(--duracion) linear forwards !important;
-  }
-
   .mesa:has(.mantener[data-held]) .barra i {
     transition: background-color 0.08s linear calc(var(--duracion) * var(--i) / var(--n)) !important;
   }
@@ -175,40 +178,14 @@
   }
 
   .reglas {
-    font-size: 15px;
-    gap: 4px;
     margin-top: 8px;
+    font-size: 15px;
   }
-
 }
 
-/* Un grupo grande necesita dos columnas de orden, y las reglas ceden primero. */
-.mesa:has(.orden li:nth-child(7)) .reglas {
-  gap: 8px;
-  margin-top: 12px;
-  font-size: 16px;
-}
-
-/* En un móvil bajo, además, el título ya dice que toca dar pistas, y las reglas están en «Cómo se juega». */
+/* En un móvil bajo, un grupo grande necesita el orden un poco más prieto. */
 @media (max-height: 700px) {
   .mesa:has(.orden li:nth-child(7)) .orden {
     font-size: 24px;
-  }
-
-  .mesa:has(.orden li:nth-child(7)) .reglas {
-    gap: 4px;
-    margin-top: 8px;
-    font-size: 15px;
-  }
-
-  .mesa:has(.orden li:nth-child(7)) .reglas p:first-child {
-    display: none;
-  }
-}
-
-/* El móvil más pequeño: el orden no se puede quitar, y las reglas están en «Cómo se juega». */
-@media (max-height: 600px) {
-  .reglas p:not(:last-child) {
-    display: none;
   }
 }

@@ -51,6 +51,7 @@ export const es = {
         noNames: 'Sin nombres',
         removeMovies: 'Quitar películas',
         moviesLeft: (count: number) => `Quedan ${count}`,
+        more: 'Más ajustes',
         addNames: 'Poner nombres',
         impostors: 'Impostores',
         oneImpostor: 'Uno',
@@ -155,6 +156,11 @@ export const es = {
                       'Antes de ver el resultado, el impostor puede intentar adivinar la película.',
                       'Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.',
                   ],
+        shortRule: (impostors: number): string =>
+            impostors === 2
+                ? 'Hay dos impostores y no saben quién es el otro. Tras las pistas, votad a una persona.'
+                : 'Una pista cada uno, sin decir el título. Después, votad quién disimula.',
+        howItEnds: 'Cómo acaba',
         starter: 'Para arrancar',
         anotherQuestion: 'Otra pregunta',
         timeLeft: 'Tiempo que queda',

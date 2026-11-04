@@ -11,7 +11,7 @@
   --ink-3: #b4b7bd;
   --line: #d3d5da;
   --on-ink: #ffffff;
-  --cobalto: #4f74e0;
+  --cobalto: #3f6ff2;
   --apagado: 0.34;
   --margin: 16px;
 }
@@ -160,14 +160,24 @@ a {
   overflow-wrap: anywhere;
 }
 
+/* Lo que hace avanzar la partida habla con la voz de los carteles, se toque o se mantenga. */
+.accion,
+.accion-sec,
+.aviso-pulsar {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 44px;
+  font-size: clamp(22px, 7vw, 26px);
+  line-height: 1.05;
+  font-stretch: 62%;
+  font-weight: 800;
+  word-spacing: 0.08em;
+  text-align: center;
+}
+
 .accion,
 .accion-sec {
   display: block;
-  width: 100%;
-  min-height: 56px;
-  padding: 12px 16px;
-  font-weight: 600;
-  text-align: center;
 }
 
 /* La acción principal del inicio llega de lado a lado y hasta abajo, y deja sitio a la barra del sistema. */
@@ -175,9 +185,6 @@ a {
   min-height: calc(64px + env(safe-area-inset-bottom));
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
   font-size: 30px;
-  font-stretch: 62%;
-  font-weight: 800;
-  word-spacing: 0.08em;
 }
 
 .accion {
@@ -196,11 +203,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
-  padding: 12px 44px;
   border: 2px solid var(--ink);
-  font-weight: 600;
-  text-align: center;
 }
 
 .aviso-pulsar > svg,
@@ -220,7 +223,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 44px;
+  padding: 10px 44px;
   background: var(--cobalto);
   color: #000;
   clip-path: inset(0 100% 0 0);
@@ -230,6 +233,11 @@ a {
   to {
     clip-path: inset(0);
   }
+}
+
+/* Se llena de izquierda a derecha mientras se mantiene, y vuelve de golpe al soltar. */
+[data-held] [data-texto]::after {
+  animation: llenar var(--duracion) linear forwards;
 }
 
 .accion:active:not(:disabled),
@@ -282,5 +290,10 @@ a {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  /* Aquí el relleno es información, no adorno: dice cuánto falta. */
+  [data-held] [data-texto]::after {
+    animation: llenar var(--duracion) linear forwards !important;
   }
 }

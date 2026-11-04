@@ -46,6 +46,7 @@ export const en: Messages = {
         noNames: 'No names',
         removeMovies: 'Remove movies',
         moviesLeft: (count) => `${count} left`,
+        more: 'More settings',
         addNames: 'Add names',
         impostors: 'Impostors',
         oneImpostor: 'One',
@@ -147,6 +148,11 @@ export const en: Messages = {
                       'Before seeing the result, the impostor can try to guess the movie.',
                       'If they guess it or the group votes wrong, the impostor wins. If not, the group wins.',
                   ],
+        shortRule: (impostors: number) =>
+            impostors === 2
+                ? 'There are two impostors, and neither knows the other. After the clues, vote for one person.'
+                : "One clue each, without saying the title. Then vote on who's faking.",
+        howItEnds: 'How it ends',
         starter: 'To get you started',
         anotherQuestion: 'Another question',
         timeLeft: 'Time left',

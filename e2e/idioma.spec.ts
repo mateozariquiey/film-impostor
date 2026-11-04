@@ -27,13 +27,15 @@ test.describe('con el navegador en español', () => {
             route.fulfill({ json: [fakeMovie(1, 'Alien'), fakeMovie(2, 'Tiburón')] }),
         );
         await page.goto('/');
+        await page.getByRole('button', { name: /Más ajustes/ }).tap();
         await page.getByRole('button', { name: 'Quitar películas' }).tap();
         await page.getByRole('button', { name: 'Tachar Tiburón' }).tap();
         await page.getByRole('button', { name: 'Usar solo esta' }).tap();
-        await expect(page.getByRole('button', { name: /Quitar películas.*Quedan 1/ })).toBeVisible();
+        await expect(page.getByRole('button', { name: /Más ajustes.*Quedan 1/ })).toBeVisible();
 
         await page.getByRole('button', { name: 'English' }).tap();
-        await expect(page.getByRole('button', { name: 'Remove movies' })).toBeVisible();
+        await page.getByRole('button', { name: /More settings/ }).tap();
+        await expect(page.getByRole('button', { name: /Remove movies/ })).toBeVisible();
         await expect(page.getByRole('button', { name: /left/ })).toHaveCount(0);
     });
 });

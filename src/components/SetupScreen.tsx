@@ -20,6 +20,8 @@ import { NamesSheet } from "./NamesSheet";
 import { RulesSheet } from "./RulesSheet";
 import { PosterWall } from "./PosterWall";
 import { Icon } from "./Icon";
+import { Sheet } from "./Sheet";
+import sheetStyles from "./ChoiceSheet.module.css";
 import styles from "./SetupScreen.module.css";
 
 const EXACT_YEAR = "YEAR";
@@ -60,6 +62,7 @@ export function SetupScreen() {
   const namesSheet = useRef<HTMLDialogElement>(null);
   const talkSheet = useRef<HTMLDialogElement>(null);
   const impostorsSheet = useRef<HTMLDialogElement>(null);
+  const moreSheet = useRef<HTMLDialogElement>(null);
   const rules = useRef<HTMLDialogElement>(null);
   const foot = useRef<HTMLDivElement>(null);
 
@@ -91,6 +94,14 @@ export function SetupScreen() {
 
   const { playerCount } = settings;
   const canStart = !isLoading && yearIsValid;
+  const hintsValue = hintsSummary(settings.hints, t);
+  const talkValue = t.setup.talkTimeOptions(settings.talkMinutes);
+  const impostorsValue = !settings.twoImpostors
+    ? t.setup.oneImpostor
+    : impostorCountFor(playerCount, true) === 2
+      ? t.setup.twoImpostors
+      : t.setup.twoImpostorsFrom(MIN_PLAYERS_FOR_TWO_IMPOSTORS);
+  const moviesValue = customPool.length > 0 ? t.setup.moviesLeft(customPool.length) : t.setup.noneRemoved;
   const namedPlayers = settings.names.slice(0, playerCount).filter((name) => name.trim() !== "").length;
   const otherLocale = locale === "es" ? "en" : "es";
   const canUseReserve = error === "offline" || error === "server";
@@ -150,31 +161,38 @@ export function SetupScreen() {
           value={t.setup.popularityOptions[settings.popularity]}
           sheet={popularitySheet}
         />
-        <Row label={t.setup.hints} value={hintsSummary(settings.hints, t)} sheet={hintsSheet} />
-        <Row
-          label={t.setup.removeMovies}
-          value={customPool.length > 0 ? t.setup.moviesLeft(customPool.length) : t.setup.noneRemoved}
-          disabled={!yearIsValid}
-          onClick={() => setShowList(true)}
-        />
         <Row
           label={t.setup.addNames}
           value={namedPlayers > 0 ? t.setup.namedCount(namedPlayers, playerCount) : t.setup.noNames}
           sheet={namesSheet}
         />
-        <Row label={t.setup.talkTime} value={t.setup.talkTimeOptions(settings.talkMinutes)} sheet={talkSheet} />
         <Row
-          label={t.setup.impostors}
-          value={
-            !settings.twoImpostors
-              ? t.setup.oneImpostor
-              : impostorCountFor(playerCount, true) === 2
-                ? t.setup.twoImpostors
-                : t.setup.twoImpostorsFrom(MIN_PLAYERS_FOR_TWO_IMPOSTORS)
-          }
-          sheet={impostorsSheet}
+          label={t.setup.more}
+          value={[hintsValue, talkValue, impostorsValue, ...(customPool.length > 0 ? [moviesValue] : [])].join(" · ")}
+          sheet={moreSheet}
+          wide
         />
       </ul>
+
+      <Sheet ref={moreSheet} titleId="mas">
+        <div className={sheetStyles.cabecera}>
+          <h2 id="mas">{t.setup.more}</h2>
+          <form method="dialog">
+            <button className={sheetStyles.listo}>{t.done}</button>
+          </form>
+        </div>
+        <ul className={styles.filasHoja}>
+          <Row label={t.setup.hints} value={hintsValue} sheet={hintsSheet} />
+          <Row label={t.setup.talkTime} value={talkValue} sheet={talkSheet} />
+          <Row label={t.setup.impostors} value={impostorsValue} sheet={impostorsSheet} />
+          <Row
+            label={t.setup.removeMovies}
+            value={moviesValue}
+            disabled={!yearIsValid}
+            onClick={() => setShowList(true)}
+          />
+        </ul>
+      </Sheet>
 
       <div ref={foot} className={styles.pie}>
         {gameExpired && !error && (
@@ -348,15 +366,18 @@ function Row({
   sheet,
   disabled,
   onClick,
+  wide,
 }: {
   label: string;
   value?: ReactNode;
   sheet?: RefObject<HTMLDialogElement | null>;
   disabled?: boolean;
   onClick?: () => void;
+  /** Ocupa las dos columnas. */
+  wide?: boolean;
 }) {
   return (
-    <li>
+    <li className={wide ? styles.ancha : undefined}>
       <button
         type="button"
         className={styles.fila}

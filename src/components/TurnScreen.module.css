@@ -48,8 +48,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Lo que no es el cartel mide 152 px: márgenes, barra de arriba y botón de pasar el móvil. Así cabe sin scroll y no se mueve de un turno a otro. */
-  width: min(100%, calc((100dvh - 152px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 3 / 5));
+  /* Lo que no es el cartel mide 162 px: márgenes, barra de arriba y botón de pasar el móvil. Así cabe sin scroll y no se mueve de un turno a otro. */
+  width: min(100%, calc((100dvh - 162px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 3 / 5));
   aspect-ratio: 3 / 5;
   margin: 8px auto 0;
   padding: 14px 14px 10px;
@@ -182,10 +182,6 @@
   visibility: visible;
 }
 
-.soltar::after {
-  animation: llenar var(--duracion) linear forwards;
-}
-
 .pie span {
   display: flex;
   align-items: center;
@@ -208,7 +204,7 @@
   .cartel {
     width: 100%;
     aspect-ratio: auto;
-    height: calc(100dvh - 152px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    height: calc(100dvh - 162px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
 
   .titular {

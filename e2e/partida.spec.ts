@@ -298,3 +298,28 @@ test('si falla «Otra película», el aviso y sus salidas quedan a la vista en u
     await expect(page.getByRole('button', { name: 'Reintentar' })).toBeInViewport();
     await expect(page.getByRole('button', { name: 'English' })).toBeInViewport();
 });
+
+test('el botón de mantener se llena de verdad, y el texto no desaparece mientras tanto', async ({ page, browserName }) => {
+    test.skip(browserName === 'webkit', 'Requiere mantener un dedo de verdad');
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.addInitScript(() => {
+        localStorage.setItem('film-impostor-settings', JSON.stringify({ playerCount: 3 }));
+    });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    for (let player = 1; player <= 3; player++) {
+        await expect(page.getByText('Coge el móvil')).toBeVisible();
+        const finger = await touchHold(page, TURN_SURFACE);
+        await page.waitForTimeout(600);
+        await finger.release();
+        await page.waitForTimeout(300);
+        await page.getByRole('button', { name: /Pásale|Dejar el móvil/ }).tap();
+    }
+    const finger = await touchHold(page, 'button:has-text("Mantén para ver quién era")');
+    // Si el nombre de la animación se pierde, el botón no da ninguna señal: por eso se mira que exista y que corra.
+    const nombres = await page.evaluate(() => document.getAnimations().map((a) => (a as CSSAnimation).animationName));
+    expect(nombres).toContain('llenar');
+    const texto = await page.locator('[data-texto]').evaluate((el) => getComputedStyle(el).color);
+    expect(texto).not.toBe('rgb(0, 0, 0)');
+    await finger.release();
+});

@@ -8,6 +8,7 @@ import { Icon } from "./Icon";
 import { PlayerSlots } from "./PlayerSlots";
 import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
+import { Sheet } from "./Sheet";
 import { TalkClock } from "./TalkClock";
 import styles from "./TableScreen.module.css";
 
@@ -19,6 +20,7 @@ export function TableScreen() {
   const { locale, t } = useLocale();
   const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const rules = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
@@ -70,10 +72,24 @@ export function TableScreen() {
         </p>
       </div>
       <div className={styles.reglas}>
-        {t.table.rules(impostorCount).map((rule) => (
-          <p key={rule}>{rule}</p>
-        ))}
+        <p>{t.table.shortRule(impostorCount)}</p>
+        <button type="button" className="enlace" onClick={() => rules.current?.showModal()}>
+          {t.table.howItEnds}
+        </button>
       </div>
+      <Sheet ref={rules} titleId="como-acaba">
+        <h2 id="como-acaba" className="titulo">
+          {t.table.howItEnds}
+        </h2>
+        <div className={styles.todasReglas}>
+          {t.table.rules(impostorCount).map((rule) => (
+            <p key={rule}>{rule}</p>
+          ))}
+        </div>
+        <form method="dialog">
+          <button className="accion">{t.rules.understood}</button>
+        </form>
+      </Sheet>
       <div className={styles.pie}>
         <TalkClock />
         <p className={`secundario ${styles.aviso}`} role="status">

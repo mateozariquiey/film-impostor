@@ -80,8 +80,23 @@
   column-gap: 20px;
 }
 
-.filas li {
+.filas li,
+.filasHoja li {
   border-bottom: 1px solid var(--line);
+}
+
+.filas .ancha {
+  grid-column: 1 / -1;
+}
+
+.ancha .valor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filasHoja li:first-child {
+  border-top: 1px solid var(--line);
 }
 
 .fila {

@@ -102,7 +102,7 @@ test.describe('en inglés', () => {
         await fakeApi(page, () => fakeMovie(1, 'Secret Movie'));
         await setSettings(page, { playerCount: 3, talkMinutes: 3 });
         await page.goto('/en');
-        await expect(page.getByRole('button', { name: /Time to talk.*3 min/ })).toBeVisible();
+        await expect(page.getByRole('button', { name: /More settings.*3 min/ })).toBeVisible();
         await page.getByRole('button', { name: 'Start' }).tap();
         await playToTable(page, 3, 'Put the phone on the table');
         await expect(page.getByRole('timer')).toBeVisible();
@@ -138,7 +138,7 @@ test.describe('el tiempo para hablar', () => {
         await fakeApi(page, () => fakeMovie(1, SECRET));
         await setSettings(page, { playerCount: 3 });
         await page.goto('/');
-        await expect(page.getByRole('button', { name: /Tiempo para hablar.*Sin límite/ })).toBeVisible();
+        await expect(page.getByRole('button', { name: /Más ajustes.*Sin límite/ })).toBeVisible();
         await page.getByRole('button', { name: 'Empezar' }).tap();
         await playToTable(page, 3);
         await expect(page.getByRole('heading', { name: 'Pistas, en este orden' })).toBeVisible();
@@ -153,9 +153,12 @@ test.describe('el tiempo para hablar', () => {
         await setSettings(page, { playerCount: 3 });
         await page.goto('/');
 
+        await page.getByRole('button', { name: /Más ajustes/ }).tap();
         await page.getByRole('button', { name: /Tiempo para hablar/ }).tap();
         await page.getByRole('dialog', { name: 'Tiempo para hablar' }).getByText('3 min').tap();
         await expect(page.getByRole('button', { name: /Tiempo para hablar.*3 min/ })).toBeVisible();
+        await page.getByRole('dialog', { name: 'Más ajustes' }).getByRole('button', { name: 'Listo' }).tap();
+        await expect(page.getByRole('button', { name: /Más ajustes.*3 min/ })).toBeVisible();
 
         await page.getByRole('button', { name: 'Empezar' }).tap();
         // Mientras se reparten los papeles no corre.
@@ -310,6 +313,7 @@ test.describe('dos impostores', () => {
 
     test('la opción está apagada por defecto, se elige en su hoja y dice desde cuándo vale', async ({ page }) => {
         await page.goto('/');
+        await page.getByRole('button', { name: /Más ajustes/ }).tap();
         const row = page.getByRole('button', { name: /Impostores/ });
         await expect(row).toContainText('Uno');
         await row.tap();
@@ -320,7 +324,9 @@ test.describe('dos impostores', () => {
         await expect(sheet).toBeHidden();
         // Con 4 sigue diciendo desde cuándo, y al llegar a 7 ya son dos.
         await expect(row).toContainText('Dos desde 7');
+        await page.getByRole('dialog', { name: 'Más ajustes' }).getByRole('button', { name: 'Listo' }).tap();
         for (let count = 4; count < 7; count++) await page.getByRole('button', { name: 'Un jugador más' }).tap();
+        await page.getByRole('button', { name: /Más ajustes/ }).tap();
         await expect(row).toContainText(/Dos\s*$/);
     });
 
@@ -443,7 +449,7 @@ test.describe('dos impostores en inglés', () => {
         await fakeApi(page, () => fakeMovie(1, 'Secret Movie'));
         await setSettings(page, { playerCount: 7, twoImpostors: true });
         await page.goto('/en');
-        await expect(page.getByRole('button', { name: /Impostors.*Two/ })).toBeVisible();
+        await expect(page.getByRole('button', { name: /More settings.*Two/ })).toBeVisible();
         await page.getByRole('button', { name: 'Start' }).tap();
         const roles: string[] = [];
         for (let player = 1; player <= 7; player++) {
