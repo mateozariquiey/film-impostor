@@ -51,6 +51,8 @@ export const es = {
         noNames: 'Sin nombres',
         removeMovies: 'Quitar películas',
         moviesLeft: (count: number) => `Quedan ${count}`,
+        hintsAre: (hints: string) => `${hints.includes(',') ? 'Pistas' : 'Pista'}: ${hints}`,
+        impostorCount: (count: number): string => (count === 2 ? '2 impostores' : '1 impostor'),
         more: 'Más ajustes',
         addNames: 'Poner nombres',
         impostors: 'Impostores',

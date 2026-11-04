@@ -168,7 +168,12 @@ export function SetupScreen() {
         />
         <Row
           label={t.setup.more}
-          value={[hintsValue, talkValue, impostorsValue, ...(customPool.length > 0 ? [moviesValue] : [])].join(" · ")}
+          value={[
+            settings.hints.length === 0 ? t.setup.noHints : t.setup.hintsAre(hintsValue.toLowerCase()),
+            talkValue,
+            t.setup.impostorCount(impostorCountFor(playerCount, settings.twoImpostors)),
+            ...(customPool.length > 0 ? [moviesValue] : []),
+          ].join(" · ")}
           sheet={moreSheet}
           wide
         />

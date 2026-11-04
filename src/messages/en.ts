@@ -46,6 +46,8 @@ export const en: Messages = {
         noNames: 'No names',
         removeMovies: 'Remove movies',
         moviesLeft: (count) => `${count} left`,
+        hintsAre: (hints: string) => `${hints.includes(',') ? 'Clues' : 'Clue'}: ${hints}`,
+        impostorCount: (count: number) => (count === 2 ? '2 impostors' : '1 impostor'),
         more: 'More settings',
         addNames: 'Add names',
         impostors: 'Impostors',

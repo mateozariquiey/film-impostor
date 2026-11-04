@@ -57,13 +57,6 @@
   overflow: hidden;
 }
 
-/* Revelado: sube la luz del cartel, sin transición, y las letras son negras. De cerca se lee bien, y de lejos no hay contraste. */
-.turno[data-held] .cartel {
-  background: var(--cobalto);
-  border-color: var(--cobalto);
-  color: #000;
-}
-
 /* Fuera del flujo: si lo empujara el papel, su altura diría cuánto ocupa el secreto, y por tanto quién es el impostor. */
 .quien {
   position: absolute;
@@ -80,10 +73,6 @@
   color: var(--ink-2);
 }
 
-.turno[data-held] .etiqueta {
-  color: #000;
-}
-
 /* Llena el ancho del cartel si puede: lo grande es el nombre porque no es secreto. */
 .nombre {
   display: block;
@@ -94,43 +83,16 @@
   color: var(--ink);
 }
 
-/* Al revelar, manda el papel: el nombre se queda en una línea de pie, como los créditos de un cartel. */
-.turno[data-held] .etiqueta,
+/* Al revelar, el nombre no se mueve y baja la voz: la luz es del papel. */
 .turno[data-held] .nombre {
-  display: inline;
-}
-
-.turno[data-held] .nombre {
-  margin: 0;
-  font-size: 24px;
-  line-height: 1;
-  color: #000;
-}
-
-.turno[data-held] .quien {
-  padding-top: 8px;
-  border-top: 1px solid #000;
-}
-
-/* El cartel encendido es el hueco de la pared a tamaño completo, con su interrogación. Es igual con cualquier papel. */
-.turno[data-held] .cartel::before {
-  content: "?";
-  content: "?" / "";
-  position: absolute;
-  right: 4cqw;
-  bottom: 12cqw;
-  font-size: 118cqw;
-  line-height: 0.8;
-  font-stretch: 62%;
-  font-weight: 800;
-  color: rgb(0 0 0 / 0.13);
+  color: var(--ink-2);
 }
 
 .rotulo {
   margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px solid #000;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.2;
 }
 
@@ -152,6 +114,17 @@
   z-index: 1;
 }
 
+/* Lo que se enciende: siempre la misma pieza, cuadrada, sea cual sea el papel. Lo que se ve desde lejos no depende de lo que dice. */
+.turno[data-held] .revelado {
+  /* Lo justo para el papel más largo: tres líneas de título o todas las pistas. Lo vigila e2e/partida.spec.ts. */
+  height: max(84cqw, 240px);
+  margin: -16px -16px 0;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--cobalto);
+  color: #000;
+}
+
 .nota {
   margin-top: 8px;
   font-size: 17px;
@@ -160,7 +133,7 @@
 }
 
 .turno[data-held] .nota {
-  font-weight: 600;
+  font-weight: 500;
   color: #000;
 }
 
@@ -229,8 +202,9 @@
     display: none;
   }
 
-  .turno[data-held] .cartel::before {
-    content: none;
+  .turno[data-held] .revelado {
+    height: auto;
+    min-height: 100%;
   }
 
   .rotulo {

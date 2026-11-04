@@ -323,3 +323,31 @@ test('el botón de mantener se llena de verdad, y el texto no desaparece mientra
     expect(texto).not.toBe('rgb(0, 0, 0)');
     await finger.release();
 });
+
+test('nada del papel se corta en el móvil más pequeño, ni con el título más largo ni con todas las pistas', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.addInitScript(() => {
+        localStorage.setItem('film-impostor-settings', JSON.stringify({ playerCount: 7, twoImpostors: true, hints: ['GENRE', 'YEAR', 'KEYWORDS'] }));
+    });
+    const long = 'Doctor Strange en el multiverso de la locura: la película completa';
+    await fakeApi(page, () => ({ ...fakeMovie(1, long), keywords: ['time travel', 'alternate universe', 'superhero'] }));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    const heights = new Set<number>();
+    for (let player = 1; player <= 7; player++) {
+        await expect(page.getByText('Coge el móvil')).toBeVisible();
+        const finger = await touchHold(page, TURN_SURFACE);
+        await expect(page.getByText(/Tu papel/)).toBeVisible();
+        const measure = await page.locator('[data-cartel] > div').last().evaluate((node) => ({
+            height: node.getBoundingClientRect().height,
+            spare: node.clientHeight - node.scrollHeight,
+        }));
+        expect(measure.spare, 'el papel cabe entero').toBeGreaterThanOrEqual(0);
+        heights.add(measure.height);
+        await page.waitForTimeout(600);
+        await finger.release();
+        await page.waitForTimeout(300);
+        await page.getByRole('button', { name: /Pásale|Dejar el móvil/ }).tap();
+    }
+    expect(heights.size, 'la pieza encendida mide lo mismo con cualquier papel').toBe(1);
+});

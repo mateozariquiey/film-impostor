@@ -199,6 +199,13 @@
   color: var(--ink-2);
 }
 
+/* En un móvil estrecho, «Cómo de conocidas» debe seguir cabiendo en una línea. */
+@media (max-width: 389px) {
+  .rotulo {
+    font-size: 14px;
+  }
+}
+
 /* En un móvil pequeño, y si la pantalla se queda corta por un error, lo que manda es poder jugar. */
 @media (max-height: 700px) {
   .pared {

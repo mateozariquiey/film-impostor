@@ -449,7 +449,7 @@ test.describe('dos impostores en inglés', () => {
         await fakeApi(page, () => fakeMovie(1, 'Secret Movie'));
         await setSettings(page, { playerCount: 7, twoImpostors: true });
         await page.goto('/en');
-        await expect(page.getByRole('button', { name: /More settings.*Two/ })).toBeVisible();
+        await expect(page.getByRole('button', { name: /More settings.*2 impostors/ })).toBeVisible();
         await page.getByRole('button', { name: 'Start' }).tap();
         const roles: string[] = [];
         for (let player = 1; player <= 7; player++) {

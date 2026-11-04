@@ -4,7 +4,6 @@ import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { impostorsOf } from "@/lib/game";
 import { posterUrl } from "@/lib/posters";
-import { PlayerSlots } from "./PlayerSlots";
 import { TitleLines } from "./TitleLines";
 import styles from "./ResultScreen.module.css";
 
@@ -74,9 +73,6 @@ export function ResultScreen() {
       >
         {impostors.length === 2 ? t.result.were(impostors[0], impostors[1], names) : t.result.was(impostors[0], names)}
       </h1>
-      <div className={styles.huecos}>
-        <PlayerSlots count={players.length} impostors={impostors} />
-      </div>
       <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>
         {t.result.movieWas}
         <strong>{hasPoster ? movie.title : <TitleLines title={movie.title} partClassName={styles.parte} />}</strong>
