@@ -43,6 +43,8 @@ test('cada partida pide no repetir las anteriores, también tras cerrar la app',
 });
 
 test('la lista de reserva tampoco repite: 38 partidas, 38 películas', async ({ page }) => {
+    // Son 38 partidas seguidas: en WebKit, en la integración continua, se pasa de los 30 s por poco.
+    test.slow();
     await page.route('**/api/movies/random**', (route) => route.fulfill({ status: 502, json: {} }));
     await page.goto('/');
 
