@@ -98,7 +98,11 @@ export function TurnScreen() {
       />
 
       <div className={styles.pie}>
-        {seen ? (
+        {held ? (
+          <span className={`aviso-pulsar ${styles.soltar}`} aria-hidden>
+            {t.turn.releaseHint}
+          </span>
+        ) : seen ? (
           <button type="button" className="accion" onClick={nextPlayer}>
             {isLast ? t.turn.leaveOnTable : t.turn.passTo(number, names)}
           </button>

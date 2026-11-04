@@ -6,6 +6,7 @@
 }
 
 .cartel {
+  container-type: size;
   position: relative;
   min-height: 0;
   overflow: hidden;
@@ -41,4 +42,18 @@
 
 .cartel[data-estado="hueco"] img {
   visibility: hidden;
+}
+
+/* Sin esto parecería una imagen que no ha cargado. */
+.cartel[data-estado="hueco"]::after {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 70cqh;
+  line-height: 1;
+  font-stretch: 62%;
+  font-weight: 800;
+  color: #000;
 }

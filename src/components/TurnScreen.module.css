@@ -81,7 +81,7 @@
 }
 
 .turno[data-held] .etiqueta {
-  color: #0c1a4a;
+  color: #000;
 }
 
 /* Llena el ancho del cartel si puede: lo grande es el nombre porque no es secreto. */
@@ -94,8 +94,11 @@
   color: var(--ink);
 }
 
+/* Al revelar, el nombre cede en tamaño y no en contraste: sigue diciendo de quién es el móvil, y manda el papel. */
 .turno[data-held] .nombre {
-  color: #3a5bc4;
+  font-size: 34px;
+  line-height: 1;
+  color: #000;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */
@@ -139,6 +142,11 @@
 
 .pie button {
   pointer-events: auto;
+}
+
+/* El pie se oculta mientras se ve el papel, salvo esto: dice cómo esconderlo, y es igual con cualquier papel. */
+.pie .soltar {
+  visibility: visible;
 }
 
 .pie span {

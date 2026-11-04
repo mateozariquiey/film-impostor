@@ -116,6 +116,7 @@ export const es = {
         takePhone: 'Coge el móvil',
         holdLonger: 'Mantén un momento más, hasta que te dé tiempo a leerlo.',
         holdNote: 'Tu papel se ve solo mientras mantienes el dedo. Que no mire nadie más.',
+        releaseHint: 'Suelta para ocultar',
         holdAria: 'Mantén pulsado para ver tu papel',
         leaveOnTable: 'Dejar el móvil en la mesa',
         passTo: (index: number, names: readonly string[]) =>

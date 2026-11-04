@@ -110,6 +110,7 @@ export const en: Messages = {
         takePhone: 'Take the phone',
         holdLonger: 'Hold a little longer, so you have time to read it.',
         holdNote: 'Your role only shows while you hold your finger down. Don’t let anyone else look.',
+        releaseHint: 'Let go to hide it',
         holdAria: 'Press and hold to see your role',
         leaveOnTable: 'Put the phone on the table',
         passTo: (index, names) => `Pass the phone to ${player(index, names)}`,
