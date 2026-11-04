@@ -1,5 +1,6 @@
 import type { ReactNode, Ref } from "react";
 import { useLocale } from "@/contexts/LocaleContext";
+import { Icon } from "./Icon";
 import { Sheet } from "./Sheet";
 import styles from "./ChoiceSheet.module.css";
 
@@ -63,16 +64,7 @@ export function ChoiceSheet<T extends string>({
               onChange={() => onChoose(value)}
             />
             <span>{label}</span>
-            <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden>
-              <path
-                d="M1.5 6.5l4 4 9-9"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon name="check" />
           </label>
         ))}
       </fieldset>

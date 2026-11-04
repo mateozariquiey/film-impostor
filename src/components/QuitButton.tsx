@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
+import { Icon } from "./Icon";
 import { Sheet } from "./Sheet";
 import styles from "./QuitButton.module.css";
 
@@ -17,15 +18,7 @@ export function QuitButton() {
         aria-label={t.quit.aria}
         onClick={() => dialog.current?.showModal()}
       >
-        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
-          <path
-            d="M3 3l12 12M15 3L3 15"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
+        <Icon name="close" />
       </button>
       <Sheet ref={dialog} titleId="abandonar">
         <h2 id="abandonar" className={styles.titulo}>

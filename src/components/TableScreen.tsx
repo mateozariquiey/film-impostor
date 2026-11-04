@@ -4,6 +4,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
 import { QUESTIONS } from "@/lib/questions";
 import { HoldButton } from "./HoldButton";
+import { Icon } from "./Icon";
 import { PlayerSlots } from "./PlayerSlots";
 import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
@@ -60,12 +61,10 @@ export function TableScreen() {
         ))}
       </ol>
       <div className={styles.pregunta}>
-        <div className={styles.arrancar}>
-          <span>{t.table.starter}</span>
-          <button type="button" className="enlace" onClick={anotherQuestion}>
-            {t.table.anotherQuestion}
-          </button>
-        </div>
+        <p className={styles.arrancar}>{t.table.starter}</p>
+        <button type="button" className={styles.otra} aria-label={t.table.anotherQuestion} onClick={anotherQuestion}>
+          <Icon name="again" />
+        </button>
         <p className="cartelon" aria-live="polite">
           {QUESTIONS[question][locale]}
         </p>
@@ -87,7 +86,10 @@ export function TableScreen() {
           onRelease={(completed) => setTooShort(!completed)}
           onComplete={revealImpostor}
         >
-          <span>{t.table.hold(impostorCount)}</span>
+          <span className="mantener-icono">
+            <Icon name="hold" />
+          </span>
+          <span data-texto={t.table.hold(impostorCount)}>{t.table.hold(impostorCount)}</span>
         </HoldButton>
       </div>
     </div>

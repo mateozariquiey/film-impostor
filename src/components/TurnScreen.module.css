@@ -94,11 +94,44 @@
   color: var(--ink);
 }
 
-/* Al revelar, el nombre cede en tamaño y no en contraste: sigue diciendo de quién es el móvil, y manda el papel. */
+/* Al revelar, manda el papel: el nombre se queda en una línea de pie, como los créditos de un cartel. */
+.turno[data-held] .etiqueta,
 .turno[data-held] .nombre {
-  font-size: 34px;
+  display: inline;
+}
+
+.turno[data-held] .nombre {
+  margin: 0;
+  font-size: 24px;
   line-height: 1;
   color: #000;
+}
+
+.turno[data-held] .quien {
+  padding-top: 8px;
+  border-top: 1px solid #000;
+}
+
+/* El cartel encendido es el hueco de la pared a tamaño completo, con su interrogación. Es igual con cualquier papel. */
+.turno[data-held] .cartel::before {
+  content: "?";
+  content: "?" / "";
+  position: absolute;
+  right: 4cqw;
+  bottom: 12cqw;
+  font-size: 118cqw;
+  line-height: 0.8;
+  font-stretch: 62%;
+  font-weight: 800;
+  color: rgb(0 0 0 / 0.13);
+}
+
+.rotulo {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #000;
+  font-size: 17px;
+  line-height: 1.2;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */
@@ -149,6 +182,10 @@
   visibility: visible;
 }
 
+.soltar::after {
+  animation: llenar var(--duracion) linear forwards;
+}
+
 .pie span {
   display: flex;
   align-items: center;
@@ -183,7 +220,16 @@
     font-size: 16px;
   }
 
-  .etiqueta {
+  .etiqueta,
+  .turno[data-held] .etiqueta {
+    display: none;
+  }
+
+  .turno[data-held] .cartel::before {
+    content: none;
+  }
+
+  .rotulo {
     display: none;
   }
 

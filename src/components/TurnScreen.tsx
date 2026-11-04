@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
+import { Icon } from "./Icon";
 import { PlayerSlots } from "./PlayerSlots";
 import { QuitButton } from "./QuitButton";
 import { TitleLines } from "./TitleLines";
@@ -69,6 +70,7 @@ export function TurnScreen() {
           </h1>
           {visible && movie ? (
             <div className={styles.revelado}>
+              <p className={styles.rotulo}>{t.turn.yourRole}</p>
               <p className={`cartelon ${styles.titular}`}>
                 {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
               </p>
@@ -99,7 +101,12 @@ export function TurnScreen() {
 
       <div className={styles.pie}>
         {held ? (
-          <span className={`aviso-pulsar ${styles.soltar}`} aria-hidden>
+          <span
+            className={`aviso-pulsar ${styles.soltar}`}
+            aria-hidden
+            data-texto={t.turn.releaseHint}
+            style={{ "--duracion": `${SEEN_AFTER_MS}ms` } as React.CSSProperties}
+          >
             {t.turn.releaseHint}
           </span>
         ) : seen ? (
@@ -109,6 +116,7 @@ export function TurnScreen() {
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.
           <span className="aviso-pulsar" aria-hidden>
+            <Icon name="hold" />
             {t.turn.holdHint}
           </span>
         )}

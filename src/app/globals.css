@@ -190,16 +190,46 @@ a {
   color: var(--ink);
 }
 
-/* Lo que se mantiene lleva marco, y lo que se toca va relleno. */
+/* Lo que se mantiene lleva marco y el círculo del dedo, y lo que se toca va relleno. */
 .aviso-pulsar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 56px;
-  padding: 12px 16px;
+  padding: 12px 44px;
   border: 2px solid var(--ink);
   font-weight: 600;
   text-align: center;
+}
+
+.aviso-pulsar > svg,
+.mantener-icono > svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  margin-top: -10px;
+}
+
+/* El relleno lleva su propia copia del texto en negro: el de debajo sigue siendo claro, y se lee entero en cualquier punto. */
+[data-texto]::after {
+  content: attr(data-texto);
+  content: attr(data-texto) / "";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 44px;
+  background: var(--cobalto);
+  color: #000;
+  clip-path: inset(0 100% 0 0);
+}
+
+@keyframes llenar {
+  to {
+    clip-path: inset(0);
+  }
 }
 
 .accion:active:not(:disabled),
@@ -212,6 +242,7 @@ a {
   opacity: 0.4;
 }
 
+/* Lo que se toca y no es la acción de la pantalla es siempre esto: texto subrayado. */
 .enlace {
   display: block;
   min-height: 44px;
@@ -219,6 +250,9 @@ a {
   margin: 0 auto;
   font-size: 15px;
   color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 .enlace:active {

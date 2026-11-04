@@ -19,6 +19,7 @@ import { MovieListScreen } from "./MovieListScreen";
 import { NamesSheet } from "./NamesSheet";
 import { RulesSheet } from "./RulesSheet";
 import { PosterWall } from "./PosterWall";
+import { Icon } from "./Icon";
 import styles from "./SetupScreen.module.css";
 
 const EXACT_YEAR = "YEAR";
@@ -124,9 +125,7 @@ export function SetupScreen() {
             disabled={playerCount <= MIN_PLAYERS}
             onClick={() => update({ playerCount: playerCount - 1 })}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-              <path d="M3 10h14" stroke="currentColor" strokeWidth="2" />
-            </svg>
+            <Icon name="minus" />
           </button>
           <button
             type="button"
@@ -134,9 +133,7 @@ export function SetupScreen() {
             disabled={playerCount >= MAX_PLAYERS}
             onClick={() => update({ playerCount: playerCount + 1 })}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-              <path d="M3 10h14M10 3v14" stroke="currentColor" strokeWidth="2" />
-            </svg>
+            <Icon name="plus" />
           </button>
         </span>
       </div>
@@ -368,12 +365,8 @@ function Row({
         onClick={onClick ?? (() => sheet?.current?.showModal())}
       >
         <span className={styles.rotulo}>{label}</span>
-        <span className={styles.valor}>
-          {value}
-          <svg width="7" height="12" viewBox="0 0 7 12" aria-hidden>
-            <path d="M1 1l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" />
-          </svg>
-        </span>
+        <span className={`cartelon ${styles.valor}`}>{value}</span>
+        <Icon name="chevron" />
       </button>
     </li>
   );
