@@ -66,7 +66,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
       <button type="button" className={styles.volver} onClick={onClose}>
         {t.list.cancel}
       </button>
-      <h1 ref={heading} tabIndex={-1} className="titulo">
+      <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.encabezado}`}>
         {t.list.title}
       </h1>
 
@@ -76,7 +76,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
             {t.list.loading}
           </p>
           <ul className={styles.filas} aria-hidden>
-            {Array.from({ length: 8 }, (_, index) => (
+            {Array.from({ length: 9 }, (_, index) => (
               <li key={index} className={styles.fila}>
                 <span className={styles.cartel} />
               </li>
@@ -122,7 +122,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
           <div className={styles.pie}>
             <button
               type="button"
-              className="accion"
+              className="accion accion-pie"
               disabled={count === 0}
               onClick={() => {
                 setCustomPool(candidates.filter((movie) => selectedIds.has(movie.id)));
@@ -164,7 +164,7 @@ function MovieRow({
             src={posterUrl(movie.posterPath, "w185")}
             alt=""
             fill
-            sizes="44px"
+            sizes="(max-width: 480px) 34vw, 160px"
             unoptimized
             onError={() => setFailed(true)}
           />

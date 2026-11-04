@@ -8,10 +8,12 @@
 }
 
 .titulo {
-  font-size: 26px;
-  line-height: 1.1;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 800;
+  font-stretch: 62%;
+  letter-spacing: -0.012em;
+  word-spacing: 0.08em;
 }
 
 .texto {
