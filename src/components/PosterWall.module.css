@@ -31,7 +31,7 @@
 
 .cartel[data-estado="apagado"] img {
   opacity: var(--apagado);
-  filter: grayscale(1);
+  filter: grayscale(0.6);
 }
 
 .cartel img {

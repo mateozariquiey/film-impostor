@@ -88,7 +88,7 @@
   padding: 16px;
   overflow: hidden;
   /* En reposo es un velo sobre la pared, y no una caja vacía: solo es cartel cuando se enciende. */
-  background: rgb(0 0 0 / 0.72);
+  background: rgb(0 0 0 / 0.84);
 }
 
 /* Revelado: se enciende sin transición y las letras son negras. De cerca se lee bien, y de lejos no hay contraste. */
