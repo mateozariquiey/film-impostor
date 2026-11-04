@@ -52,7 +52,7 @@
   width: min(100%, calc((100dvh - 162px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 3 / 5));
   aspect-ratio: 3 / 5;
   margin: 8px auto 0;
-  padding: 14px 14px 10px;
+  padding: 16px 16px 12px;
   border: 1px solid var(--line);
   overflow: hidden;
 }
@@ -67,9 +67,9 @@
 /* Fuera del flujo: si lo empujara el papel, su altura diría cuánto ocupa el secreto, y por tanto quién es el impostor. */
 .quien {
   position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 10px;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
   font-size: inherit;
   font-weight: inherit;
 }
@@ -154,8 +154,8 @@
 
 .nota {
   margin-top: 8px;
-  font-size: 19px;
-  line-height: 1.2;
+  font-size: 17px;
+  line-height: 1.25;
   color: var(--ink-2);
 }
 
@@ -195,6 +195,14 @@
   margin: 16px 0 0;
   clip-path: none;
   white-space: normal;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+/* Cuántos llevan mirado: con la fila sola no se sabe qué significa el que sobresale. */
+.cuenta {
+  flex: 1;
+  margin-left: 8px;
   font-size: 15px;
   color: var(--ink-2);
 }

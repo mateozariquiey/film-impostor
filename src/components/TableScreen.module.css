@@ -69,7 +69,7 @@
 .pregunta {
   position: relative;
   margin-top: 16px;
-  padding: 10px 44px 12px 12px;
+  padding: 12px 44px 12px 12px;
   background: var(--zona);
 }
 
@@ -102,7 +102,7 @@
 
 .reglas {
   margin-top: 16px;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.35;
   color: var(--ink-2);
 }
@@ -129,8 +129,8 @@
 }
 
 .aviso {
-  min-height: 22px;
-  margin-bottom: 6px;
+  min-height: 20px;
+  margin-bottom: 4px;
 }
 
 .mantener {

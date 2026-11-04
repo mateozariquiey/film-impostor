@@ -13,7 +13,7 @@
 }
 
 .cabecera {
-  padding-top: 20px;
+  padding-top: 16px;
 }
 
 .nombre {
@@ -22,14 +22,14 @@
 
 .lema {
   margin-top: 4px;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--ink-2);
 }
 
 .jugadores {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-top: 16px;
   padding-bottom: 12px;
   border-bottom: 2px solid var(--ink);
@@ -106,7 +106,7 @@
   align-items: center;
   width: 100%;
   min-height: 72px;
-  padding: 10px 0;
+  padding: 8px 0;
   text-align: left;
 }
 
@@ -138,14 +138,14 @@
 }
 
 .pie {
-  margin-top: 10px;
+  margin-top: 8px;
   /* El botón principal llega de lado a lado y hasta abajo, como la pared arriba. */
   margin-inline: calc(var(--margin) * -1);
 }
 
 .caducada,
 .error {
-  padding: 0 var(--margin) 10px;
+  padding: 0 var(--margin) 8px;
 }
 
 .error {
@@ -195,7 +195,7 @@
 
 .anio small {
   grid-column: 1 / -1;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--ink-2);
 }
 
@@ -217,11 +217,7 @@
 
   .fila {
     min-height: 52px;
-    padding: 5px 0;
-  }
-
-  .rotulo {
-    font-size: 14px;
+    padding: 4px 0;
   }
 
   .valor {
@@ -230,12 +226,12 @@
   }
 
   .jugadores {
-    margin-top: 6px;
-    padding-bottom: 6px;
+    margin-top: 8px;
+    padding-bottom: 8px;
   }
 
   .cabecera {
-    padding-top: 10px;
+    padding-top: 8px;
   }
 }
 

@@ -26,5 +26,5 @@
 }
 
 .contenido {
-  padding: 20px var(--margin) calc(env(safe-area-inset-bottom) + 20px);
+  padding: 16px var(--margin) calc(env(safe-area-inset-bottom) + 16px);
 }

@@ -121,6 +121,7 @@ export const en: Messages = {
         holdLonger: 'Hold a little longer, so you have time to read it.',
         holdNote: 'Your role only shows while you hold your finger down. Don’t let anyone else look.',
         yourRole: 'Your role',
+        count: (number: number, total: number) => `${number} of ${total}`,
         releaseHint: 'Let go to hide it',
         holdAria: 'Press and hold to see your role',
         leaveOnTable: 'Put the phone on the table',

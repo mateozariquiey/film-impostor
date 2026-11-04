@@ -16,12 +16,12 @@
   display: grid;
   gap: 12px;
   margin-top: 16px;
-  padding-left: 22px;
+  padding-left: 24px;
   list-style: decimal;
 }
 
 .apartado {
-  margin-top: 20px;
+  margin-top: 24px;
   font-size: 17px;
   font-weight: 600;
 }
@@ -31,6 +31,6 @@
 }
 
 .credito {
-  margin: 16px 0 20px;
-  font-size: 13px;
+  margin: 16px 0 24px;
+  font-size: 15px;
 }

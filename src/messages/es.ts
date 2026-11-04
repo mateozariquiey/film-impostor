@@ -127,6 +127,7 @@ export const es = {
         holdLonger: 'Mantén un momento más, hasta que te dé tiempo a leerlo.',
         holdNote: 'Tu papel se ve solo mientras mantienes el dedo. Que no mire nadie más.',
         yourRole: 'Tu papel',
+        count: (number: number, total: number) => `${number} de ${total}`,
         releaseHint: 'Suelta para ocultar',
         holdAria: 'Mantén pulsado para ver tu papel',
         leaveOnTable: 'Dejar el móvil en la mesa',

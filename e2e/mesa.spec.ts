@@ -341,7 +341,7 @@ test.describe('dos impostores', () => {
         expect(roles.filter((role) => role === SECRET)).toHaveLength(6);
 
         // En la mesa no hay secretos, y el número de impostores sí se dice.
-        await expect(page.getByText('Hay dos impostores y no saben quién es el otro.', { exact: false })).toBeVisible();
+        await expect(page.getByText('Hay dos impostores y no saben quién es el otro.', { exact: false }).first()).toBeVisible();
         expect(await domText(page)).not.toContain(SECRET);
 
         const finger = await touchHold(page, 'button:has-text("Mantén para ver quiénes eran")');
@@ -462,7 +462,7 @@ test.describe('dos impostores en inglés', () => {
             await page.getByRole('button', { name: player === 7 ? 'Put the phone on the table' : /Pass the phone/ }).tap();
         }
         expect(roles.filter((role) => role === 'You’re the impostor')).toHaveLength(2);
-        await expect(page.getByText('There are two impostors', { exact: false })).toBeVisible();
+        await expect(page.getByText('There are two impostors', { exact: false }).first()).toBeVisible();
         const finger = await touchHold(page, 'button:has-text("Hold to see who they were")');
         await expect(page.getByRole('heading', { name: /^It was Player \d and Player \d$/ })).toBeVisible({ timeout: 3000 });
         await finger.release();

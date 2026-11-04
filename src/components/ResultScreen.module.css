@@ -54,7 +54,7 @@
 }
 
 .era {
-  margin-top: 14px;
+  margin-top: 16px;
   font-size: clamp(52px, 19vw, 76px);
 }
 
@@ -63,11 +63,11 @@
 }
 
 .huecos {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .peli {
-  margin-top: 10px;
+  margin-top: 8px;
   color: var(--ink-2);
 }
 
@@ -102,12 +102,12 @@
 @media (max-height: 700px) {
   .era {
     font-size: 46px;
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   .peli {
     font-size: 15px;
-    margin-top: 6px;
+    margin-top: 4px;
   }
 }
 

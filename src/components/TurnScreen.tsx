@@ -40,6 +40,9 @@ export function TurnScreen() {
     <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
       <div className={styles.barra}>
         <PlayerSlots count={players.length} current={currentPlayerIndex} />
+        <span className={styles.cuenta} aria-hidden>
+          {t.turn.count(number, players.length)}
+        </span>
         <QuitButton />
       </div>
 
@@ -70,7 +73,7 @@ export function TurnScreen() {
           </h1>
           {visible && movie ? (
             <div className={styles.revelado}>
-              <p className={styles.rotulo}>{t.turn.yourRole}</p>
+              <div className={styles.rotulo}>{t.turn.yourRole}</div>
               <p className={`cartelon ${styles.titular}`}>
                 {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
               </p>

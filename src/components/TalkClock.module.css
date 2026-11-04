@@ -5,7 +5,7 @@
   min-height: 44px;
   margin-top: 8px;
   border-top: 1px solid var(--line);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.25;
 }
 
@@ -25,8 +25,5 @@
 
 .botones button {
   margin: 0;
-  font-size: 16px;
   color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
