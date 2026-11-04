@@ -28,9 +28,16 @@ export function PosterWall({ players, className = "" }: Props) {
               decoding="async"
               // Con CORS, como los pide el service worker: si no, el navegador guarda una copia sin la cabecera y él no puede usarla.
               crossOrigin="anonymous"
-              // Sin esto se vería el icono de imagen rota sobre el color medio.
               onError={(event) => {
-                event.currentTarget.style.visibility = "hidden";
+                const image = event.currentTarget;
+                // Quien usó la versión anterior puede tener la copia sin esa cabecera: se reintenta sin CORS una vez.
+                if (image.crossOrigin !== null) {
+                  image.removeAttribute("crossorigin");
+                  image.src = posterUrl(path, "w342");
+                  return;
+                }
+                // Sin esto se vería el icono de imagen rota sobre el color medio.
+                image.style.visibility = "hidden";
               }}
             />
           </div>
