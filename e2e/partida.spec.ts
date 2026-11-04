@@ -319,8 +319,12 @@ test('el botón de mantener se llena de verdad, y el texto no desaparece mientra
     // Si el nombre de la animación se pierde, el botón no da ninguna señal: por eso se mira que exista y que corra.
     const nombres = await page.evaluate(() => document.getAnimations().map((a) => (a as CSSAnimation).animationName));
     expect(nombres).toContain('llenar');
-    const texto = await page.locator('[data-texto]').evaluate((el) => getComputedStyle(el).color);
-    expect(texto).not.toBe('rgb(0, 0, 0)');
+    // Lo que aún no se ha llenado sigue leyéndose: el texto de debajo no se confunde con el fondo del botón.
+    const { color, fondo } = await page.locator('[data-texto]').evaluate((el) => ({
+        color: getComputedStyle(el).color,
+        fondo: getComputedStyle(el.parentElement!).backgroundColor,
+    }));
+    expect(color).not.toBe(fondo);
     await finger.release();
 });
 

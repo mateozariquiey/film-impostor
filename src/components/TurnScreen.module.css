@@ -172,7 +172,7 @@
   margin-top: 8px;
   font-size: 17px;
   line-height: 1.25;
-  color: var(--ink-2);
+  color: var(--ink);
 }
 
 .turno[data-held] .nota {

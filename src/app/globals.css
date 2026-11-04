@@ -2,8 +2,8 @@
   color-scheme: light dark;
   /* Papel frío y negro de verdad, y el color lo ponen los carteles. El único propio es el cobalto, la luz de una pantalla
      en la oscuridad, y marca solo lo secreto: el papel de cada uno, el hueco del impostor y lo que se está llenando. */
-  --bg: #f2f3f5;
-  --zona: #e5e7ea;
+  --bg: #ffffff;
+  --zona: #eef0f2;
   --relleno: #d8dade;
   --hoja: #ffffff;
   --ink: #000000;
@@ -283,7 +283,7 @@ a {
   padding: 0 12px;
   margin: 0 auto;
   font-size: 15px;
-  color: var(--ink-2);
+  color: var(--ink);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;

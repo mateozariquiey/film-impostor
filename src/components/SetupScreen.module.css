@@ -222,6 +222,10 @@
 
 /* En un móvil pequeño, y si la pantalla se queda corta por un error, lo que manda es poder jugar. */
 @media (max-height: 700px) {
+  .pared {
+    max-height: 164px;
+  }
+
   .cifra {
     font-size: 54px;
   }
@@ -278,7 +282,29 @@
     padding-bottom: 16px;
   }
 
-  .fila {
-    min-height: 84px;
+  .filas {
+    grid-template-columns: 1fr;
+    margin-top: 8px;
+  }
+
+  /* Como los créditos de un cartel: qué, a la izquierda, y cuál, a la derecha, con la flecha al borde. */
+  .filas .fila {
+    grid-template-columns: auto minmax(0, 1fr) 20px;
+    column-gap: 12px;
+    min-height: 60px;
+  }
+
+  .filas .fila svg {
+    grid-row: 1;
+    grid-column: 3;
+  }
+
+  .filas .valor {
+    margin: 0;
+    text-align: right;
+  }
+
+  .filas .ancha .valor {
+    max-width: none;
   }
 }
