@@ -6,7 +6,7 @@ Un juego de deducción para jugar en grupo con un solo móvil. Todos reciben el 
 
 1. Elegid entre 3 y 12 jugadores y ajustad las películas por década o año, género y lo conocidas que sean. Podéis revisar una hoja de hasta 60 títulos y tachar los que no conozcáis, y poner nombres si queréis.
 2. Pasaos el móvil. Cada jugador mantiene el dedo para revelar su papel y, al soltar, desaparece.
-3. La app sortea quién empieza y da el orden. Dad pistas, haced preguntas y votad quién creéis que es el impostor. Antes de revelar el resultado, el impostor puede intentar adivinar el título.
+3. La app sortea quién empieza, da el orden y propone una pregunta para arrancar, como «¿La verías en una primera cita?», que se puede cambiar con un toque. Dad pistas, haced preguntas y votad quién creéis que es el impostor. Antes de revelar el resultado, el impostor puede intentar adivinar el título.
 4. Si adivina la película, gana. Si no, el grupo gana al acertar la votación; una votación incorrecta da la victoria al impostor.
 
 La conversación y la votación se hacen en persona. La aplicación reparte los roles y revela el resultado; no lleva puntuaciones ni necesita cuentas.
@@ -89,6 +89,10 @@ Español e inglés, sin librería. Cada texto está en `src/messages/`: `es.ts` 
 - La lista de reserva tiene su título en cada idioma. Una película sin título en inglés es porque no es conocida fuera de España, y no sale en esa lista.
 
 Las imágenes para compartir salen de `scripts/generate-share-images.mjs`, y los iconos, de `scripts/generate-icons.mjs`. Se ejecutan a mano si cambia el lema o el icono.
+
+## Preguntas para arrancar
+
+Están escritas a mano en `src/lib/questions.ts`, cada una con su traducción al lado. Para añadir una, tiene que servir para cualquier película y contestarse con una opinión, porque el impostor no sabe el título: «¿Quién muere?» lo delataría al instante. Se eligen sin mirar la película ni el reparto, y las 30 últimas no se repiten en ese dispositivo.
 
 ## Partida guardada
 

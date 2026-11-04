@@ -2,9 +2,11 @@
   padding-top: 0;
 }
 
+/* Lo primero que cede: ocupa lo que sobre, hasta su altura de siempre, y si no sobra nada desaparece. */
 .pared {
-  flex: none;
-  height: 19dvh;
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: 19dvh;
   margin-inline: calc(var(--margin) * -1);
   overflow: hidden;
   grid-template-rows: repeat(3, 19dvh);
@@ -61,6 +63,33 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.pregunta {
+  margin-top: 14px;
+}
+
+/* La voz de los carteles, porque es lo que se lee en alto. Reserva dos líneas para que cambiar de pregunta no mueva nada. */
+.pregunta p {
+  min-height: 1.88em;
+  font-size: 26px;
+}
+
+.arrancar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 24px;
+  margin-bottom: 2px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+/* El toque sigue siendo de 44 px, aunque visualmente ocupe la línea. */
+.arrancar button {
+  margin: 0 -12px 0 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .reglas {
@@ -154,6 +183,14 @@
     margin-top: 4px;
   }
 
+  .pregunta {
+    margin-top: 8px;
+  }
+
+  .pregunta p {
+    font-size: 24px;
+  }
+
   .reglas {
     font-size: 15px;
     gap: 4px;
@@ -162,5 +199,17 @@
 
   .reglas p:last-child {
     padding-top: 4px;
+  }
+}
+
+/* El móvil más pequeño: el orden no se puede quitar, y las reglas están en «Cómo se juega». */
+@media (max-height: 600px) {
+  .reglas p:not(:last-child) {
+    display: none;
+  }
+
+  .reglas p:last-child {
+    padding-top: 0;
+    border-top: 0;
   }
 }

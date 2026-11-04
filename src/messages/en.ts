@@ -130,6 +130,8 @@ export const en: Messages = {
             'Before seeing the result, the impostor can try to guess the movie.',
             'If they guess it or the group votes wrong, the impostor wins. If not, the group wins.',
         ],
+        starter: 'To get you started',
+        anotherQuestion: 'Another question',
         tooShort: 'Keep holding until the button fills up.',
         hold: 'Hold to see who it was',
     },

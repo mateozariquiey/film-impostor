@@ -1,4 +1,5 @@
 import type { Movie } from '@/types';
+import { isQuestion } from '@/lib/questions';
 import { parseSettings, type GameSettings } from '@/lib/settings';
 
 /** Lo necesario para retomar una partida a medias. El resultado no se guarda: ya es público. */
@@ -7,6 +8,8 @@ export interface SavedGame {
     currentPlayerIndex: number;
     impostor: number;
     firstPlayer: number;
+    /** La pregunta de la mesa, para que recargar no la cambie. */
+    question: number;
     movie: Movie;
     settings: GameSettings;
     /** Para que «Otra película» siga saliendo de la selección manual. */
@@ -92,7 +95,7 @@ export function canSaveGames(): boolean {
 }
 
 function toSavedGame(data: Record<string, unknown>): SavedGame | null {
-    const { phase, currentPlayerIndex, impostor, firstPlayer, movie, settings, customPool } = data;
+    const { phase, currentPlayerIndex, impostor, firstPlayer, question, movie, settings, customPool } = data;
     if (phase !== 'TURN' && phase !== 'TABLE') return null;
     if (!isMovie(movie) || !isRecord(settings)) return null;
 
@@ -109,6 +112,8 @@ function toSavedGame(data: Record<string, unknown>): SavedGame | null {
         currentPlayerIndex,
         impostor,
         firstPlayer,
+        // Una partida guardada antes de que hubiera preguntas se sigue pudiendo retomar.
+        question: isQuestion(question) ? question : 0,
         movie,
         settings: parsed,
         customPool: Array.isArray(customPool) ? customPool.filter(isMovie) : [],

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
+import { QUESTIONS } from "@/lib/questions";
 import { HoldButton } from "./HoldButton";
 import { PlayerSlots } from "./PlayerSlots";
 import { PosterWall } from "./PosterWall";
@@ -12,8 +13,8 @@ const REVEAL_IMPOSTOR_MS = 1200;
 
 /** La conversación. El móvil descansa hasta que el grupo decide ver el resultado. */
 export function TableScreen() {
-  const { players, movie, names, firstPlayer, revealImpostor } = useGame();
-  const { t } = useLocale();
+  const { players, movie, names, firstPlayer, question, anotherQuestion, revealImpostor } = useGame();
+  const { locale, t } = useLocale();
   const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -57,6 +58,17 @@ export function TableScreen() {
           </li>
         ))}
       </ol>
+      <div className={styles.pregunta}>
+        <div className={styles.arrancar}>
+          <span>{t.table.starter}</span>
+          <button type="button" className="enlace" onClick={anotherQuestion}>
+            {t.table.anotherQuestion}
+          </button>
+        </div>
+        <p className="cartelon" aria-live="polite">
+          {QUESTIONS[question][locale]}
+        </p>
+      </div>
       <div className={styles.reglas}>
         {t.table.rules.map((rule) => (
           <p key={rule}>{rule}</p>

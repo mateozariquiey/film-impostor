@@ -138,6 +138,8 @@ export const es = {
             'Antes de ver el resultado, el impostor puede intentar adivinar la película.',
             'Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.',
         ],
+        starter: 'Para arrancar',
+        anotherQuestion: 'Otra pregunta',
         tooShort: 'Deja el dedo hasta que se llene el botón.',
         hold: 'Mantén para ver quién era',
     },

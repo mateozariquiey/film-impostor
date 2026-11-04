@@ -28,6 +28,7 @@ const game: SavedGame = {
     currentPlayerIndex: 2,
     impostor: 3,
     firstPlayer: 0,
+    question: 7,
     movie,
     settings: { ...DEFAULT_SETTINGS, playerCount: 5, names: ['Lucía', '', 'Marcos'] },
     customPool: [movie],
@@ -75,6 +76,14 @@ describe('codificar y leer la partida', () => {
         ['número de jugadores inválido', encodeWith({ settings: { ...game.settings, playerCount: 99 } })],
     ])('descarta %s', (_, raw) => {
         expect(decodeSavedGame(raw, NOW)).toEqual({ status: 'none' });
+    });
+
+    it.each([
+        ['sin pregunta, de antes de que las hubiera', undefined],
+        ['con una pregunta que ya no existe', 9999],
+    ])('retoma una partida %s', (_, question) => {
+        const loaded = decodeSavedGame(encodeWith({ question }), NOW);
+        expect(loaded.status === 'ok' && loaded.game.question).toBe(0);
     });
 
     it('filtra lo que no sea una película en la selección manual', () => {

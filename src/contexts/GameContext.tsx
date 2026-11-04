@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom';
 import type { GamePhase, Hint, Locale, Movie, Player } from '@/types';
 import { createDeal, playersWithImpostor } from '@/lib/game';
 import { ApiError, fetchKeywords, fetchRandomMovie, type ApiErrorKind } from '@/lib/api';
+import { addRecentQuestion, loadRecentQuestions, pickQuestion, saveRecentQuestions } from '@/lib/questions';
 import { addRecentMovie, loadRecentMovies, pickFresh, saveRecentMovies } from '@/lib/recentMovies';
 import { isReserveMovie, reserveMovies } from '@/lib/reserve';
 import { canSaveGames, clearGame, loadGame, saveGame, type SavedGame } from '@/lib/savedGame';
@@ -18,6 +19,8 @@ interface GameState {
     movie: Movie | null;
     /** Quien da la primera pista en la mesa. */
     firstPlayer: number;
+    /** La pregunta para arrancar la conversación: su posición en `QUESTIONS`. */
+    question: number;
     /** Los ajustes con los que se repartió, para «Otra película» y para retomar. */
     settings: GameSettings | null;
 }
@@ -45,6 +48,7 @@ interface GameContextValue extends Omit<GameState, 'settings'> {
     /** Reparte otra película con los ajustes de la partida que acaba de terminar. */
     playAgain: () => Promise<void>;
     nextPlayer: () => void;
+    anotherQuestion: () => void;
     revealImpostor: () => void;
     resetGame: () => void;
     clearError: () => void;
@@ -56,6 +60,7 @@ const INITIAL_STATE: GameState = {
     currentPlayerIndex: 0,
     movie: null,
     firstPlayer: 0,
+    question: 0,
     settings: null,
 };
 
@@ -79,6 +84,7 @@ function restoreState(game: SavedGame): GameState {
         currentPlayerIndex: game.currentPlayerIndex,
         movie: game.movie,
         firstPlayer: game.firstPlayer,
+        question: game.question,
         settings: game.settings,
     };
 }
@@ -99,6 +105,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     );
 
     const [recentMovies, setRecentMovies] = useState(loadRecentMovies);
+    const [recentQuestions, setRecentQuestions] = useState(loadRecentQuestions);
 
     const { phase } = state;
     const inGame = phase === 'TURN' || phase === 'TABLE';
@@ -114,6 +121,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 currentPlayerIndex: state.currentPlayerIndex,
                 impostor: state.players.findIndex((player) => player.role === 'impostor'),
                 firstPlayer: state.firstPlayer,
+                question: state.question,
                 movie,
                 settings,
                 customPool,
@@ -153,6 +161,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
         return () => window.removeEventListener('pagehide', hideSecrets);
     }, [phase]);
 
+    /** Saca una pregunta que no haya salido hace poco y la apunta. */
+    const drawQuestion = () => {
+        const question = pickQuestion(recentQuestions);
+        const recent = addRecentQuestion(recentQuestions, question);
+        setRecentQuestions(recent);
+        saveRecentQuestions(recent);
+        return question;
+    };
+
     const deal = (settings: GameSettings, movie: Movie) => {
         const recent = addRecentMovie(recentMovies, movie.id);
         setRecentMovies(recent);
@@ -162,6 +179,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             phase: 'TURN',
             currentPlayerIndex: 0,
             movie,
+            question: drawQuestion(),
             ...createDeal(settings.playerCount),
             settings: { ...settings, names: settings.names.map(cleanName) },
         });
@@ -202,6 +220,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    const anotherQuestion = () => {
+        const question = drawQuestion();
+        setState((prev) => ({ ...prev, question }));
+    };
+
     const revealImpostor = () => setState((prev) => ({ ...prev, phase: 'RESULT' }));
 
     const resetGame = () => {
@@ -232,6 +255,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 startWithReserve,
                 playAgain,
                 nextPlayer,
+                anotherQuestion,
                 revealImpostor,
                 resetGame,
                 clearError: () => setError(null),
