@@ -65,7 +65,9 @@
 .nombre {
   min-height: calc(var(--cifra) * 0.86);
   margin-left: -0.02em;
-  font-size: min(var(--cifra), calc((min(100vw, 480px) - var(--margin) * 2) / (var(--letras) * 0.6)));
+  /* El aire de arriba es para las tildes de las mayúsculas, que aquí no caben en la línea. */
+  padding-top: 0.1em;
+  font-size: min(var(--cifra) * 0.86, calc((min(100vw, 480px) - var(--margin) * 2) / (var(--letras) * 0.6)));
   letter-spacing: -0.04em;
   overflow-wrap: anywhere;
 }
