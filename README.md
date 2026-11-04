@@ -9,7 +9,7 @@ Un juego de deducción para jugar en grupo con un solo móvil. Todos reciben el 
 3. La app sortea quién empieza, da el orden y propone una pregunta para arrancar, como «¿La verías en una primera cita?», que se puede cambiar con un toque. Dad pistas, haced preguntas y votad quién creéis que es el impostor. Antes de revelar el resultado, el impostor puede intentar adivinar el título.
 4. Si adivina la película, gana. Si no, el grupo gana al acertar la votación; una votación incorrecta da la victoria al impostor.
 
-La conversación y la votación se hacen en persona. La aplicación reparte los roles y revela el resultado; no lleva puntuaciones ni necesita cuentas.
+La conversación y la votación se hacen en persona, a propósito: votar en el móvil obligaría a pasarlo otra vez por toda la mesa justo en el momento en que todos deberían estar mirándose. La aplicación reparte los roles y revela el resultado; no lleva puntuaciones ni necesita cuentas.
 
 Las pistas para el impostor son opcionales: género, año y palabras clave. Estas últimas pueden aparecer en inglés o faltar, según TMDB. Si filtráis por un género, la pista es otro género de la película («También: Ciencia ficción»), porque el que elegisteis ya lo sabe. Si no tiene otro, esa pista no sale.
 
@@ -89,6 +89,15 @@ Español e inglés, sin librería. Cada texto está en `src/messages/`: `es.ts` 
 - La lista de reserva tiene su título en cada idioma. Una película sin título en inglés es porque no es conocida fuera de España, y no sale en esa lista.
 
 Las imágenes para compartir salen de `scripts/generate-share-images.mjs`, y los iconos, de `scripts/generate-icons.mjs`. Se ejecutan a mano si cambia el lema o el icono.
+
+## Dos impostores
+
+Es opcional, está apagado por defecto y solo cuenta desde 7 jugadores (`impostorCountFor` en `src/lib/game.ts`). Con un solo impostor en un grupo grande, casi todos confirman lo mismo y él oye muchas pistas buenas antes de hablar. Con dos, una pista rara ya no señala a nadie con seguridad, y como no saben quién es el otro, cada uno puede tomar por buena la pista inventada del otro.
+
+- **Se vota como siempre**, a una persona: si es impostor, gana el grupo. Pedir que acierten a los dos obligaría a una votación más complicada y dejaría al grupo casi sin opciones. Al azar, acertar con 12 jugadores y dos impostores es tan probable (1 de 6) como con 6 jugadores y uno.
+- **Cualquiera de los dos puede adivinar la película** antes del resultado, y basta con que acierte uno.
+- **El secreto no cambia.** El papel dice lo mismo, «Eres el impostor», en el mismo cartel. Solo se añade una línea pequeña a las pistas, que se ve mientras se mantiene el dedo, y el número de impostores es público porque lo decide el grupo.
+- **La partida guardada** lleva la lista de impostores, y sigue aceptando el formato antiguo de un solo número.
 
 ## Preguntas para arrancar
 

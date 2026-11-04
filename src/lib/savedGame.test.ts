@@ -26,7 +26,7 @@ const movie: Movie = {
 const game: SavedGame = {
     phase: 'TURN',
     currentPlayerIndex: 2,
-    impostor: 3,
+    impostors: [3],
     firstPlayer: 0,
     question: 7,
     talkTimer: null,
@@ -68,8 +68,13 @@ describe('codificar y leer la partida', () => {
         ['resultado guardado', encodeWith({ phase: 'RESULT' })],
         ['ajustes de fase', encodeWith({ phase: 'SETUP' })],
         ['turno fuera de rango', encodeWith({ currentPlayerIndex: 5 })],
-        ['impostor fuera de rango', encodeWith({ impostor: 5 })],
-        ['impostor no entero', encodeWith({ impostor: 1.5 })],
+        ['impostor fuera de rango', encodeWith({ impostors: [5] })],
+        ['impostor no entero', encodeWith({ impostors: [1.5] })],
+        ['sin impostores', encodeWith({ impostors: [] })],
+        ['el mismo impostor dos veces', encodeWith({ impostors: [3, 3], settings: { ...game.settings, playerCount: 8 } })],
+        ['dos impostores en un grupo pequeño', encodeWith({ impostors: [1, 3] })],
+        ['tres impostores', encodeWith({ impostors: [1, 2, 3], settings: { ...game.settings, playerCount: 8 } })],
+        ['impostor antiguo fuera de rango', encodeWith({ impostors: undefined, impostor: 5 })],
         ['primer jugador fuera de rango', encodeWith({ firstPlayer: -1 })],
         ['sin película', encodeWith({ movie: null })],
         ['película sin título', encodeWith({ movie: { ...movie, title: '' } })],
@@ -85,6 +90,17 @@ describe('codificar y leer la partida', () => {
     ])('retoma una partida %s', (_, question) => {
         const loaded = decodeSavedGame(encodeWith({ question }), NOW);
         expect(loaded.status === 'ok' && loaded.game.question).toBe(0);
+    });
+
+    it('conserva a los dos impostores', () => {
+        const settings = { ...game.settings, playerCount: 8, twoImpostors: true };
+        const loaded = decodeSavedGame(encodeSavedGame({ ...game, impostors: [6, 1], settings }, NOW), NOW);
+        expect(loaded.status === 'ok' && loaded.game.impostors).toEqual([6, 1]);
+    });
+
+    it('retoma una partida guardada con un solo impostor en el formato antiguo', () => {
+        const loaded = decodeSavedGame(encodeWith({ impostors: undefined, impostor: 2 }), NOW);
+        expect(loaded.status === 'ok' && loaded.game.impostors).toEqual([2]);
     });
 
     it('conserva el tiempo de la mesa, y un temporizador en un turno no vale', () => {

@@ -17,6 +17,8 @@ export interface GameSettings {
     names: string[];
     /** Minutos de conversación. 0 es sin límite. */
     talkMinutes: number;
+    /** Dos impostores en los grupos que lleguen al mínimo. Ver `impostorCountFor`. */
+    twoImpostors: boolean;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -28,6 +30,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
     hints: ['GENRE'],
     names: [],
     talkMinutes: 0,
+    twoImpostors: false,
 };
 
 export const MAX_NAME_LENGTH = 16;
@@ -71,6 +74,7 @@ export function parseSettings(raw: string | null): GameSettings {
         talkMinutes: (TALK_MINUTES as readonly unknown[]).includes(data.talkMinutes)
             ? (data.talkMinutes as number)
             : DEFAULT_SETTINGS.talkMinutes,
+        twoImpostors: data.twoImpostors === true,
     };
 }
 

@@ -14,7 +14,7 @@ const REVEAL_IMPOSTOR_MS = 1200;
 
 /** La conversación. El móvil descansa hasta que el grupo decide ver el resultado. */
 export function TableScreen() {
-  const { players, movie, names, firstPlayer, question, anotherQuestion, revealImpostor } = useGame();
+  const { players, movie, names, firstPlayer, question, impostorCount, anotherQuestion, revealImpostor } = useGame();
   const { locale, t } = useLocale();
   const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -71,7 +71,7 @@ export function TableScreen() {
         </p>
       </div>
       <div className={styles.reglas}>
-        {t.table.rules.map((rule) => (
+        {t.table.rules(impostorCount).map((rule) => (
           <p key={rule}>{rule}</p>
         ))}
       </div>
@@ -87,7 +87,7 @@ export function TableScreen() {
           onRelease={(completed) => setTooShort(!completed)}
           onComplete={revealImpostor}
         >
-          <span>{t.table.hold}</span>
+          <span>{t.table.hold(impostorCount)}</span>
         </HoldButton>
       </div>
     </div>

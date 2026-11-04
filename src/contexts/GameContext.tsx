@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import type { GamePhase, Hint, Locale, Movie, Player } from '@/types';
-import { createDeal, playersWithImpostor } from '@/lib/game';
+import { createDeal, impostorCountFor, impostorsOf, playersWithImpostors } from '@/lib/game';
 import { prepareChime } from '@/lib/chime';
 import { ApiError, fetchKeywords, fetchRandomMovie, type ApiErrorKind } from '@/lib/api';
 import { addRecentQuestion, loadRecentQuestions, pickQuestion, saveRecentQuestions } from '@/lib/questions';
@@ -33,6 +33,8 @@ interface GameContextValue extends Omit<GameState, 'settings'> {
     hints: Hint[];
     /** El grupo eligió un género, así que la pista es otro además de ese. La reserva no aplica los filtros. */
     genreHintIsExtra: boolean;
+    /** Cuántos impostores hay. Es público: lo decidió el grupo. */
+    impostorCount: number;
     /** Nombre de cada jugador, vacío si no se ha escrito. */
     names: string[];
     isLoading: boolean;
@@ -86,7 +88,7 @@ async function chooseMovie(settings: GameSettings, customPool: Movie[], locale: 
 function restoreState(game: SavedGame): GameState {
     return {
         phase: game.phase,
-        players: playersWithImpostor(game.settings.playerCount, game.impostor),
+        players: playersWithImpostors(game.settings.playerCount, game.impostors),
         currentPlayerIndex: game.currentPlayerIndex,
         movie: game.movie,
         firstPlayer: game.firstPlayer,
@@ -126,7 +128,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             saveGame({
                 phase: savedPhase,
                 currentPlayerIndex: state.currentPlayerIndex,
-                impostor: state.players.findIndex((player) => player.role === 'impostor'),
+                impostors: impostorsOf(state.players),
                 firstPlayer: state.firstPlayer,
                 question: state.question,
                 talkTimer: state.talkTimer,
@@ -189,7 +191,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             movie,
             question: drawQuestion(),
             talkTimer: null,
-            ...createDeal(settings.playerCount),
+            ...createDeal(settings.playerCount, Math.random, impostorCountFor(settings.playerCount, settings.twoImpostors)),
             settings: { ...settings, names: settings.names.map(cleanName) },
         });
     };
@@ -256,6 +258,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 ...game,
                 hints: settings?.hints ?? [],
                 genreHintIsExtra: settings?.genre != null && game.movie !== null && !isReserveMovie(game.movie),
+                impostorCount: impostorsOf(game.players).length,
                 names: settings?.names ?? [],
                 isLoading,
                 error,

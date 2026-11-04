@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
+import { impostorsOf } from "@/lib/game";
 import { posterUrl } from "@/lib/posters";
 import { PlayerSlots } from "./PlayerSlots";
 import { TitleLines } from "./TitleLines";
@@ -39,7 +40,7 @@ export function ResultScreen() {
   }, []);
 
   if (!movie) return null;
-  const impostor = players.findIndex((player) => player.role === "impostor");
+  const impostors = impostorsOf(players);
   const hasPoster = movie.posterPath !== null && !posterFailed;
 
   return (
@@ -65,11 +66,16 @@ export function ResultScreen() {
         </div>
       )}
 
-      <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.era}`}>
-        {t.result.was(impostor, names)}
+      <h1
+        ref={heading}
+        tabIndex={-1}
+        className={`cartelon ${styles.era}`}
+        data-dos={impostors.length === 2 || undefined}
+      >
+        {impostors.length === 2 ? t.result.were(impostors[0], impostors[1], names) : t.result.was(impostors[0], names)}
       </h1>
       <div className={styles.huecos}>
-        <PlayerSlots count={players.length} impostor={impostor} />
+        <PlayerSlots count={players.length} impostors={impostors} />
       </div>
       <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>
         {t.result.movieWas}

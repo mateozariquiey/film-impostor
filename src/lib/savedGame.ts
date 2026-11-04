@@ -1,4 +1,5 @@
 import type { Movie } from '@/types';
+import { MIN_PLAYERS_FOR_TWO_IMPOSTORS } from '@/lib/game';
 import { isQuestion } from '@/lib/questions';
 import { parseSettings, type GameSettings } from '@/lib/settings';
 import { parseTalkTimer, type TalkTimer } from '@/lib/talkTimer';
@@ -7,7 +8,7 @@ import { parseTalkTimer, type TalkTimer } from '@/lib/talkTimer';
 export interface SavedGame {
     phase: 'TURN' | 'TABLE';
     currentPlayerIndex: number;
-    impostor: number;
+    impostors: number[];
     firstPlayer: number;
     /** La pregunta de la mesa, para que recargar no la cambie. */
     question: number;
@@ -98,7 +99,7 @@ export function canSaveGames(): boolean {
 }
 
 function toSavedGame(data: Record<string, unknown>): SavedGame | null {
-    const { phase, currentPlayerIndex, impostor, firstPlayer, question, talkTimer, movie, settings, customPool } = data;
+    const { phase, currentPlayerIndex, impostors: savedImpostors, impostor, firstPlayer, question, talkTimer, movie, settings, customPool } = data;
     if (phase !== 'TURN' && phase !== 'TABLE') return null;
     if (!isMovie(movie) || !isRecord(settings)) return null;
 
@@ -106,14 +107,15 @@ function toSavedGame(data: Record<string, unknown>): SavedGame | null {
     // parseSettings sustituye lo que no vale: otro número de jugadores significa que era inválido.
     if (parsed.playerCount !== settings.playerCount) return null;
     const count = parsed.playerCount;
-    if (!isIndex(currentPlayerIndex, count) || !isIndex(impostor, count) || !isIndex(firstPlayer, count)) {
-        return null;
-    }
+    if (!isIndex(currentPlayerIndex, count) || !isIndex(firstPlayer, count)) return null;
+    // Una partida guardada antes de que pudiera haber dos trae un solo número, y se sigue pudiendo retomar.
+    const impostors = Array.isArray(savedImpostors) ? savedImpostors : [impostor];
+    if (!areImpostors(impostors, count)) return null;
 
     return {
         phase,
         currentPlayerIndex,
-        impostor,
+        impostors,
         firstPlayer,
         // Una partida guardada antes de que hubiera preguntas se sigue pudiendo retomar.
         question: isQuestion(question) ? question : 0,
@@ -130,6 +132,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isIndex(value: unknown, count: number): value is number {
     return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value < count;
+}
+
+function areImpostors(values: unknown[], count: number): values is number[] {
+    if (!values.every((value) => isIndex(value, count))) return false;
+    if (new Set(values).size !== values.length) return false;
+    return values.length === 1 || (values.length === 2 && count >= MIN_PLAYERS_FOR_TWO_IMPOSTORS);
 }
 
 function isMovie(value: unknown): value is Movie {

@@ -154,6 +154,10 @@
   margin: 0 -12px;
 }
 
+.nota {
+  padding-top: 12px;
+}
+
 .anio {
   display: grid;
   grid-template-columns: auto 1fr;

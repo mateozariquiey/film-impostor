@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } 
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { isValidYear, MIN_YEAR } from "@/lib/filters";
-import { MAX_PLAYERS, MIN_PLAYERS } from "@/lib/game";
+import { impostorCountFor, MAX_PLAYERS, MIN_PLAYERS, MIN_PLAYERS_FOR_TWO_IMPOSTORS } from "@/lib/game";
 import { genreName, pickableGenres } from "@/lib/genres";
 import { reserveMovies } from "@/lib/reserve";
 import { TALK_MINUTES } from "@/lib/talkTimer";
@@ -58,6 +58,7 @@ export function SetupScreen() {
   const hintsSheet = useRef<HTMLDialogElement>(null);
   const namesSheet = useRef<HTMLDialogElement>(null);
   const talkSheet = useRef<HTMLDialogElement>(null);
+  const impostorsSheet = useRef<HTMLDialogElement>(null);
   const rules = useRef<HTMLDialogElement>(null);
   const foot = useRef<HTMLDivElement>(null);
 
@@ -165,6 +166,17 @@ export function SetupScreen() {
           sheet={namesSheet}
         />
         <Row label={t.setup.talkTime} value={t.setup.talkTimeOptions(settings.talkMinutes)} sheet={talkSheet} />
+        <Row
+          label={t.setup.impostors}
+          value={
+            !settings.twoImpostors
+              ? t.setup.oneImpostor
+              : impostorCountFor(playerCount, true) === 2
+                ? t.setup.twoImpostors
+                : t.setup.twoImpostorsFrom(MIN_PLAYERS_FOR_TWO_IMPOSTORS)
+          }
+          sheet={impostorsSheet}
+        />
       </ul>
 
       <div ref={foot} className={styles.pie}>
@@ -309,6 +321,19 @@ export function SetupScreen() {
         isSelected={(value) => settings.talkMinutes === Number(value)}
         onChoose={(value) => update({ talkMinutes: Number(value) })}
       />
+      <ChoiceSheet<"ONE" | "TWO">
+        ref={impostorsSheet}
+        id="impostores"
+        title={t.setup.impostors}
+        choices={[
+          { value: "ONE", label: t.setup.oneImpostor },
+          { value: "TWO", label: t.setup.twoImpostorsFrom(MIN_PLAYERS_FOR_TWO_IMPOSTORS) },
+        ]}
+        isSelected={(value) => settings.twoImpostors === (value === "TWO")}
+        onChoose={(value) => update({ twoImpostors: value === "TWO" })}
+      >
+        <p className={`secundario ${styles.nota}`}>{t.setup.twoImpostorsNote(MIN_PLAYERS_FOR_TWO_IMPOSTORS)}</p>
+      </ChoiceSheet>
       <NamesSheet
         ref={namesSheet}
         playerCount={playerCount}

@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_PLAYERS, MIN_PLAYERS, createDeal, createPlayers, pickRandom, randomIndex } from './game';
+import {
+    MAX_PLAYERS,
+    MIN_PLAYERS,
+    MIN_PLAYERS_FOR_TWO_IMPOSTORS,
+    createDeal,
+    createPlayers,
+    impostorCountFor,
+    impostorsOf,
+    pickRandom,
+    playersWithImpostors,
+    randomIndex,
+} from './game';
 
 describe('createPlayers', () => {
     it('crea el número de jugadores pedido con un único impostor', () => {
@@ -32,6 +43,50 @@ describe('randomIndex y pickRandom', () => {
 
     it('falla con una lista vacía', () => {
         expect(() => pickRandom([])).toThrow();
+    });
+});
+
+describe('dos impostores', () => {
+    it('solo cuentan desde el mínimo de jugadores, y si el grupo los ha pedido', () => {
+        expect(impostorCountFor(MIN_PLAYERS_FOR_TWO_IMPOSTORS - 1, true)).toBe(1);
+        expect(impostorCountFor(MIN_PLAYERS_FOR_TWO_IMPOSTORS, true)).toBe(2);
+        expect(impostorCountFor(MAX_PLAYERS, true)).toBe(2);
+        expect(impostorCountFor(MAX_PLAYERS, false)).toBe(1);
+    });
+
+    it('son siempre dos personas distintas, y todas las parejas salen por igual', () => {
+        const count = 7;
+        const seen = new Map<string, number>();
+        for (let first = 0; first < count; first++) {
+            for (let second = 0; second < count - 1; second++) {
+                const values = [first / count, second / (count - 1)];
+                const impostors = impostorsOf(createPlayers(count, () => values.shift()!, 2));
+                expect(impostors).toHaveLength(2);
+                const key = impostors.join('-');
+                seen.set(key, (seen.get(key) ?? 0) + 1);
+            }
+        }
+        // Cada pareja sale dos veces: una por cada orden en que se pueden sacar.
+        expect(seen.size).toBe((count * (count - 1)) / 2);
+        expect([...seen.values()].every((times) => times === 2)).toBe(true);
+    });
+
+    it('quien empieza se sigue sorteando entre todos, también los impostores', () => {
+        const count = 7;
+        const starts = new Set<boolean>();
+        for (let first = 0; first < count; first++) {
+            const values = [0, 0, first / count];
+            const { players, firstPlayer } = createDeal(count, () => values.shift()!, 2);
+            expect(firstPlayer).toBe(first);
+            starts.add(players[firstPlayer].role === 'impostor');
+        }
+        expect(starts).toEqual(new Set([true, false]));
+    });
+
+    it('el reparto se puede rehacer a partir de quiénes son', () => {
+        const players = playersWithImpostors(8, [6, 1]);
+        expect(impostorsOf(players)).toEqual([1, 6]);
+        expect(players).toHaveLength(8);
     });
 });
 

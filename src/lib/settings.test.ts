@@ -3,6 +3,12 @@ import { MAX_PLAYERS } from './game';
 import { cleanName, DEFAULT_SETTINGS, MAX_NAME_LENGTH, parseSettings, settingsToFilters } from './settings';
 
 describe('parseSettings', () => {
+    it('los dos impostores hay que pedirlos', () => {
+        expect(parseSettings('{}').twoImpostors).toBe(false);
+        expect(parseSettings('{"twoImpostors":true}').twoImpostors).toBe(true);
+        expect(parseSettings('{"twoImpostors":"sí"}').twoImpostors).toBe(false);
+    });
+
     it('el tiempo para hablar es uno de los que se ofrecen, y por defecto no hay', () => {
         expect(parseSettings('{"talkMinutes":5}').talkMinutes).toBe(5);
         expect(parseSettings('{"talkMinutes":4}').talkMinutes).toBe(0);
@@ -26,6 +32,7 @@ describe('parseSettings', () => {
             hints: ['YEAR'],
             names: [],
             talkMinutes: 0,
+            twoImpostors: false,
         });
     });
 });

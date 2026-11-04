@@ -110,3 +110,8 @@
     margin-top: 6px;
   }
 }
+
+/* Dos nombres no caben al tamaño de uno. */
+.era[data-dos] {
+  font-size: clamp(38px, 12vw, 52px);
+}

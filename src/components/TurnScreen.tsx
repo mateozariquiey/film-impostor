@@ -17,7 +17,7 @@ const SEEN_AFTER_MS = 500;
  * de cerca pero no desde el sofá: en una simulación con OCR, a 30 px ya se lee a veces a 2,5 m, y a 28 no.
  */
 export function TurnScreen() {
-  const { players, currentPlayerIndex, movie, names, nextPlayer } = useGame();
+  const { players, currentPlayerIndex, movie, names, impostorCount, nextPlayer } = useGame();
   const { t } = useLocale();
   const [held, setHeld] = useState(false);
   const [readerOpen, setReaderOpen] = useState(false);
@@ -72,7 +72,7 @@ export function TurnScreen() {
               <p className={`cartelon ${styles.titular}`}>
                 {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
               </p>
-              {isImpostor ? <ImpostorHints /> : <p className={styles.nota}>{t.turn.giveClues}</p>}
+              {isImpostor ? <ImpostorHints /> : <p className={styles.nota}>{t.turn.giveClues(impostorCount)}</p>}
             </div>
           ) : seen ? (
             <div className={styles.revelado}>
@@ -129,18 +129,25 @@ export function TurnScreen() {
 }
 
 function ImpostorHints() {
-  const { movie, hints, genreHintIsExtra } = useGame();
+  const { movie, hints, genreHintIsExtra, impostorCount } = useGame();
   const { t } = useLocale();
   if (!movie) return null;
   const genre = hints.includes("GENRE") ? movie.genre : null;
   const rest = hints.filter((hint) => hint !== "GENRE");
+  const other = impostorCount === 2 && <p>{t.turn.otherImpostor}</p>;
   if (!genre && rest.length === 0)
-    return <p className={styles.nota}>{t.turn.noHints}</p>;
+    return (
+      <div className={styles.nota}>
+        <p>{t.turn.noHints}</p>
+        {other}
+      </div>
+    );
   return (
     <div className={styles.nota}>
       {genre && <p>{genreHintIsExtra ? t.turn.hintExtraGenre(genre) : t.turn.hintGenre(genre)}</p>}
       {hints.includes("YEAR") && <p>{t.turn.hintYear(movie.releaseYear)}</p>}
       {hints.includes("KEYWORDS") && <p>{t.turn.hintKeywords(movie.keywords.slice(0, 3))}</p>}
+      {other}
     </div>
   );
 }

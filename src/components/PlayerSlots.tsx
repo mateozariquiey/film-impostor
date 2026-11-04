@@ -4,20 +4,20 @@ interface Props {
   count: number;
   /** A quién le toca: los anteriores salen vistos y el acento es suyo. */
   current?: number;
-  /** Quién es el impostor: el único de color de la fila. */
-  impostor?: number;
+  /** Quiénes son los impostores: los únicos de color de la fila. */
+  impostors?: readonly number[];
   /** Quién da la primera pista en la mesa: también es «a quien le toca». */
   starts?: number;
 }
 
 /** Un cartel en miniatura por jugador, como la pared del inicio: el de color es siempre el impostor. */
-export function PlayerSlots({ count, current, impostor, starts }: Props) {
+export function PlayerSlots({ count, current, impostors, starts }: Props) {
   return (
     <div className={styles.huecos} aria-hidden>
       {Array.from({ length: count }, (_, index) => (
         <i
           key={index}
-          data-estado={index === starts ? "turno" : stateOf(index, current, impostor)}
+          data-estado={index === starts ? "turno" : stateOf(index, current, impostors)}
           style={{ "--i": index, "--n": count } as React.CSSProperties}
         />
       ))}
@@ -25,8 +25,8 @@ export function PlayerSlots({ count, current, impostor, starts }: Props) {
   );
 }
 
-function stateOf(index: number, current?: number, impostor?: number) {
-  if (index === impostor) return "impostor";
+function stateOf(index: number, current?: number, impostors?: readonly number[]) {
+  if (impostors?.includes(index)) return "impostor";
   if (current === undefined) return "jugador";
   if (index === current) return "turno";
   return index < current ? "visto" : "pendiente";

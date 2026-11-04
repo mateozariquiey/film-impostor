@@ -52,6 +52,12 @@ export const es = {
         removeMovies: 'Quitar películas',
         moviesLeft: (count: number) => `Quedan ${count}`,
         addNames: 'Poner nombres',
+        impostors: 'Impostores',
+        oneImpostor: 'Uno',
+        twoImpostors: 'Dos',
+        twoImpostorsFrom: (min: number) => `Dos desde ${min}`,
+        twoImpostorsNote: (min: number) =>
+            `Dos desde ${min} jugadores; con menos, uno. Ninguno sabe quién es el otro. Se vota a una persona, como siempre: si es impostor, gana el grupo. Si cualquiera de los dos adivina la película, ganan ellos.`,
         talkTime: 'Tiempo para hablar',
         talkTimeOptions: (minutes: number) => (minutes === 0 ? 'Sin límite' : `${minutes} min`),
         namedCount: (named: number, total: number) => `${named} de ${total}`,
@@ -112,7 +118,8 @@ export const es = {
         player: 'Jugador',
         ofTotal: (total: number) => `de ${total}`,
         youAreImpostor: 'Eres el impostor',
-        giveClues: 'Da pistas sin regalársela al impostor.',
+        giveClues: (impostors: number) => `Da pistas sin regalársela ${impostors === 2 ? 'a los impostores' : 'al impostor'}.`,
+        otherImpostor: 'Hay otro impostor, y no sabes quién es.',
         hidden: 'Ya está oculto',
         seeAgain: 'Para verlo otra vez, mantén el dedo.',
         takePhone: 'Coge el móvil',
@@ -135,11 +142,18 @@ export const es = {
     },
     table: {
         title: 'Pistas, en este orden',
-        rules: [
-            'Cada uno da una, sin decir el título. Después, preguntad y votad quién disimula.',
-            'Antes de ver el resultado, el impostor puede intentar adivinar la película.',
-            'Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.',
-        ],
+        rules: (impostors: number) =>
+            impostors === 2
+                ? [
+                      'Cada uno da una, sin decir el título. Después, preguntad y votad a una persona.',
+                      'Hay dos impostores y no saben quién es el otro. Antes de ver el resultado, cada uno puede intentar adivinar la película.',
+                      'Si alguno la adivina o la persona votada no es impostor, ganan ellos. Si no, gana el grupo.',
+                  ]
+                : [
+                      'Cada uno da una, sin decir el título. Después, preguntad y votad quién disimula.',
+                      'Antes de ver el resultado, el impostor puede intentar adivinar la película.',
+                      'Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.',
+                  ],
         starter: 'Para arrancar',
         anotherQuestion: 'Otra pregunta',
         timeLeft: 'Tiempo que queda',
@@ -149,11 +163,17 @@ export const es = {
         timeOver: 'Se acabó el tiempo. A la de tres, señalad a quien sospechéis.',
         timeSkipped: 'A la de tres, señalad a quien sospechéis.',
         tooShort: 'Deja el dedo hasta que se llene el botón.',
-        hold: 'Mantén para ver quién era',
+        hold: (impostors: number) => `Mantén para ver ${impostors === 2 ? 'quiénes eran' : 'quién era'}`,
     },
     result: {
         was: (index: number, names: readonly string[]) =>
             `Era ${player(index, names) || `el jugador ${index + 1}`}`,
+        were: (first: number, second: number, names: readonly string[]) => {
+            const who = (index: number) => player(index, names) || `el jugador ${index + 1}`;
+            // «Lucía e Inés»: la «y» cambia delante del sonido /i/, pero no en «Hierro» ni en «Hiedra».
+            const and = /^(h?[ií](?!e))/i.test(who(second)) ? 'e' : 'y';
+            return `Eran ${who(first)} ${and} ${who(second)}`;
+        },
         poster: (title: string) => `Cartel de ${title}`,
         movieWas: 'La película era ',
         searching: 'Buscando película…',
@@ -162,7 +182,8 @@ export const es = {
     },
     resume: {
         title: 'Partida a medias',
-        atTable: 'Ya lo habíais visto todos. Falta votar y ver quién era.',
+        atTable: (impostors: number) =>
+            `Ya lo habíais visto todos. Falta votar y ver ${impostors === 2 ? 'quiénes eran' : 'quién era'}.`,
         turnOf: (index: number, names: readonly string[]) =>
             `Le toca ${player(index, names) ? `a ${player(index, names)}` : `al jugador ${index + 1}`}. Los papeles siguen ocultos.`,
         continue: 'Seguir',

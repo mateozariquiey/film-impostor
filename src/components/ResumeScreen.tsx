@@ -6,7 +6,7 @@ import styles from "./ResumeScreen.module.css";
 
 /** Al volver a una partida guardada. No enseña ningún papel: solo a quién le toca. */
 export function ResumeScreen() {
-  const { phase, players, currentPlayerIndex, names, continueGame, resetGame } = useGame();
+  const { phase, players, currentPlayerIndex, names, impostorCount, continueGame, resetGame } = useGame();
   const { t } = useLocale();
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -25,7 +25,7 @@ export function ResumeScreen() {
         {t.resume.title}
       </h1>
       <p className={styles.nota}>
-        {atTable ? t.resume.atTable : t.resume.turnOf(currentPlayerIndex, names)}
+        {atTable ? t.resume.atTable(impostorCount) : t.resume.turnOf(currentPlayerIndex, names)}
       </p>
       <div className={styles.pie}>
         <button type="button" className="accion" onClick={continueGame}>

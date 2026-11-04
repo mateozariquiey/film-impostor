@@ -47,6 +47,12 @@ export const en: Messages = {
         removeMovies: 'Remove movies',
         moviesLeft: (count) => `${count} left`,
         addNames: 'Add names',
+        impostors: 'Impostors',
+        oneImpostor: 'One',
+        twoImpostors: 'Two',
+        twoImpostorsFrom: (min) => `Two from ${min}`,
+        twoImpostorsNote: (min) =>
+            `Two from ${min} players; with fewer, one. Neither knows who the other is. You vote for one person, as always: if they’re an impostor, the group wins. If either impostor guesses the movie, they win.`,
         talkTime: 'Time to talk',
         talkTimeOptions: (minutes) => (minutes === 0 ? 'No limit' : `${minutes} min`),
         namedCount: (named, total) => `${named} of ${total}`,
@@ -106,7 +112,8 @@ export const en: Messages = {
         player: 'Player',
         ofTotal: (total) => `of ${total}`,
         youAreImpostor: 'You’re the impostor',
-        giveClues: 'Give clues without giving it away to the impostor.',
+        giveClues: (impostors) => `Give clues without giving it away to the ${impostors === 2 ? 'impostors' : 'impostor'}.`,
+        otherImpostor: 'There’s another impostor, and you don’t know who.',
         hidden: 'Hidden again',
         seeAgain: 'To see it again, hold your finger down.',
         takePhone: 'Take the phone',
@@ -127,11 +134,18 @@ export const en: Messages = {
     },
     table: {
         title: 'Clues, in this order',
-        rules: [
-            'Each of you gives one, without saying the title. Then ask questions and vote on who’s faking it.',
-            'Before seeing the result, the impostor can try to guess the movie.',
-            'If they guess it or the group votes wrong, the impostor wins. If not, the group wins.',
-        ],
+        rules: (impostors) =>
+            impostors === 2
+                ? [
+                      'Each of you gives one, without saying the title. Then ask questions and vote for one person.',
+                      'There are two impostors, and neither knows who the other is. Before seeing the result, each can try to guess the movie.',
+                      'If either guesses it or the person voted isn’t an impostor, they win. If not, the group wins.',
+                  ]
+                : [
+                      'Each of you gives one, without saying the title. Then ask questions and vote on who’s faking it.',
+                      'Before seeing the result, the impostor can try to guess the movie.',
+                      'If they guess it or the group votes wrong, the impostor wins. If not, the group wins.',
+                  ],
         starter: 'To get you started',
         anotherQuestion: 'Another question',
         timeLeft: 'Time left',
@@ -141,10 +155,11 @@ export const en: Messages = {
         timeOver: 'Time’s up. On three, point at who you suspect.',
         timeSkipped: 'On three, point at who you suspect.',
         tooShort: 'Keep holding until the button fills up.',
-        hold: 'Hold to see who it was',
+        hold: (impostors) => (impostors === 2 ? 'Hold to see who they were' : 'Hold to see who it was'),
     },
     result: {
         was: (index, names) => `It was ${player(index, names)}`,
+        were: (first, second, names) => `It was ${player(first, names)} and ${player(second, names)}`,
         poster: (title) => `Poster for ${title}`,
         movieWas: 'The movie was ',
         searching: 'Finding a movie…',
@@ -153,7 +168,8 @@ export const en: Messages = {
     },
     resume: {
         title: 'Game in progress',
-        atTable: 'You’d all seen it. All that’s left is to vote and see who it was.',
+        atTable: (impostors) =>
+            `You’d all seen it. All that’s left is to vote and see who ${impostors === 2 ? 'they were' : 'it was'}.`,
         turnOf: (index, names) => `It’s ${player(index, names)}’s turn. Roles are still hidden.`,
         continue: 'Continue',
         restart: 'Start over',
