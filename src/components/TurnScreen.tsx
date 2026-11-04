@@ -4,6 +4,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
 import { Icon } from "./Icon";
 import { PlayerSlots } from "./PlayerSlots";
+import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
 import { TitleLines } from "./TitleLines";
 import styles from "./TurnScreen.module.css";
@@ -35,6 +36,7 @@ export function TurnScreen() {
   const isImpostor = players[currentPlayerIndex].role === "impostor";
   const isLast = number === players.length;
   const visible = held || readerOpen;
+  const passLabel = isLast ? t.turn.leaveOnTable : t.turn.passTo(number, names);
 
   return (
     <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
@@ -46,50 +48,53 @@ export function TurnScreen() {
         <QuitButton />
       </div>
 
-      <div className={styles.papel} aria-live="polite">
-        <div className={styles.cartel} data-cartel>
-          {/* El nombre se ve el primero en el orden de lectura, pero va abajo: es lo grande del cartel porque no es secreto. */}
-          <h1 ref={heading} tabIndex={-1} className={styles.quien}>
-            {name ? (
+      <div className={styles.medida} data-cartel aria-live="polite">
+        {/* El nombre se ve el primero en el orden de lectura, pero va debajo del cartel: es lo grande porque no es secreto. */}
+        <h1 ref={heading} tabIndex={-1} className={styles.quien}>
+          {name ? (
+            <>
+              <span className={styles.etiqueta}>{t.turn.whoseTurn}</span>{" "}
+              <span
+                className={`cartelon ${styles.nombre}`}
+                style={{ "--letras": Math.max(name.length, 3) } as React.CSSProperties}
+              >
+                {name}
+              </span>{" "}
+              <span className="solo-lector">{t.turn.playerOf(number, players.length)}</span>
+            </>
+          ) : (
+            <>
+              <span className={styles.etiqueta}>{t.turn.player}</span>{" "}
+              <span className={`cartelon ${styles.nombre}`} style={{ "--letras": 3 } as React.CSSProperties}>
+                {number}
+              </span>{" "}
+              <span className="solo-lector">{t.turn.ofTotal(players.length)}</span>
+            </>
+          )}
+        </h1>
+        <div className={styles.escena}>
+          <PosterWall className={styles.pared} />
+          <div className={styles.pieza} data-pieza>
+            {visible && movie ? (
               <>
-                <span className={styles.etiqueta}>{t.turn.whoseTurn}</span>{" "}
-                <span
-                  className={`cartelon ${styles.nombre}`}
-                  style={{ "--letras": Math.max(name.length, 3) } as React.CSSProperties}
-                >
-                  {name}
-                </span>{" "}
-                <span className="solo-lector">{t.turn.playerOf(number, players.length)}</span>
+                <div className={styles.rotulo}>{t.turn.yourRole}</div>
+                <p className={`cartelon ${styles.titular}`}>
+                  {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
+                </p>
+                {isImpostor ? <ImpostorHints /> : <p className={styles.nota}>{t.turn.giveClues(impostorCount)}</p>}
+              </>
+            ) : seen ? (
+              <>
+                <p className={`cartelon ${styles.titular}`}>{t.turn.hidden}</p>
+                <p className={styles.nota}>{t.turn.seeAgain}</p>
               </>
             ) : (
               <>
-                <span className={styles.etiqueta}>{t.turn.player}</span>{" "}
-                <span className={`cartelon ${styles.nombre}`} style={{ "--letras": 3 } as React.CSSProperties}>
-                  {number}
-                </span>{" "}
-                <span className="solo-lector">{t.turn.ofTotal(players.length)}</span>
+                <p className={`cartelon ${styles.titular}`}>{t.turn.takePhone}</p>
+                <p className={styles.nota}>{tooShort ? t.turn.holdLonger : t.turn.holdNote}</p>
               </>
             )}
-          </h1>
-          {visible && movie ? (
-            <div className={styles.revelado}>
-              <div className={styles.rotulo}>{t.turn.yourRole}</div>
-              <p className={`cartelon ${styles.titular}`}>
-                {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
-              </p>
-              {isImpostor ? <ImpostorHints /> : <p className={styles.nota}>{t.turn.giveClues(impostorCount)}</p>}
-            </div>
-          ) : seen ? (
-            <div className={styles.revelado}>
-              <p className={`cartelon ${styles.titular}`}>{t.turn.hidden}</p>
-              <p className={styles.nota}>{t.turn.seeAgain}</p>
-            </div>
-          ) : (
-            <div className={styles.revelado}>
-              <p className={`cartelon ${styles.titular}`}>{t.turn.takePhone}</p>
-              <p className={styles.nota}>{tooShort ? t.turn.holdLonger : t.turn.holdNote}</p>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -113,8 +118,8 @@ export function TurnScreen() {
             {t.turn.releaseHint}
           </span>
         ) : seen ? (
-          <button type="button" className="accion" onClick={nextPlayer}>
-            {isLast ? t.turn.leaveOnTable : t.turn.passTo(number, names)}
+          <button type="button" className="accion" data-largo={passLabel.length > 26 || undefined} onClick={nextPlayer}>
+            {passLabel}
           </button>
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.

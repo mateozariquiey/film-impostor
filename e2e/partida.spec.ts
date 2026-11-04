@@ -338,7 +338,7 @@ test('nada del papel se corta en el móvil más pequeño, ni con el título más
         await expect(page.getByText('Coge el móvil')).toBeVisible();
         const finger = await touchHold(page, TURN_SURFACE);
         await expect(page.getByText(/Tu papel/)).toBeVisible();
-        const measure = await page.locator('[data-cartel] > div').last().evaluate((node) => ({
+        const measure = await page.locator('[data-pieza]').evaluate((node) => ({
             height: node.getBoundingClientRect().height,
             spare: node.clientHeight - node.scrollHeight,
         }));
@@ -350,4 +350,14 @@ test('nada del papel se corta en el móvil más pequeño, ni con el título más
         await page.getByRole('button', { name: /Pásale|Dejar el móvil/ }).tap();
     }
     expect(heights.size, 'la pieza encendida mide lo mismo con cualquier papel').toBe(1);
+});
+
+test('el dedo sobre el texto del cartel también enseña el papel', async ({ page }) => {
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    const text = await page.getByText('Coge el móvil').boundingBox();
+    const finger = await touchHold(page, TURN_SURFACE, { x: text!.x + 10, y: text!.y + text!.height / 2 });
+    await expect(page.getByText('Tu papel', { exact: true })).toBeVisible();
+    await finger.release();
 });

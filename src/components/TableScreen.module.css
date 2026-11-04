@@ -178,3 +178,46 @@
     font-size: 24px;
   }
 }
+
+/* El móvil más pequeño: lo que no se puede quitar es el orden, la pregunta y el botón. */
+@media (max-height: 600px) {
+  .encabezado {
+    font-size: 32px;
+    margin-top: 0;
+  }
+
+  .orden {
+    margin-top: 4px;
+  }
+
+  .mesa .orden,
+  .mesa:has(.orden li:nth-child(7)) .orden {
+    font-size: 22px;
+  }
+
+  .orden li {
+    padding: 0;
+  }
+
+  .arrancar {
+    display: none;
+  }
+
+  .pregunta {
+    padding: 8px 44px 8px 12px;
+  }
+
+  .pregunta p:last-child {
+    font-size: 20px;
+  }
+
+  .reglas {
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .aviso {
+    min-height: 0;
+    margin-bottom: 0;
+  }
+}

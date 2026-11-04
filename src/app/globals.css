@@ -193,6 +193,12 @@ a {
   font-size: 34px;
 }
 
+/* Un nombre largo no debe partir el botón en dos líneas, que empujaría la pantalla entera. */
+.accion[data-largo] {
+  padding-inline: 8px;
+  font-size: 18px;
+}
+
 .accion {
   background: var(--ink);
   color: var(--on-ink);

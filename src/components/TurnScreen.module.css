@@ -13,19 +13,32 @@
   outline-offset: -6px;
 }
 
+/* El mismo esqueleto que el inicio y la mesa: la pared arriba, lo que importa debajo y la acción al alcance del pulgar. */
 .turno {
+  position: relative;
+  padding-top: 0;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
 
 .barra {
-  position: relative;
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: var(--margin);
+  right: var(--margin);
   z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   min-height: 34px;
+}
+
+/* Cuántos llevan mirado: con la fila sola no se sabe qué significa el que sobresale. */
+.cuenta {
+  flex: 1;
+  margin-left: 8px;
+  font-size: 15px;
+  color: var(--ink-2);
 }
 
 .turno[data-held] .barra button,
@@ -33,51 +46,79 @@
   visibility: hidden;
 }
 
-.papel {
-  position: relative;
+/* Lo de aquí dentro solo se ve: el dedo siempre cae en la superficie, también sobre el texto. */
+.medida {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  margin-top: 8px;
+  pointer-events: none;
 }
 
-/* El cartel apagado: el mismo rectángulo con cualquier papel. Lo que se ve desde lejos no depende de lo que dice. */
-.cartel {
-  container-type: inline-size;
+.escena {
   position: relative;
+  order: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 0;
+  margin-inline: calc(var(--margin) * -1);
+  padding: calc(env(safe-area-inset-top) + 56px) var(--margin) 0;
+}
+
+/* La misma pared, apagada: es la misma para todos y da poca luz. */
+.pared {
+  position: absolute;
+  inset: 0;
+  grid-template-rows: repeat(3, 1fr);
+  -webkit-mask-image: linear-gradient(transparent, #000 72px, #000 calc(100% - 96px), transparent);
+  mask-image: linear-gradient(transparent, #000 72px, #000 calc(100% - 96px), transparent);
+}
+
+/* El cartel es una pieza más de la pared. Mide lo mismo con cualquier papel, y lo que se ve desde lejos no depende de lo que dice. */
+.pieza {
+  position: relative;
+  /* Lo justo para el papel más largo: tres líneas de título o todas las pistas. Lo vigila e2e/partida.spec.ts. */
+  height: max(84cqw, 240px);
+  padding: 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #000;
+}
+
+/* Revelado: se enciende sin transición y las letras son negras. De cerca se lee bien, y de lejos no hay contraste. */
+.turno[data-held] .pieza {
+  border-color: var(--cobalto);
+  background: var(--cobalto);
+  color: #000;
+}
+
+/* Fuera del cartel, y con altura fija: si dependiera del papel, su posición delataría quién es el impostor. */
+.quien {
+  order: 2;
   display: flex;
   flex-direction: column;
-  /* Lo que no es el cartel mide 162 px: márgenes, barra de arriba y botón de pasar el móvil. Así cabe sin scroll y no se mueve de un turno a otro. */
-  width: min(100%, calc((100dvh - 162px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 3 / 5));
-  aspect-ratio: 3 / 5;
-  margin: 8px auto 0;
-  padding: 16px 16px 12px;
-  border: 1px solid var(--line);
-  overflow: hidden;
-}
-
-/* Fuera del flujo: si lo empujara el papel, su altura diría cuánto ocupa el secreto, y por tanto quién es el impostor. */
-.quien {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 12px;
+  justify-content: flex-end;
+  height: calc(28px + 40cqw);
+  margin-top: 8px;
   font-size: inherit;
   font-weight: inherit;
 }
 
 .etiqueta {
   display: block;
-  font-size: 17px;
+  font-size: 15px;
+  line-height: 20px;
   color: var(--ink-2);
 }
 
-/* Llena el ancho del cartel si puede: lo grande es el nombre porque no es secreto. */
+/* Llena el ancho si puede: lo grande es el nombre porque no es secreto. */
 .nombre {
   display: block;
   margin-left: -0.02em;
-  font-size: min(46cqw, calc(235cqw / var(--letras)));
+  font-size: min(44cqw, calc(235cqw / var(--letras)));
   line-height: 0.92;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -86,14 +127,6 @@
 /* Al revelar, el nombre no se mueve y baja la voz: la luz es del papel. */
 .turno[data-held] .nombre {
   color: var(--ink-2);
-}
-
-.rotulo {
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #000;
-  font-size: 15px;
-  line-height: 1.2;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */
@@ -108,21 +141,12 @@
   display: block;
 }
 
-/* Por encima del nombre, por si en una pantalla muy baja llegan a coincidir. */
-.revelado {
-  position: relative;
-  z-index: 1;
-}
-
-/* Lo que se enciende: siempre la misma pieza, cuadrada, sea cual sea el papel. Lo que se ve desde lejos no depende de lo que dice. */
-.turno[data-held] .revelado {
-  /* Lo justo para el papel más largo: tres líneas de título o todas las pistas. Lo vigila e2e/partida.spec.ts. */
-  height: max(84cqw, 240px);
-  margin: -16px -16px 0;
-  padding: 16px;
-  overflow: hidden;
-  background: var(--cobalto);
-  color: #000;
+.rotulo {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #000;
+  font-size: 15px;
+  line-height: 1.2;
 }
 
 .nota {
@@ -140,7 +164,6 @@
 .pie {
   position: relative;
   z-index: 1;
-  margin-top: auto;
   padding-top: 12px;
   /* Deja pasar el toque a la superficie, salvo en el botón de pasar el móvil. */
   pointer-events: none;
@@ -172,20 +195,20 @@
   color: var(--ink-2);
 }
 
-/* Cuántos llevan mirado: con la fila sola no se sabe qué significa el que sobresale. */
-.cuenta {
-  flex: 1;
-  margin-left: 8px;
-  font-size: 15px;
-  color: var(--ink-2);
-}
-
-/* Con poca altura el cartel deja de ser vertical para que quepan las pistas, y sigue midiendo lo mismo con cualquier papel. */
+/* Con poca altura, el cartel ocupa lo que quede para que quepan las pistas, y sigue midiendo lo mismo con cualquier papel. */
 @media (max-height: 560px) {
-  .cartel {
-    width: 100%;
-    aspect-ratio: auto;
-    height: calc(100dvh - 162px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  .pieza {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+
+  .pared {
+    display: none;
+  }
+
+  .quien {
+    height: 56px;
   }
 
   .titular {
@@ -194,19 +217,10 @@
 
   .nota {
     margin-top: 4px;
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .etiqueta,
-  .turno[data-held] .etiqueta {
-    display: none;
-  }
-
-  .turno[data-held] .revelado {
-    height: auto;
-    min-height: 100%;
-  }
-
   .rotulo {
     display: none;
   }
