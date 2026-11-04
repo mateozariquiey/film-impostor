@@ -33,10 +33,10 @@ export async function fakeApi(page: Page, movies: (url: URL) => FakeMovie): Prom
  * Mantiene el dedo de verdad, con eventos táctiles del navegador: `tap` de Playwright suelta al
  * instante y un `click` de ratón no pasaría por el gesto que usa la gente.
  */
-export async function touchHold(page: Page, selector: string) {
+export async function touchHold(page: Page, selector: string, at?: { x: number; y: number }) {
     const box = await page.locator(selector).boundingBox();
     if (!box) throw new Error(`No se ve ${selector}`);
-    const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    const point = at ?? { x: box.x + box.width / 2, y: box.y + box.height / 2 };
     const client = await page.context().newCDPSession(page);
     await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
     return {

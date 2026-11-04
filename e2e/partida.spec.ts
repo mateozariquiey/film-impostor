@@ -78,6 +78,23 @@ test('soltar antes de tiempo oculta el papel y pide mantener un poco más', asyn
     await expect(page.getByRole('button', { name: /Pásale el móvil/ })).toHaveCount(0);
 });
 
+test('al soltar sobre el sitio donde aparece «Pasar el móvil» no se pasa solo', async ({ page }) => {
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    await expect(page.getByText('Coge el móvil')).toBeVisible();
+
+    // El dedo sobre la señal de abajo, que es justo donde aparecerá el botón de pasar.
+    const hint = await page.getByText('Mantén para ver tu papel').boundingBox();
+    const finger = await touchHold(page, TURN_SURFACE, { x: hint!.x + hint!.width / 2, y: hint!.y + hint!.height / 2 });
+    await page.waitForTimeout(650);
+    await finger.release();
+
+    await page.waitForTimeout(400);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Jugador 1');
+    await expect(page.getByText('Ya está oculto')).toBeVisible();
+});
+
 test('que el móvil pase a segundo plano o pierda el foco oculta el papel', async ({ page }) => {
     await fakeApi(page, () => fakeMovie(1, SECRET));
     await page.goto('/');
