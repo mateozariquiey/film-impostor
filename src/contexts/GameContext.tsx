@@ -1,15 +1,17 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import type { GamePhase, Hint, Locale, Movie, Player } from '@/types';
 import { createDeal, playersWithImpostor } from '@/lib/game';
+import { prepareChime } from '@/lib/chime';
 import { ApiError, fetchKeywords, fetchRandomMovie, type ApiErrorKind } from '@/lib/api';
 import { addRecentQuestion, loadRecentQuestions, pickQuestion, saveRecentQuestions } from '@/lib/questions';
 import { addRecentMovie, loadRecentMovies, pickFresh, saveRecentMovies } from '@/lib/recentMovies';
 import { isReserveMovie, reserveMovies } from '@/lib/reserve';
 import { canSaveGames, clearGame, loadGame, saveGame, type SavedGame } from '@/lib/savedGame';
 import { cleanName, settingsToFilters, type GameSettings } from '@/lib/settings';
+import { startTalkTimer, type TalkTimer } from '@/lib/talkTimer';
 import { useLocale } from './LocaleContext';
 
 interface GameState {
@@ -21,6 +23,8 @@ interface GameState {
     firstPlayer: number;
     /** La pregunta para arrancar la conversación: su posición en `QUESTIONS`. */
     question: number;
+    /** El tiempo de conversación. Arranca al dejar el móvil en la mesa, si el grupo lo ha pedido. */
+    talkTimer: TalkTimer | null;
     /** Los ajustes con los que se repartió, para «Otra película» y para retomar. */
     settings: GameSettings | null;
 }
@@ -49,6 +53,7 @@ interface GameContextValue extends Omit<GameState, 'settings'> {
     playAgain: () => Promise<void>;
     nextPlayer: () => void;
     anotherQuestion: () => void;
+    setTalkTimer: (timer: TalkTimer) => void;
     revealImpostor: () => void;
     resetGame: () => void;
     clearError: () => void;
@@ -61,6 +66,7 @@ const INITIAL_STATE: GameState = {
     movie: null,
     firstPlayer: 0,
     question: 0,
+    talkTimer: null,
     settings: null,
 };
 
@@ -85,6 +91,7 @@ function restoreState(game: SavedGame): GameState {
         movie: game.movie,
         firstPlayer: game.firstPlayer,
         question: game.question,
+        talkTimer: game.talkTimer,
         settings: game.settings,
     };
 }
@@ -122,6 +129,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 impostor: state.players.findIndex((player) => player.role === 'impostor'),
                 firstPlayer: state.firstPlayer,
                 question: state.question,
+                talkTimer: state.talkTimer,
                 movie,
                 settings,
                 customPool,
@@ -180,6 +188,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             currentPlayerIndex: 0,
             movie,
             question: drawQuestion(),
+            talkTimer: null,
             ...createDeal(settings.playerCount),
             settings: { ...settings, names: settings.names.map(cleanName) },
         });
@@ -212,11 +221,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
 
     const nextPlayer = () => {
+        const now = Date.now();
+        // Es el último toque antes del aviso del final, y iOS solo deja preparar el sonido en un toque.
+        if (state.settings?.talkMinutes && state.currentPlayerIndex + 1 === state.players.length) prepareChime();
         setState((prev) => {
             const next = prev.currentPlayerIndex + 1;
             return next < prev.players.length
                 ? { ...prev, currentPlayerIndex: next }
-                : { ...prev, phase: 'TABLE' };
+                : { ...prev, phase: 'TABLE', talkTimer: startTalkTimer(prev.settings?.talkMinutes ?? 0, now) };
         });
     };
 
@@ -224,6 +236,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const question = drawQuestion();
         setState((prev) => ({ ...prev, question }));
     };
+
+    const setTalkTimer = useCallback((talkTimer: TalkTimer) => setState((prev) => ({ ...prev, talkTimer })), []);
 
     const revealImpostor = () => setState((prev) => ({ ...prev, phase: 'RESULT' }));
 
@@ -248,7 +262,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 customPool,
                 setCustomPool,
                 isResuming,
-                continueGame: () => setIsResuming(false),
+                continueGame: () => {
+                    if (state.talkTimer) prepareChime();
+                    setIsResuming(false);
+                },
                 gameExpired,
                 canResume,
                 startGame,
@@ -256,6 +273,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 playAgain,
                 nextPlayer,
                 anotherQuestion,
+                setTalkTimer,
                 revealImpostor,
                 resetGame,
                 clearError: () => setError(null),

@@ -1,0 +1,32 @@
+.reloj {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.cifra {
+  font-size: 34px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cifra[data-pausado] {
+  color: var(--ink-2);
+}
+
+.botones {
+  display: flex;
+  margin-right: -12px;
+}
+
+.botones button {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

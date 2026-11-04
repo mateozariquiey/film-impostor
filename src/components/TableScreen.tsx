@@ -7,6 +7,7 @@ import { HoldButton } from "./HoldButton";
 import { PlayerSlots } from "./PlayerSlots";
 import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
+import { TalkClock } from "./TalkClock";
 import styles from "./TableScreen.module.css";
 
 const REVEAL_IMPOSTOR_MS = 1200;
@@ -75,6 +76,7 @@ export function TableScreen() {
         ))}
       </div>
       <div className={styles.pie}>
+        <TalkClock />
         <p className={`secundario ${styles.aviso}`} role="status">
           {tooShort ? t.table.tooShort : ""}
         </p>

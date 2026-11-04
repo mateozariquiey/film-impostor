@@ -184,7 +184,7 @@
 /* En un móvil pequeño, y si la pantalla se queda corta por un error, lo que manda es poder jugar. */
 @media (max-height: 700px) {
   .pared {
-    flex-basis: 168px;
+    flex-basis: 132px;
     min-height: 132px;
   }
 
@@ -217,5 +217,13 @@
 
   .cabecera {
     padding-top: 10px;
+  }
+}
+
+/* El móvil más pequeño: la pared se queda en una tira para que «Empezar» siga a la vista. */
+@media (max-height: 600px) {
+  .pared {
+    flex-basis: 80px;
+    min-height: 80px;
   }
 }

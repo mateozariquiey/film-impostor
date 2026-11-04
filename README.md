@@ -94,6 +94,12 @@ Las imágenes para compartir salen de `scripts/generate-share-images.mjs`, y los
 
 Están escritas a mano en `src/lib/questions.ts`, cada una con su traducción al lado. Para añadir una, tiene que servir para cualquier película y contestarse con una opinión, porque el impostor no sabe el título: «¿Quién muere?» lo delataría al instante. Se eligen sin mirar la película ni el reparto, y las 30 últimas no se repiten en ese dispositivo.
 
+## Tiempo para hablar
+
+Es opcional y por defecto no hay. Arranca al dejar el móvil en la mesa, y se puede parar o saltar (`src/lib/talkTimer.ts`, `TalkClock`). Guarda la hora a la que acaba y no lo que queda, porque con la pantalla bloqueada los temporizadores del navegador se paran pero el reloj sigue, así que recargar tampoco lo reinicia.
+
+Al acabar da un aviso suave: dos notas generadas con Web Audio, sin archivo, y una vibración donde la haya (`src/lib/chime.ts`). iOS solo deja arrancar el audio dentro de un toque, y por eso se prepara al tocar «Dejar el móvil en la mesa». La pantalla se mantiene encendida durante toda la partida con la Wake Lock API, si el navegador la tiene.
+
 ## Partida guardada
 
 Cada cambio de turno se guarda en `localStorage` (`src/lib/savedGame.ts`), así que recargar, cerrar por error o que el navegador mate la pestaña no pierde la partida.

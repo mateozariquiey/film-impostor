@@ -3,6 +3,13 @@ import { MAX_PLAYERS } from './game';
 import { cleanName, DEFAULT_SETTINGS, MAX_NAME_LENGTH, parseSettings, settingsToFilters } from './settings';
 
 describe('parseSettings', () => {
+    it('el tiempo para hablar es uno de los que se ofrecen, y por defecto no hay', () => {
+        expect(parseSettings('{"talkMinutes":5}').talkMinutes).toBe(5);
+        expect(parseSettings('{"talkMinutes":4}').talkMinutes).toBe(0);
+        expect(parseSettings('{"talkMinutes":"5"}').talkMinutes).toBe(0);
+        expect(parseSettings('{}').talkMinutes).toBe(0);
+    });
+
     it('devuelve los valores por defecto si no hay nada guardado o el JSON está roto', () => {
         expect(parseSettings(null)).toEqual(DEFAULT_SETTINGS);
         expect(parseSettings('{no es json')).toEqual(DEFAULT_SETTINGS);
@@ -18,6 +25,7 @@ describe('parseSettings', () => {
             year: '1985',
             hints: ['YEAR'],
             names: [],
+            talkMinutes: 0,
         });
     });
 });

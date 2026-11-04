@@ -1,6 +1,7 @@
 import type { Movie } from '@/types';
 import { isQuestion } from '@/lib/questions';
 import { parseSettings, type GameSettings } from '@/lib/settings';
+import { parseTalkTimer, type TalkTimer } from '@/lib/talkTimer';
 
 /** Lo necesario para retomar una partida a medias. El resultado no se guarda: ya es público. */
 export interface SavedGame {
@@ -10,6 +11,8 @@ export interface SavedGame {
     firstPlayer: number;
     /** La pregunta de la mesa, para que recargar no la cambie. */
     question: number;
+    /** Solo existe en la mesa, y si el grupo ha pedido tiempo. */
+    talkTimer: TalkTimer | null;
     movie: Movie;
     settings: GameSettings;
     /** Para que «Otra película» siga saliendo de la selección manual. */
@@ -95,7 +98,7 @@ export function canSaveGames(): boolean {
 }
 
 function toSavedGame(data: Record<string, unknown>): SavedGame | null {
-    const { phase, currentPlayerIndex, impostor, firstPlayer, question, movie, settings, customPool } = data;
+    const { phase, currentPlayerIndex, impostor, firstPlayer, question, talkTimer, movie, settings, customPool } = data;
     if (phase !== 'TURN' && phase !== 'TABLE') return null;
     if (!isMovie(movie) || !isRecord(settings)) return null;
 
@@ -114,6 +117,7 @@ function toSavedGame(data: Record<string, unknown>): SavedGame | null {
         firstPlayer,
         // Una partida guardada antes de que hubiera preguntas se sigue pudiendo retomar.
         question: isQuestion(question) ? question : 0,
+        talkTimer: phase === 'TABLE' ? parseTalkTimer(talkTimer) : null,
         movie,
         settings: parsed,
         customPool: Array.isArray(customPool) ? customPool.filter(isMovie) : [],

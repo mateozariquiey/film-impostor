@@ -202,6 +202,13 @@
   }
 }
 
+/* Un grupo grande en un móvil bajo: el título ya dice que toca dar pistas, y las reglas están en «Cómo se juega». */
+@media (max-height: 700px) {
+  .mesa:has(.orden li:nth-child(7)) .reglas p:first-child {
+    display: none;
+  }
+}
+
 /* El móvil más pequeño: el orden no se puede quitar, y las reglas están en «Cómo se juega». */
 @media (max-height: 600px) {
   .reglas p:not(:last-child) {

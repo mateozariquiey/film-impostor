@@ -5,6 +5,7 @@ import { isValidYear, MIN_YEAR } from "@/lib/filters";
 import { MAX_PLAYERS, MIN_PLAYERS } from "@/lib/game";
 import { genreName, pickableGenres } from "@/lib/genres";
 import { reserveMovies } from "@/lib/reserve";
+import { TALK_MINUTES } from "@/lib/talkTimer";
 import {
   loadSettings,
   saveSettings,
@@ -56,6 +57,7 @@ export function SetupScreen() {
   const popularitySheet = useRef<HTMLDialogElement>(null);
   const hintsSheet = useRef<HTMLDialogElement>(null);
   const namesSheet = useRef<HTMLDialogElement>(null);
+  const talkSheet = useRef<HTMLDialogElement>(null);
   const rules = useRef<HTMLDialogElement>(null);
   const foot = useRef<HTMLDivElement>(null);
 
@@ -162,6 +164,7 @@ export function SetupScreen() {
           value={namedPlayers > 0 ? t.setup.namedCount(namedPlayers, playerCount) : t.setup.noNames}
           sheet={namesSheet}
         />
+        <Row label={t.setup.talkTime} value={t.setup.talkTimeOptions(settings.talkMinutes)} sheet={talkSheet} />
       </ul>
 
       <div ref={foot} className={styles.pie}>
@@ -294,6 +297,17 @@ export function SetupScreen() {
               : [...settings.hints, value],
           })
         }
+      />
+      <ChoiceSheet<string>
+        ref={talkSheet}
+        id="tiempo"
+        title={t.setup.talkTime}
+        choices={TALK_MINUTES.map((minutes) => ({
+          value: String(minutes),
+          label: t.setup.talkTimeOptions(minutes),
+        }))}
+        isSelected={(value) => settings.talkMinutes === Number(value)}
+        onChoose={(value) => update({ talkMinutes: Number(value) })}
       />
       <NamesSheet
         ref={namesSheet}

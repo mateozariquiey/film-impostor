@@ -2,6 +2,7 @@ import type { Decade, Hint, MovieFilters, Popularity } from '@/types';
 import { isDecade, isHint, isPopularity, isValidYear } from '@/lib/filters';
 import { isGenreId } from '@/lib/genres';
 import { MAX_PLAYERS, MIN_PLAYERS } from '@/lib/game';
+import { TALK_MINUTES } from '@/lib/talkTimer';
 
 export interface GameSettings {
     playerCount: number;
@@ -14,6 +15,8 @@ export interface GameSettings {
     hints: Hint[];
     /** Nombre escrito para cada jugador, por posición. Sobrevive a bajar y subir el número de jugadores. */
     names: string[];
+    /** Minutos de conversación. 0 es sin límite. */
+    talkMinutes: number;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -24,6 +27,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
     genre: null,
     hints: ['GENRE'],
     names: [],
+    talkMinutes: 0,
 };
 
 export const MAX_NAME_LENGTH = 16;
@@ -64,6 +68,9 @@ export function parseSettings(raw: string | null): GameSettings {
                   .slice(0, MAX_PLAYERS)
                   .map((name) => (typeof name === 'string' ? name.slice(0, MAX_NAME_LENGTH) : ''))
             : DEFAULT_SETTINGS.names,
+        talkMinutes: (TALK_MINUTES as readonly unknown[]).includes(data.talkMinutes)
+            ? (data.talkMinutes as number)
+            : DEFAULT_SETTINGS.talkMinutes,
     };
 }
 

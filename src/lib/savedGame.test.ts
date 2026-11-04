@@ -29,6 +29,7 @@ const game: SavedGame = {
     impostor: 3,
     firstPlayer: 0,
     question: 7,
+    talkTimer: null,
     movie,
     settings: { ...DEFAULT_SETTINGS, playerCount: 5, names: ['Lucía', '', 'Marcos'] },
     customPool: [movie],
@@ -84,6 +85,14 @@ describe('codificar y leer la partida', () => {
     ])('retoma una partida %s', (_, question) => {
         const loaded = decodeSavedGame(encodeWith({ question }), NOW);
         expect(loaded.status === 'ok' && loaded.game.question).toBe(0);
+    });
+
+    it('conserva el tiempo de la mesa, y un temporizador en un turno no vale', () => {
+        const timer = { status: 'paused', remainingMs: 1000 };
+        const atTable = decodeSavedGame(encodeWith({ phase: 'TABLE', talkTimer: timer }), NOW);
+        expect(atTable.status === 'ok' && atTable.game.talkTimer).toEqual(timer);
+        const onTurn = decodeSavedGame(encodeWith({ phase: 'TURN', talkTimer: timer }), NOW);
+        expect(onTurn.status === 'ok' && onTurn.game.talkTimer).toBeNull();
     });
 
     it('filtra lo que no sea una película en la selección manual', () => {
