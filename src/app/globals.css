@@ -200,6 +200,7 @@ a {
 .aviso-pulsar.accion-pie,
 .mantener-pie.accion-pie {
   border-width: 2px 0 0;
+  background: var(--relleno);
 }
 
 /* Un nombre largo no debe partir el botón en dos líneas, que empujaría la pantalla entera. */
@@ -236,7 +237,7 @@ a {
   position: absolute;
   left: 14px;
   top: 50%;
-  margin-top: -10px;
+  transform: translateY(-50%);
 }
 
 /* El relleno lleva su propia copia del texto en negro: el de debajo sigue siendo claro, y se lee entero en cualquier punto. */

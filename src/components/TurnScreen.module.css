@@ -49,6 +49,7 @@
 /* Lo de aquí dentro solo se ve: el dedo siempre cae en la superficie, también sobre el texto. */
 .medida {
   container-type: inline-size;
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -57,13 +58,13 @@
 }
 
 .escena {
-  position: relative;
   order: 1;
   display: flex;
   flex: 1;
   flex-direction: column;
   justify-content: flex-end;
   min-height: 0;
+  position: static;
   margin-inline: calc(var(--margin) * -1);
   padding: calc(env(safe-area-inset-top) + 56px) var(--margin) 0;
 }
@@ -71,10 +72,12 @@
 /* La misma pared, apagada: es la misma para todos y da poca luz. */
 .pared {
   position: absolute;
-  inset: 0;
+  inset: 0 calc(var(--margin) * -1);
   grid-template-rows: repeat(3, 1fr);
-  -webkit-mask-image: linear-gradient(transparent, #000 72px, #000 calc(100% - 96px), transparent);
-  mask-image: linear-gradient(transparent, #000 72px, #000 calc(100% - 96px), transparent);
+  opacity: 0.8;
+  /* Se apaga hacia abajo: el nombre va encima y tiene que leerse. */
+  -webkit-mask-image: linear-gradient(transparent, #000 72px, #000 50%, rgb(0 0 0 / 0.35) 80%);
+  mask-image: linear-gradient(transparent, #000 72px, #000 50%, rgb(0 0 0 / 0.35) 80%);
 }
 
 /* El cartel es una pieza más de la pared. Mide lo mismo con cualquier papel, y lo que se ve desde lejos no depende de lo que dice. */
@@ -95,14 +98,18 @@
   color: #000;
 }
 
-/* Fuera del cartel, y con altura fija: si dependiera del papel, su posición delataría quién es el impostor. */
+/* Por encima de la pared. Fuera del cartel, y con altura fija: si dependiera del papel, su posición delataría quién es el impostor. */
 .quien {
+  position: relative;
+  z-index: 1;
   order: 2;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   height: calc(28px + 40cqw);
   margin-top: 8px;
+  /* Los carteles de detrás no deben comerse la etiqueta. */
+  text-shadow: 0 0 12px #000, 0 0 2px #000;
   font-size: inherit;
   font-weight: inherit;
 }
@@ -126,11 +133,21 @@
 
 /* Al revelar, el nombre no se mueve y baja la voz: la luz es del papel. */
 .turno[data-held] .nombre {
-  color: #5f6165;
+  display: inline;
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
 }
 
 .turno[data-held] .etiqueta {
-  color: #5f6165;
+  display: inline;
+  margin-right: 4px;
+}
+
+/* Sigue en su hueco, para que el cartel no se mueva, y abajo del todo. */
+.turno[data-held] .quien {
+  display: block;
+  padding-top: calc(28px + 40cqw - 40px);
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */

@@ -11,7 +11,15 @@ const PATHS = {
 /** Todos los iconos, con la misma rejilla y el mismo trazo que las letras gruesas: puntas rectas y 2 px. */
 export function Icon({ name }: { name: keyof typeof PATHS | "hold" }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+    <svg
+      width={name === "hold" ? 24 : 20}
+      height={name === "hold" ? 24 : 20}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden
+    >
       {name === "hold" ? (
         // Un dedo apoyado: un punto que se queda dentro de su círculo.
         <>

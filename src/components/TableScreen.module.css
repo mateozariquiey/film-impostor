@@ -18,15 +18,9 @@
 .barra {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   min-height: 34px;
   margin-top: calc(env(safe-area-inset-top) * -1);
-}
-
-/* Mientras se mantiene, los huecos se llenan uno a uno sin señalar a nadie. Al soltar vuelven de golpe. */
-.mesa:has(.mantener[data-held]) .barra i {
-  background: var(--ink);
-  transition: background-color 0.08s linear calc(var(--duracion) * var(--i) / var(--n));
 }
 
 .encabezado {
@@ -143,13 +137,6 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-}
-
-/* Aquí la barra es información, no adorno: dice cuánto falta, también con movimiento reducido. */
-@media (prefers-reduced-motion: reduce) {
-  .mesa:has(.mantener[data-held]) .barra i {
-    transition: background-color 0.08s linear calc(var(--duracion) * var(--i) / var(--n)) !important;
-  }
 }
 
 @media (max-height: 700px) {

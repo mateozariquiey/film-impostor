@@ -5,7 +5,6 @@ import { posterUrl } from "@/lib/posters";
 import { QUESTIONS } from "@/lib/questions";
 import { HoldButton } from "./HoldButton";
 import { Icon } from "./Icon";
-import { PlayerSlots } from "./PlayerSlots";
 import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
 import { Sheet } from "./Sheet";
@@ -39,7 +38,6 @@ export function TableScreen() {
     >
       <PosterWall players={players.length} className={styles.pared} />
       <div className={styles.barra}>
-        <PlayerSlots count={players.length} current={players.length} starts={firstPlayer} />
         <QuitButton />
       </div>
       <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.encabezado}`}>
