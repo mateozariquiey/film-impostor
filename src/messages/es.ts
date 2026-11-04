@@ -123,6 +123,7 @@ export const es = {
         showRole: 'Mostrar mi papel sin mantener pulsado',
         noHints: 'Sin pistas esta vez. Escucha y disimula.',
         hintGenre: (genre: string) => `Género: ${genre}`,
+        hintExtraGenre: (genre: string) => `También: ${genre}`,
         hintYear: (year: string | null) => `Año: ${year ?? 'desconocido'}`,
         hintKeywords: (keywords: readonly string[]) =>
             `Palabras clave: ${keywords.length ? keywords.join(', ') : 'ninguna'}`,

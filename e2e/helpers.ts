@@ -3,7 +3,7 @@ import { expect, type Page } from '@playwright/test';
 export interface FakeMovie {
     id: number;
     title: string;
-    genre: string;
+    genre: string | null;
     posterPath: string | null;
     releaseYear: string | null;
     keywords: string[];

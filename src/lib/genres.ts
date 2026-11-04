@@ -33,6 +33,16 @@ export function genreName(id: number | undefined, locale: Locale): string {
     return GENRES.find((genre) => genre.id === id)?.[locale] ?? (locale === 'es' ? 'Género desconocido' : 'Unknown genre');
 }
 
+/**
+ * El género que sirve de pista. El que ha elegido el grupo no le dice nada al impostor, que lo eligió con
+ * ellos, así que se da el siguiente que tenga la película: la misma cantidad de información que sin filtro.
+ * Si no tiene otro, no hay pista, porque inventarla o repetir el filtro sería peor.
+ */
+export function hintGenreName(ids: readonly number[] = [], filtered: number | undefined, locale: Locale): string | null {
+    const id = ids.find((other) => other !== filtered && isGenreId(other));
+    return id === undefined ? null : genreName(id, locale);
+}
+
 /** Para las películas de la lista de reserva, que llevan el género escrito en español. */
 export function translateGenre(spanishName: string, locale: Locale): string {
     return genreName(GENRES.find(({ es }) => es === spanishName)?.id, locale);

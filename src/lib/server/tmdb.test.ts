@@ -50,8 +50,19 @@ describe('toMovie', () => {
 
     it('tolera datos incompletos', () => {
         const movie = toMovie({ id: 2, title: 'Sin datos', poster_path: null }, 'es');
-        expect(movie.genre).toBe('Género desconocido');
+        expect(movie.genre).toBeNull();
         expect(movie.releaseYear).toBeNull();
+    });
+
+    it('si el grupo filtra por un género, da otro de la película como pista', () => {
+        const raw = { id: 1, title: 'Alien', genre_ids: [27, 878, 28], poster_path: null };
+        expect(toMovie(raw, 'es', 27).genre).toBe('Ciencia ficción');
+        expect(toMovie(raw, 'en', 27).genre).toBe('Science Fiction');
+        expect(toMovie(raw, 'es', 878).genre).toBe('Terror');
+    });
+
+    it('sin otro género no hay pista, en lugar de repetir el filtro', () => {
+        expect(toMovie({ id: 1, title: 'Alien', genre_ids: [27], poster_path: null }, 'es', 27).genre).toBeNull();
     });
 });
 

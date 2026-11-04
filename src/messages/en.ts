@@ -116,6 +116,7 @@ export const en: Messages = {
         showRole: 'Show my role without holding',
         noHints: 'No hints this time. Listen and blend in.',
         hintGenre: (genre) => `Genre: ${genre}`,
+        hintExtraGenre: (genre) => `Also: ${genre}`,
         hintYear: (year) => `Year: ${year ?? 'unknown'}`,
         hintKeywords: (keywords) => `Keywords: ${keywords.length ? keywords.join(', ') : 'none'}`,
     },

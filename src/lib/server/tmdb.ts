@@ -1,6 +1,6 @@
 import type { Decade, Locale, Movie, MovieFilters, Popularity } from '@/types';
 import { pickRandom, randomIndex } from '@/lib/game';
-import { genreName } from '@/lib/genres';
+import { hintGenreName } from '@/lib/genres';
 import { TMDB_LANGUAGES } from '@/lib/locale';
 import { pickFresh } from '@/lib/recentMovies';
 
@@ -93,11 +93,11 @@ export function maxPagesFor(filters: MovieFilters): number {
     return filters.year !== undefined ? Math.min(max, MAX_PAGES_FOR_SINGLE_YEAR) : max;
 }
 
-export function toMovie(raw: TmdbMovie, locale: Locale, keywords: string[] = []): Movie {
+export function toMovie(raw: TmdbMovie, locale: Locale, filteredGenre?: number, keywords: string[] = []): Movie {
     return {
         id: raw.id,
         title: raw.title,
-        genre: genreName(raw.genre_ids?.[0], locale),
+        genre: hintGenreName(raw.genre_ids, filteredGenre, locale),
         posterPath: raw.poster_path,
         releaseYear: raw.release_date ? raw.release_date.slice(0, 4) : null,
         keywords,
@@ -149,12 +149,12 @@ export async function getRandomMovie(filters: MovieFilters, locale: Locale = 'es
     if (found.length === 0) throw new NoMoviesError('No hay películas con esos filtros');
 
     const raw = pickFresh(found, recent);
-    return toMovie(raw, locale, await getKeywords(raw.id));
+    return toMovie(raw, locale, filters.genre, await getKeywords(raw.id));
 }
 
 export async function getMoviePool(filters: MovieFilters, locale: Locale = 'es'): Promise<Movie[]> {
     const pages = Array.from({ length: POOL_PAGES }, (_, i) => discover(filters, i + 1, locale));
     const results = (await Promise.all(pages)).flatMap((page) => page.results);
-    const unique = new Map(results.map((raw) => [raw.id, toMovie(raw, locale)]));
+    const unique = new Map(results.map((raw) => [raw.id, toMovie(raw, locale, filters.genre)]));
     return [...unique.values()];
 }

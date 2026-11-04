@@ -23,7 +23,8 @@ export interface Movie {
     id: number;
     /** Título y género van en el idioma en el que se pidió la película. */
     title: string;
-    genre: string;
+    /** Lo que se le da al impostor como pista. Sin nada que aporte, no hay: ver `hintGenreName`. */
+    genre: string | null;
     posterPath: string | null;
     releaseYear: string | null;
     keywords: string[];

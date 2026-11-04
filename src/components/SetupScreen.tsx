@@ -57,10 +57,16 @@ export function SetupScreen() {
   const hintsSheet = useRef<HTMLDialogElement>(null);
   const namesSheet = useRef<HTMLDialogElement>(null);
   const rules = useRef<HTMLDialogElement>(null);
+  const foot = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
+
+  // En un móvil pequeño el aviso no cabe entero: se lleva a la vista con sus salidas.
+  useEffect(() => {
+    if (error) foot.current?.scrollIntoView({ block: "end" });
+  }, [error]);
 
   const update = (changes: Partial<GameSettings>) => {
     if ("decade" in changes || "popularity" in changes || "year" in changes || "genre" in changes) {
@@ -163,7 +169,7 @@ export function SetupScreen() {
         />
       </ul>
 
-      <div className={styles.pie}>
+      <div ref={foot} className={styles.pie}>
         {gameExpired && !error && (
           <p className={`secundario ${styles.caducada}`} role="status">
             {t.setup.expired}
@@ -195,8 +201,9 @@ export function SetupScreen() {
         >
           {isLoading ? t.setup.searching : canUseReserve ? t.setup.retry : t.setup.start}
         </button>
-        {!error && (
-          <div className={styles.enlaces}>
+        <div className={styles.enlaces}>
+          {/* Con un error hay menos sitio, y lo que no puede faltar es poder leerlo en otro idioma. */}
+          {!error && (
             <button
               type="button"
               className="enlace"
@@ -207,20 +214,20 @@ export function SetupScreen() {
             >
               {t.rules.title}
             </button>
-            {/* Cada idioma se ofrece en su propio idioma, para que lo encuentre quien no entiende el otro. */}
-            <button
-              type="button"
-              className="enlace"
-              lang={otherLocale}
-              onClick={() => {
-                setCustomPool([]);
-                setLocale(otherLocale);
-              }}
-            >
-              {t.otherLanguage}
-            </button>
-          </div>
-        )}
+          )}
+          {/* Cada idioma se ofrece en su propio idioma, para que lo encuentre quien no entiende el otro. */}
+          <button
+            type="button"
+            className="enlace"
+            lang={otherLocale}
+            onClick={() => {
+              setCustomPool([]);
+              setLocale(otherLocale);
+            }}
+          >
+            {t.otherLanguage}
+          </button>
+        </div>
       </div>
 
       <ChoiceSheet<EraChoice>

@@ -130,7 +130,7 @@ function isMovie(value: unknown): value is Movie {
         typeof id === 'number' &&
         typeof title === 'string' &&
         title !== '' &&
-        typeof genre === 'string' &&
+        (genre === null || typeof genre === 'string') &&
         (posterPath === null || typeof posterPath === 'string') &&
         (releaseYear === null || typeof releaseYear === 'string') &&
         Array.isArray(keywords) &&

@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 3100;
+// Otro puerto si este está ocupado. El servidor siempre es propio: reutilizar el que hubiera probaría otra compilación, o hasta otra app.
+const PORT = Number(process.env.E2E_PORT ?? 3100);
 /** El móvil pequeño para el que está pensada la app, sea cual sea el navegador. */
 const viewport = { width: 360, height: 640 };
 
@@ -29,7 +30,6 @@ export default defineConfig({
     webServer: {
         command: `npm start -- -p ${PORT}`,
         url: `http://localhost:${PORT}`,
-        reuseExistingServer: !process.env.CI,
         env: { TMDB_API_KEY: '' },
     },
 });

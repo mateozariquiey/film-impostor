@@ -11,7 +11,7 @@ Un juego de deducción para jugar en grupo con un solo móvil. Todos reciben el 
 
 La conversación y la votación se hacen en persona. La aplicación reparte los roles y revela el resultado; no lleva puntuaciones ni necesita cuentas.
 
-Las pistas para el impostor son opcionales: género, año y palabras clave. Estas últimas pueden aparecer en inglés o faltar, según TMDB.
+Las pistas para el impostor son opcionales: género, año y palabras clave. Estas últimas pueden aparecer en inglés o faltar, según TMDB. Si filtráis por un género, la pista es otro género de la película («También: Ciencia ficción»), porque el que elegisteis ya lo sabe. Si no tiene otro, esa pista no sale.
 
 ## Ejecutarlo en local
 
@@ -116,6 +116,23 @@ Los modos Top 100 y Top 500 acotan las páginas de resultados ordenados por popu
 ## Despliegue
 
 Puede ejecutarse en Vercel o en un servidor con Node.js usando `npm run build` y `npm start`. Configura `TMDB_API_KEY` en el entorno del servidor. No es una exportación estática: las rutas de API necesitan ejecutarse en el servidor.
+
+### Límite de peticiones
+
+Las rutas de `/api/movies` no tienen límite en el código, a propósito. Un contador en memoria solo ve lo que pasa por su instancia y se vacía al reiniciarse, así que parecería proteger sin hacerlo. En Vercel el límite real es una regla del cortafuegos, que está en todos los planes (en Hobby, una por proyecto), cuenta por IP antes de ejecutar la función y no necesita servicios externos. No se puede escribir en `vercel.json`, que solo admite denegar o desafiar, así que hay que crearla una vez:
+
+```sh
+vercel link
+vercel firewall rules add "Limitar la API de películas" \
+  --condition '{"type":"path","op":"pre","value":"/api/movies"}' \
+  --action rate_limit --rate-limit-window 60 --rate-limit-requests 30 --rate-limit-keys ip --yes
+vercel firewall diff
+vercel firewall publish --yes
+```
+
+Un grupo hace una o dos peticiones por partida, así que 30 por minuto dejan margen de sobra, incluso a varios grupos detrás de la misma IP. Quien lo pase recibe un 429 y la app ofrece la lista de reserva, como con cualquier fallo del servidor. El contador es por región, de modo que quien reparta las peticiones por varias regiones o IP puede pasar de ahí: frena el abuso casual, no un ataque distribuido, para el que Vercel tiene sus propias defensas.
+
+TMDB no tiene cuota diaria ni mensual, solo un tope de unas 40 peticiones por segundo, y las respuestas se guardan una hora en la caché de datos de Next. Lo que se gasta de verdad con el abuso son las invocaciones de funciones de Vercel, que esta regla corta antes de que ocurran. Un servidor propio con Node.js no tiene este cortafuegos, y tendría que poner el límite en su proxy.
 
 Si vienes de la versión anterior, sustituye `NEXT_PUBLIC_TMDB_API_KEY` por `TMDB_API_KEY` y vuelve a desplegar. La variable antigua se incluía en el JavaScript público; conviene reemplazar esa clave en TMDB.
 

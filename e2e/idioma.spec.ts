@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { fakeApi, fakeMovie, touchHold, TURN_SURFACE } from './helpers';
+import { expectNoSideScroll, fakeApi, fakeMovie, touchHold, TURN_SURFACE } from './helpers';
 
 test.describe('con el navegador en español', () => {
     test.use({ locale: 'es-ES' });
@@ -63,6 +63,23 @@ test.describe('con el navegador en inglés', () => {
         await expect(page.getByText('The backup list has 37 very well-known movies')).toBeVisible();
         await page.getByRole('button', { name: 'Play with the backup list' }).tap();
         await expect(page.getByText('Take the phone')).toBeVisible();
+    });
+
+    test('con un error se puede cambiar de idioma: cabe, y el aviso se lee en el otro', async ({ page }) => {
+        await page.route('**/api/movies/random**', (route) => route.fulfill({ status: 429, json: {} }));
+        await page.goto('/');
+        await page.getByRole('button', { name: 'Start' }).tap();
+
+        // En 360×640 no cabe todo: el aviso, sus salidas y el idioma quedan a la vista sin buscarlos.
+        await expect(page.getByText('TMDB isn’t responding')).toBeInViewport();
+        await expect(page.getByRole('button', { name: 'Play with the backup list' })).toBeInViewport();
+        await expect(page.getByRole('button', { name: 'Try again' })).toBeInViewport();
+        await expect(page.getByRole('button', { name: 'Español' })).toBeInViewport();
+
+        await page.getByRole('button', { name: 'Español' }).tap();
+        await expect(page.getByRole('button', { name: 'Jugar con la lista de reserva' })).toBeInViewport();
+        await expect(page.getByRole('button', { name: 'English' })).toBeInViewport();
+        await expectNoSideScroll(page);
     });
 });
 

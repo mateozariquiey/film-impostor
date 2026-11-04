@@ -139,14 +139,16 @@ function TitleLines({ title }: { title: string }) {
 }
 
 function ImpostorHints() {
-  const { movie, hints } = useGame();
+  const { movie, hints, genreHintIsExtra } = useGame();
   const { t } = useLocale();
   if (!movie) return null;
-  if (hints.length === 0)
+  const genre = hints.includes("GENRE") ? movie.genre : null;
+  const rest = hints.filter((hint) => hint !== "GENRE");
+  if (!genre && rest.length === 0)
     return <p className={styles.nota}>{t.turn.noHints}</p>;
   return (
     <div className={styles.nota}>
-      {hints.includes("GENRE") && <p>{t.turn.hintGenre(movie.genre)}</p>}
+      {genre && <p>{genreHintIsExtra ? t.turn.hintExtraGenre(genre) : t.turn.hintGenre(genre)}</p>}
       {hints.includes("YEAR") && <p>{t.turn.hintYear(movie.releaseYear)}</p>}
       {hints.includes("KEYWORDS") && <p>{t.turn.hintKeywords(movie.keywords.slice(0, 3))}</p>}
     </div>

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { domText, expectNoSideScroll, fakeApi, fakeMovie, touchHold, TURN_SURFACE } from './helpers';
 
 const SECRET = 'Película Secreta';
@@ -165,4 +165,40 @@ test('volver atrás desde otra página no restaura ningún secreto', async ({ pa
     await page.goBack();
     await expect(page.getByRole('heading', { name: 'Partida a medias' })).toBeVisible();
     expect(await domText(page)).not.toContain(SECRET);
+});
+
+test.describe('la pista de género, con el grupo filtrando por Terror', () => {
+    /** Va pasando el móvil hasta dar con el impostor, y devuelve lo que ve mientras mantiene. */
+    async function impostorScreen(page: Page, genre: string | null) {
+        await fakeApi(page, () => ({ ...fakeMovie(1, SECRET), genre }));
+        await page.goto('/');
+        await page.getByRole('button', { name: /De qué género/ }).tap();
+        await page.getByRole('dialog', { name: 'De qué género' }).getByText('Terror').tap();
+        await page.getByRole('button', { name: 'Un jugador menos' }).tap();
+        await page.getByRole('button', { name: 'Empezar' }).tap();
+
+        for (const player of [1, 2, 3]) {
+            await expect(page.getByRole('heading', { level: 1 })).toContainText(`Jugador ${player}`);
+            const finger = await touchHold(page, TURN_SURFACE);
+            await expect(page.getByText(new RegExp(`${SECRET}|${IMPOSTOR_ROLE}`))).toBeVisible();
+            const text = await domText(page);
+            await page.waitForTimeout(550);
+            await finger.release();
+            if (text.includes(IMPOSTOR_ROLE)) return text;
+            await page.getByRole('button', { name: player === 3 ? 'Dejar el móvil en la mesa' : `Pásale el móvil al jugador ${player + 1}` }).tap();
+        }
+        throw new Error('Ningún jugador era el impostor');
+    }
+
+    test('otro género de la película se presenta como un añadido', async ({ page }) => {
+        const text = await impostorScreen(page, 'Ciencia ficción');
+        expect(text).toContain('También: Ciencia ficción');
+    });
+
+    test('sin otro género no hay línea de género, y dice que no hay pistas', async ({ page }) => {
+        const text = await impostorScreen(page, null);
+        expect(text).not.toContain('También');
+        expect(text).not.toContain('Género:');
+        expect(text).toContain('Sin pistas esta vez');
+    });
 });

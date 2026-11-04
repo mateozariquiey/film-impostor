@@ -24,6 +24,8 @@ interface GameState {
 
 interface GameContextValue extends Omit<GameState, 'settings'> {
     hints: Hint[];
+    /** El grupo eligió un género, así que la pista es otro además de ese. La reserva no aplica los filtros. */
+    genreHintIsExtra: boolean;
     /** Nombre de cada jugador, vacío si no se ha escrito. */
     names: string[];
     isLoading: boolean;
@@ -216,6 +218,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             value={{
                 ...game,
                 hints: settings?.hints ?? [],
+                genreHintIsExtra: settings?.genre != null && game.movie !== null && !isReserveMovie(game.movie),
                 names: settings?.names ?? [],
                 isLoading,
                 error,

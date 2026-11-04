@@ -10,6 +10,8 @@ describe('errores de la API propia', () => {
         expect(errorKindFromStatus(404)).toBe('no-movies');
         expect(errorKindFromStatus(500)).toBe('server');
         expect(errorKindFromStatus(502)).toBe('server');
+        // El límite de peticiones del cortafuegos también lleva a ofrecer la reserva.
+        expect(errorKindFromStatus(429)).toBe('server');
     });
 
     it('trata como sin conexión una petición que no llega a ningún servidor', async () => {
