@@ -263,7 +263,7 @@
 }
 
 /* En un móvil alto sobra sitio: lo aprovechan el aire y el tamaño, no un hueco antes del botón. */
-@media (min-height: 780px) {
+@media (min-height: 830px) {
   .cabecera {
     padding-top: 24px;
   }
