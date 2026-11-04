@@ -204,8 +204,12 @@ a {
 
 /* Un nombre largo no debe partir el botón en dos líneas, que empujaría la pantalla entera. */
 .accion[data-largo] {
-  padding-inline: 8px;
-  font-size: 18px;
+  padding-inline: 12px;
+  font-size: 22px;
+}
+
+.accion[data-largo="mucho"] {
+  font-size: 17px;
 }
 
 .accion {

@@ -118,7 +118,7 @@ export function TurnScreen() {
             {t.turn.releaseHint}
           </span>
         ) : seen ? (
-          <button type="button" className="accion accion-pie" data-largo={passLabel.length > 26 || undefined} onClick={nextPlayer}>
+          <button type="button" className="accion accion-pie" data-largo={passLabel.length > 34 ? "mucho" : passLabel.length > 22 ? "algo" : undefined} onClick={nextPlayer}>
             {passLabel}
           </button>
         ) : (

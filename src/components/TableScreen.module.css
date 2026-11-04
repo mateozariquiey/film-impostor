@@ -6,7 +6,7 @@
 .pared {
   flex: 1 1 0;
   min-height: 0;
-  max-height: 19dvh;
+  max-height: 30dvh;
   margin-inline: calc(var(--margin) * -1);
   overflow: hidden;
   grid-template-rows: repeat(3, 19dvh);
@@ -111,8 +111,8 @@
 .reglas button {
   display: inline;
   min-height: 0;
-  padding: 12px 0;
-  margin: -12px 0;
+  padding: 14px 0;
+  margin: -14px 0;
   font-size: inherit;
   color: var(--ink);
 }
