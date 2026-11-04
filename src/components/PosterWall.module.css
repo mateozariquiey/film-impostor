@@ -1,14 +1,14 @@
 .pared {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 1fr;
   background: #000;
 }
 
+/* Siempre enteros, con la proporción de un cartel: un cartel recortado por dentro parece un error. */
 .cartel {
   container-type: size;
   position: relative;
-  min-height: 0;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
 }
 
@@ -18,7 +18,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top;
 }
 
 /* Un cartel sin encender está, pero no cuenta. Se enciende cuando alguien pulsa, y por eso es lo único de la pantalla que se mueve. */

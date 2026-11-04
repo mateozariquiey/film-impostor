@@ -5,11 +5,12 @@
   min-height: 100dvh;
 }
 
+/* Los doce a la vista: el que falta depende de cuántos jugáis, y no puede quedarse fuera. */
 .pared {
-  flex: 1 1 0;
-  min-height: 168px;
-  max-height: 58dvh;
+  flex: none;
+  grid-template-columns: repeat(6, 1fr);
   margin-inline: calc(var(--margin) * -1);
+  overflow: hidden;
 }
 
 .cabecera {
@@ -89,8 +90,15 @@
   grid-column: 1 / -1;
 }
 
+/* Es un resumen, no un valor: va con la letra de leer. */
 .ancha .valor {
+  margin-top: 4px;
   overflow: hidden;
+  font-size: 15px;
+  font-stretch: 100%;
+  font-weight: 500;
+  line-height: 1.25;
+  word-spacing: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -138,7 +146,8 @@
 }
 
 .pie {
-  margin-top: 8px;
+  margin-top: auto;
+  padding-top: 8px;
   /* El botón principal llega de lado a lado y hasta abajo, como la pared arriba. */
   margin-inline: calc(var(--margin) * -1);
 }
@@ -213,11 +222,6 @@
 
 /* En un móvil pequeño, y si la pantalla se queda corta por un error, lo que manda es poder jugar. */
 @media (max-height: 700px) {
-  .pared {
-    flex-basis: 132px;
-    min-height: 132px;
-  }
-
   .cifra {
     font-size: 54px;
   }
@@ -250,7 +254,31 @@
 /* El móvil más pequeño: la pared se queda en una tira para que «Empezar» siga a la vista. */
 @media (max-height: 600px) {
   .pared {
-    flex-basis: 80px;
-    min-height: 80px;
+    max-height: 22dvh;
+  }
+}
+
+/* En un móvil alto sobra sitio: lo aprovechan el aire y el tamaño, no un hueco antes del botón. */
+@media (min-height: 780px) {
+  .cabecera {
+    padding-top: 24px;
+  }
+
+  .nombre {
+    font-size: 72px;
+  }
+
+  .lema {
+    margin-top: 8px;
+    font-size: 17px;
+  }
+
+  .jugadores {
+    margin-top: 24px;
+    padding-bottom: 16px;
+  }
+
+  .fila {
+    min-height: 84px;
   }
 }

@@ -72,12 +72,11 @@
 /* La misma pared, apagada: es la misma para todos y da poca luz. */
 .pared {
   position: absolute;
-  inset: 0 calc(var(--margin) * -1);
-  grid-template-rows: repeat(3, 1fr);
+  inset: 0 calc(var(--margin) * -1) auto;
   opacity: 0.8;
-  /* Se apaga hacia abajo: el nombre va encima y tiene que leerse. */
-  -webkit-mask-image: linear-gradient(transparent, #000 72px, #000 50%, rgb(0 0 0 / 0.35) 80%);
-  mask-image: linear-gradient(transparent, #000 72px, #000 50%, rgb(0 0 0 / 0.35) 80%);
+  /* Se apaga hacia abajo: en un móvil pequeño llega hasta el nombre, y tiene que leerse. */
+  -webkit-mask-image: linear-gradient(transparent, #000 72px, #000 60%, transparent);
+  mask-image: linear-gradient(transparent, #000 72px, #000 60%, transparent);
 }
 
 /* El cartel es una pieza más de la pared. Mide lo mismo con cualquier papel, y lo que se ve desde lejos no depende de lo que dice. */
