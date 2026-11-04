@@ -96,7 +96,7 @@ export function TableScreen() {
           {tooShort ? t.table.tooShort : ""}
         </p>
         <HoldButton
-          className={`accion ${styles.mantener}`}
+          className={`accion accion-pie mantener-pie ${styles.mantener}`}
           durationMs={REVEAL_IMPOSTOR_MS}
           onHoldChange={(held) => held && setTooShort(false)}
           onRelease={(completed) => setTooShort(!completed)}

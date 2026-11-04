@@ -82,17 +82,17 @@ export function ResultScreen() {
       </p>
 
       <div className={styles.acciones} inert={!armed}>
+        <button type="button" className="enlace" onClick={resetGame}>
+          {t.result.settings}
+        </button>
         <button
           type="button"
-          className="accion"
+          className="accion accion-pie"
           disabled={isLoading}
           aria-busy={isLoading}
           onClick={() => void playAgain()}
         >
           {isLoading ? t.result.searching : t.result.another}
-        </button>
-        <button type="button" className="enlace" onClick={resetGame}>
-          {t.result.settings}
         </button>
       </div>
     </div>

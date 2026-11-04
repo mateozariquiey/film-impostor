@@ -158,6 +158,11 @@
   font-weight: 600;
 }
 
+.pie > :global(.accion-pie) {
+  width: 100%;
+  margin-inline: 0;
+}
+
 .enlaces {
   display: flex;
   justify-content: space-between;

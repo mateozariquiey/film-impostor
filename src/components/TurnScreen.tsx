@@ -110,7 +110,7 @@ export function TurnScreen() {
       <div className={styles.pie}>
         {held ? (
           <span
-            className={`aviso-pulsar ${styles.soltar}`}
+            className={`aviso-pulsar accion-pie ${styles.soltar}`}
             aria-hidden
             data-texto={t.turn.releaseHint}
             style={{ "--duracion": `${SEEN_AFTER_MS}ms` } as React.CSSProperties}
@@ -118,12 +118,12 @@ export function TurnScreen() {
             {t.turn.releaseHint}
           </span>
         ) : seen ? (
-          <button type="button" className="accion" data-largo={passLabel.length > 26 || undefined} onClick={nextPlayer}>
+          <button type="button" className="accion accion-pie" data-largo={passLabel.length > 26 || undefined} onClick={nextPlayer}>
             {passLabel}
           </button>
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.
-          <span className="aviso-pulsar" aria-hidden>
+          <span className="aviso-pulsar accion-pie" aria-hidden>
             <Icon name="hold" />
             {t.turn.holdHint}
           </span>

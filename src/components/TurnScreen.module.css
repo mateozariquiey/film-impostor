@@ -16,7 +16,7 @@
 /* El mismo esqueleto que el inicio y la mesa: la pared arriba, lo que importa debajo y la acción al alcance del pulgar. */
 .turno {
   position: relative;
-  padding-top: 0;
+  padding-block: 0;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -81,7 +81,7 @@
 .pieza {
   position: relative;
   /* Lo justo para el papel más largo: tres líneas de título o todas las pistas. Lo vigila e2e/partida.spec.ts. */
-  height: max(84cqw, 240px);
+  height: 240px;
   padding: 16px;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -126,7 +126,11 @@
 
 /* Al revelar, el nombre no se mueve y baja la voz: la luz es del papel. */
 .turno[data-held] .nombre {
-  color: var(--ink-2);
+  color: #5f6165;
+}
+
+.turno[data-held] .etiqueta {
+  color: #5f6165;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */

@@ -186,11 +186,20 @@ a {
   display: block;
 }
 
-/* La acción principal del inicio llega de lado a lado y hasta abajo, y deja sitio a la barra del sistema. */
+/* La acción principal es siempre la misma pieza y siempre está en el mismo sitio: de lado a lado y hasta abajo,
+   y deja sitio a la barra del sistema. Se toque o se mantenga, solo cambia que una va llena y la otra por encender. */
 .accion-pie {
+  width: calc(100% + var(--margin) * 2);
+  max-width: 480px;
   min-height: calc(72px + env(safe-area-inset-bottom));
+  margin-inline: calc(var(--margin) * -1);
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  font-size: 34px;
+  font-size: clamp(26px, 8.5vw, 32px);
+}
+
+.aviso-pulsar.accion-pie,
+.mantener-pie.accion-pie {
+  border-width: 2px 0 0;
 }
 
 /* Un nombre largo no debe partir el botón en dos líneas, que empujaría la pantalla entera. */

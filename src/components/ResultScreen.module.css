@@ -5,7 +5,7 @@
   --ink-3: #6d6f74;
   --on-ink: #000000;
   position: relative;
-  padding-top: 0;
+  padding-block: 0;
   color: var(--ink);
   isolation: isolate;
 }

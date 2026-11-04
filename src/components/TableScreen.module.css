@@ -1,5 +1,5 @@
 .mesa {
-  padding-top: 0;
+  padding-block: 0;
 }
 
 /* Lo primero que cede: ocupa lo que sobre, hasta su altura de siempre, y si no sobra nada desaparece. */
