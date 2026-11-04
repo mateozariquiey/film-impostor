@@ -10,9 +10,9 @@
   --ink-3: #b4b7bd;
   --line: #d3d5da;
   --on-ink: #ffffff;
-  --hueco: #000000;
-  --apagado: 0.22;
-  --cartel: #6b6d72;
+  --hueco: var(--bg);
+  --apagado: 0.34;
+  --cartel: #77797e;
   --margin: 16px;
 }
 
@@ -27,8 +27,8 @@
     --ink-3: #55575c;
     --line: #2a2b2e;
     --on-ink: #000000;
-    --hueco: #17181a;
-    --apagado: 0.32;
+    --hueco: #000000;
+    --apagado: 0.3;
   }
 }
 
@@ -44,7 +44,7 @@
   --ink-3: #3f4144;
   --line: #2c2d30;
   --on-ink: #000000;
-  --hueco: #121315;
+  --hueco: #000000;
   --apagado: 0.3;
 }
 
@@ -188,6 +188,17 @@ a {
 .accion-sec {
   background: var(--relleno);
   color: var(--ink);
+}
+
+.aviso-pulsar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 1px solid var(--ink-2);
+  font-weight: 600;
+  text-align: center;
 }
 
 .accion:active:not(:disabled),

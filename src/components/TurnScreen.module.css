@@ -47,9 +47,9 @@
   container-type: inline-size;
   display: flex;
   flex-direction: column;
-  width: min(100%, calc((100dvh - 150px) * 2 / 3));
-  aspect-ratio: 2 / 3;
-  margin-top: 8px;
+  width: min(100%, calc((100dvh - 136px) * 3 / 5));
+  aspect-ratio: 3 / 5;
+  margin: 8px auto 0;
   padding: 14px 14px 10px;
   border: 1px solid var(--line);
   overflow: hidden;
@@ -83,10 +83,9 @@
 .nombre {
   display: block;
   margin-left: -0.02em;
-  font-size: min(50cqw, calc(150cqw / var(--letras)));
+  font-size: min(46cqw, calc(235cqw / var(--letras)));
   line-height: 0.92;
   letter-spacing: -0.01em;
-  text-wrap: nowrap;
   color: var(--ink);
 }
 

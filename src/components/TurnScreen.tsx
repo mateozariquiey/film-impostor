@@ -104,7 +104,7 @@ export function TurnScreen() {
           </button>
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.
-          <span className="accion-sec" aria-hidden>
+          <span className="aviso-pulsar" aria-hidden>
             {t.turn.holdHint}
           </span>
         )}

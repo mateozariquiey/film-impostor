@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 1fr;
-  background: var(--bg);
+  background: #000;
 }
 
 .cartel {
@@ -22,12 +22,15 @@
 
 /* Un cartel sin encender está, pero no cuenta. Se enciende cuando alguien pulsa, y por eso es lo único de la pantalla que se mueve. */
 .cartel[data-estado="apagado"] {
-  opacity: var(--apagado);
-  filter: grayscale(1);
-  transition: opacity 0.18s ease-out, filter 0.18s ease-out;
+  background-color: #000 !important;
 }
 
-.cartel[data-estado="encendido"] {
+.cartel[data-estado="apagado"] img {
+  opacity: var(--apagado);
+  filter: grayscale(1);
+}
+
+.cartel img {
   transition: opacity 0.18s ease-out, filter 0.18s ease-out;
 }
 

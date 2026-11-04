@@ -1,5 +1,31 @@
+/* Da igual el tema: es como cuando acaba la película y la sala sigue a oscuras. */
 .resultado {
+  --ink: #ffffff;
+  --ink-2: #d5d6da;
+  --ink-3: #6d6f74;
+  --on-ink: #000000;
+  position: relative;
   padding-top: 0;
+  color: var(--ink);
+  isolation: isolate;
+}
+
+.resultado::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: #000;
+}
+
+/* El color de cada película: su cartel, muy desenfocado y apagado, detrás de todo. */
+.ambiente {
+  position: fixed;
+  inset: -60px;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  filter: blur(46px) saturate(1.5) brightness(0.42);
 }
 
 /* El cartel llega de lado a lado y arriba, y se destapa de izquierda a derecha, como se llenó el botón que lo pidió. */

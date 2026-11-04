@@ -10,7 +10,7 @@ import styles from "./ResultScreen.module.css";
 const ARM_AFTER_RELEASE_MS = 350;
 const ARM_FALLBACK_MS = 3000;
 
-/** Vuelve la luz normal de la app, y el cartel se destapa igual que se llenó el botón que lo pidió. */
+/** El cartel se destapa igual que se llenó el botón que lo pidió, y su color es la única luz de la pantalla. */
 export function ResultScreen() {
   const { players, movie, names, playAgain, resetGame, isLoading } = useGame();
   const { t } = useLocale();
@@ -44,6 +44,13 @@ export function ResultScreen() {
 
   return (
     <div className={`pantalla ${styles.resultado}`}>
+      {hasPoster && (
+        <div
+          className={styles.ambiente}
+          style={{ backgroundImage: `url(${posterUrl(movie.posterPath!, "w185")})` }}
+          aria-hidden
+        />
+      )}
       {hasPoster && (
         <div className={styles.cartel}>
           <Image
