@@ -1,18 +1,20 @@
 import { useRef } from "react";
 import { useGame } from "@/contexts/GameContext";
+import { useLocale } from "@/contexts/LocaleContext";
 import { Sheet } from "./Sheet";
 import styles from "./QuitButton.module.css";
 
 /** Abandonar una partida a medias, con confirmación. */
 export function QuitButton() {
   const { resetGame } = useGame();
+  const { t } = useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
   return (
     <>
       <button
         type="button"
         className={styles.salir}
-        aria-label="Abandonar la partida"
+        aria-label={t.quit.aria}
         onClick={() => dialog.current?.showModal()}
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
@@ -27,14 +29,14 @@ export function QuitButton() {
       </button>
       <Sheet ref={dialog} titleId="abandonar">
         <h2 id="abandonar" className={styles.titulo}>
-          ¿Abandonar la partida?
+          {t.quit.title}
         </h2>
-        <p className={styles.texto}>Se pierde el reparto y volvéis a los ajustes.</p>
+        <p className={styles.texto}>{t.quit.text}</p>
         <button type="button" className="accion" onClick={resetGame}>
-          Abandonar
+          {t.quit.confirm}
         </button>
         <form method="dialog">
-          <button className={`accion-sec ${styles.seguir}`}>Seguir jugando</button>
+          <button className={`accion-sec ${styles.seguir}`}>{t.quit.keepPlaying}</button>
         </form>
       </Sheet>
     </>

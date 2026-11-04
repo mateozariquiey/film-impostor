@@ -1,22 +1,6 @@
 import type { MetadataRoute } from 'next';
+import { webManifest } from '@/lib/webManifest';
 
 export default function manifest(): MetadataRoute.Manifest {
-    return {
-        name: 'Film Impostor',
-        short_name: 'Impostor',
-        description: 'Todos ven la misma película, menos uno. Un juego de deducción para jugar en grupo con un solo móvil.',
-        id: '/',
-        start_url: '/',
-        scope: '/',
-        display: 'standalone',
-        orientation: 'portrait',
-        background_color: '#1b2220',
-        theme_color: '#1b2220',
-        lang: 'es',
-        icons: [
-            { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-            { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-        ],
-    };
+    return webManifest('es');
 }

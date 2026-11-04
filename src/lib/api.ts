@@ -1,4 +1,4 @@
-import type { Movie, MovieFilters } from '@/types';
+import type { Locale, Movie, MovieFilters } from '@/types';
 import { filtersToSearchParams } from '@/lib/filters';
 
 // Cliente de la API propia (/api/movies). El navegador nunca habla directamente con TMDB.
@@ -28,12 +28,22 @@ async function getJson<T>(url: string): Promise<T> {
     return res.json() as Promise<T>;
 }
 
-export function fetchRandomMovie(filters: MovieFilters): Promise<Movie> {
-    return getJson(`/api/movies/random?${filtersToSearchParams(filters)}`);
+function movieParams(filters: MovieFilters, locale: Locale): URLSearchParams {
+    const params = filtersToSearchParams(filters);
+    params.set('lang', locale);
+    return params;
 }
 
-export function fetchMoviePool(filters: MovieFilters): Promise<Movie[]> {
-    return getJson(`/api/movies/pool?${filtersToSearchParams(filters)}`);
+/** `recent` son las que ya han salido en este dispositivo, de la más antigua a la más reciente. */
+export function fetchRandomMovie(filters: MovieFilters, locale: Locale, recent: readonly number[]): Promise<Movie> {
+    const params = movieParams(filters, locale);
+    const fromTmdb = recent.filter((id) => id > 0);
+    if (fromTmdb.length > 0) params.set('exclude', fromTmdb.join(','));
+    return getJson(`/api/movies/random?${params}`);
+}
+
+export function fetchMoviePool(filters: MovieFilters, locale: Locale): Promise<Movie[]> {
+    return getJson(`/api/movies/pool?${movieParams(filters, locale)}`);
 }
 
 export function fetchKeywords(movieId: number): Promise<string[]> {

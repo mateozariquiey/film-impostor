@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useGame } from "@/contexts/GameContext";
-import { thePlayer } from "@/lib/game";
+import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
 import { PlayerDots } from "./PlayerDots";
 import styles from "./ResultScreen.module.css";
@@ -12,6 +12,7 @@ const ARM_FALLBACK_MS = 3000;
 /** Vuelve la luz normal de la app, y el cartel se destapa igual que se llenó el botón que lo pidió. */
 export function ResultScreen() {
   const { players, movie, names, playAgain, resetGame, isLoading } = useGame();
+  const { t } = useLocale();
   const [posterFailed, setPosterFailed] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   // Se llega con el dedo aún pulsado justo donde quedan estos botones: al levantarlo no deben saltar.
@@ -46,7 +47,7 @@ export function ResultScreen() {
         <div className={styles.cartel}>
           <Image
             src={posterUrl(movie.posterPath!, "w500")}
-            alt={`Cartel de ${movie.title}`}
+            alt={t.result.poster(movie.title)}
             fill
             sizes="(max-width: 480px) 100vw, 480px"
             unoptimized
@@ -57,11 +58,11 @@ export function ResultScreen() {
       )}
 
       <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.era}`}>
-        Era {thePlayer(impostor, names)}
+        {t.result.was(impostor, names)}
       </h1>
       <PlayerDots count={players.length} impostor={impostor} />
       <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>
-        La película era <strong>{movie.title}</strong>
+        {t.result.movieWas}<strong>{movie.title}</strong>
         {movie.releaseYear && ` (${movie.releaseYear})`}.
       </p>
 
@@ -73,10 +74,10 @@ export function ResultScreen() {
           aria-busy={isLoading}
           onClick={() => void playAgain()}
         >
-          {isLoading ? "Buscando película…" : "Otra película"}
+          {isLoading ? t.result.searching : t.result.another}
         </button>
         <button type="button" className="enlace" onClick={resetGame}>
-          Cambiar ajustes
+          {t.result.settings}
         </button>
       </div>
     </div>

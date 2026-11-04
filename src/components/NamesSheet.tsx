@@ -1,6 +1,6 @@
 import type { KeyboardEvent, Ref } from "react";
+import { useLocale } from "@/contexts/LocaleContext";
 import { MAX_NAME_LENGTH } from "@/lib/settings";
-import { playerName } from "@/lib/game";
 import { Sheet } from "./Sheet";
 import choice from "./ChoiceSheet.module.css";
 import styles from "./NamesSheet.module.css";
@@ -14,6 +14,7 @@ interface Props {
 
 /** Nombres opcionales: un campo por jugador, y el que se deja vacío sigue siendo «Jugador N». */
 export function NamesSheet({ ref, playerCount, names, onChange }: Props) {
+  const { t } = useLocale();
   const setName = (index: number, name: string) => {
     const next = Array.from({ length: Math.max(names.length, index + 1) }, (_, i) => names[i] ?? "");
     next[index] = name;
@@ -33,15 +34,15 @@ export function NamesSheet({ ref, playerCount, names, onChange }: Props) {
   return (
     <Sheet ref={ref} titleId="nombres">
       <div className={choice.cabecera}>
-        <h2 id="nombres">Nombres</h2>
+        <h2 id="nombres">{t.names.title}</h2>
         <form method="dialog">
-          <button className={choice.listo}>Listo</button>
+          <button className={choice.listo}>{t.done}</button>
         </form>
       </div>
-      <p className={`secundario ${styles.nota}`}>Son opcionales. Se recuerdan para la próxima partida.</p>
+      <p className={`secundario ${styles.nota}`}>{t.names.note}</p>
       <div>
         {Array.from({ length: playerCount }, (_, index) => {
-          const label = playerName(index, []);
+          const label = t.playerName(index, []);
           return (
             <label key={index} className={styles.fila}>
               <span className="solo-lector">{label}</span>
@@ -64,7 +65,7 @@ export function NamesSheet({ ref, playerCount, names, onChange }: Props) {
       </div>
       {names.some((name) => name.trim() !== "") && (
         <button type="button" className={`enlace ${styles.borrar}`} onClick={() => onChange([])}>
-          Borrar los nombres
+          {t.names.clear}
         </button>
       )}
     </Sheet>

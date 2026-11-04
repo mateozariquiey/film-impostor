@@ -1,38 +1,34 @@
 import type { Ref } from "react";
+import { useLocale } from "@/contexts/LocaleContext";
 import { MAX_PLAYERS, MIN_PLAYERS } from "@/lib/game";
 import { Sheet } from "./Sheet";
 import styles from "./RulesSheet.module.css";
 
 export function RulesSheet({ ref }: { ref: Ref<HTMLDialogElement> }) {
+  const { t } = useLocale();
   return (
     <Sheet ref={ref} titleId="reglas">
       <h2 id="reglas" className={styles.titulo}>
-        Cómo se juega
+        {t.rules.title}
       </h2>
-      <p className={styles.intro}>
-        De {MIN_PLAYERS} a {MAX_PLAYERS} personas, un solo móvil y una película secreta.
-      </p>
+      <p className={styles.intro}>{t.rules.intro(MIN_PLAYERS, MAX_PLAYERS)}</p>
       <ol className={styles.pasos}>
-        <li>
-          Pasaos el móvil. Cada uno mantiene el dedo para ver su papel y, al soltar,
-          desaparece. Todos ven el título menos el impostor.
-        </li>
-        <li>
-          Dad pistas y haced preguntas sin decir el título. Después, votad quién está
-          disimulando.
-        </li>
-        <li>
-          Antes de ver el resultado, el impostor puede intentar adivinar la película. Si
-          acierta, gana. Si no, el grupo gana al acertar la votación.
-        </li>
+        {t.rules.steps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
       </ol>
+      {/* iOS no avisa de que se puede instalar, así que hay que contarlo. */}
+      <h3 className={styles.apartado}>{t.rules.installTitle}</h3>
+      <p className={styles.instalar}>{t.rules.installIntro}</p>
+      <p className={styles.instalar}>{t.rules.installIos}</p>
+      <p className={styles.instalar}>{t.rules.installAndroid}</p>
       <p className={`secundario ${styles.credito}`}>
-        Títulos, géneros y carteles de{" "}
-        <a href="https://www.themoviedb.org/">The Movie Database</a>. Este producto usa la
-        API de TMDB, pero TMDB no lo respalda ni lo certifica.
+        {t.rules.creditBefore}
+        <a href="https://www.themoviedb.org/">The Movie Database</a>
+        {t.rules.creditAfter}
       </p>
       <form method="dialog">
-        <button className="accion">Entendido</button>
+        <button className="accion">{t.rules.understood}</button>
       </form>
     </Sheet>
   );

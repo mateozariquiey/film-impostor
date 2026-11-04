@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Image from "next/image";
 import { useGame } from "@/contexts/GameContext";
+import { useLocale } from "@/contexts/LocaleContext";
 import { ApiError, fetchMoviePool, type ApiErrorKind } from "@/lib/api";
 import { posterUrl } from "@/lib/posters";
 import type { Movie, MovieFilters } from "@/types";
@@ -13,15 +14,10 @@ interface Props {
 
 type LoadState = "loading" | "ready" | ApiErrorKind;
 
-const ERRORS: Record<ApiErrorKind, string> = {
-  offline: "No hay conexión, así que no se puede cargar la lista.",
-  server: "TMDB no responde, así que no se puede cargar la lista.",
-  "no-movies": "No hay películas con estos filtros. Vuelve y prueba con otra época.",
-};
-
 /** Lista de películas candidatas: se tachan las que el grupo no conoce. */
 export function MovieListScreen({ filters, onClose }: Props) {
   const { customPool, setCustomPool } = useGame();
+  const { locale, t } = useLocale();
   const [candidates, setCandidates] = useState<Movie[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [load, setLoad] = useState<LoadState>("loading");
@@ -38,7 +34,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    fetchMoviePool(filters)
+    fetchMoviePool(filters, locale)
       .then((movies) => {
         if (!cancelled) onLoaded(movies);
       })
@@ -48,7 +44,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [filters, attempt]);
+  }, [filters, locale, attempt]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -68,16 +64,16 @@ export function MovieListScreen({ filters, onClose }: Props) {
   return (
     <div className={`pantalla ${styles.lista}`}>
       <button type="button" className={styles.volver} onClick={onClose}>
-        Cancelar
+        {t.list.cancel}
       </button>
       <h1 ref={heading} tabIndex={-1} className="titulo">
-        Tachad las que no conozcáis
+        {t.list.title}
       </h1>
 
       {load === "loading" && (
         <>
           <p className={`secundario ${styles.estado}`} role="status">
-            Cargando películas…
+            {t.list.loading}
           </p>
           <ul className={styles.filas} aria-hidden>
             {Array.from({ length: 8 }, (_, index) => (
@@ -91,7 +87,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
 
       {load !== "loading" && load !== "ready" && (
         <div className={styles.error} role="alert">
-          <p>{ERRORS[load]}</p>
+          <p>{t.list.errors[load]}</p>
           {load !== "no-movies" && (
             <button
               type="button"
@@ -101,7 +97,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
                 setAttempt(attempt + 1);
               }}
             >
-              Reintentar
+              {t.list.retry}
             </button>
           )}
         </div>
@@ -110,7 +106,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
       {load === "ready" && (
         <>
           <p className={`secundario ${styles.estado}`} aria-live="polite">
-            {count} de {candidates.length} en juego
+            {t.list.inPlay(count, candidates.length)}
           </p>
           <ul className={styles.filas}>
             {candidates.map((movie) => (
@@ -133,11 +129,7 @@ export function MovieListScreen({ filters, onClose }: Props) {
                 onClose();
               }}
             >
-              {count === 0
-                ? "Deja al menos una"
-                : count === 1
-                  ? "Usar solo esta"
-                  : `Usar estas ${count}`}
+              {count === 0 ? t.list.keepOne : count === 1 ? t.list.useOne : t.list.useMany(count)}
             </button>
           </div>
         </>
@@ -155,13 +147,14 @@ function MovieRow({
   selected: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useLocale();
   const [failed, setFailed] = useState(false);
   return (
     <button
       type="button"
       className={styles.fila}
       aria-pressed={!selected}
-      aria-label={`Tachar ${movie.title}`}
+      aria-label={t.list.crossOff(movie.title)}
       data-tachada={!selected || undefined}
       onClick={onToggle}
     >

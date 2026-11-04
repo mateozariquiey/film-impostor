@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { GameProvider, useGame } from "@/contexts/GameContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { useDimScreen, useKeepScreenOn, useServiceWorker, useWarnBeforeLeaving } from "@/lib/browser";
 import { ResultScreen } from "./ResultScreen";
 import { ResumeScreen } from "./ResumeScreen";
@@ -11,9 +12,11 @@ import { TurnScreen } from "./TurnScreen";
 
 export function Game() {
   return (
-    <GameProvider>
-      <Screens />
-    </GameProvider>
+    <LocaleProvider>
+      <GameProvider>
+        <Screens />
+      </GameProvider>
+    </LocaleProvider>
   );
 }
 

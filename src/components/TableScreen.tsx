@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { thePlayer } from "@/lib/game";
+import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
 import { HoldButton } from "./HoldButton";
 import { PlayerDots } from "./PlayerDots";
@@ -12,6 +12,7 @@ const REVEAL_IMPOSTOR_MS = 1200;
 /** La conversación. El móvil descansa hasta que el grupo decide ver el resultado. */
 export function TableScreen() {
   const { players, movie, names, firstPlayer, revealImpostor } = useGame();
+  const { t } = useLocale();
   const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -20,6 +21,8 @@ export function TableScreen() {
     // Carga el cartel ahora para que aparezca al instante en el resultado.
     if (movie?.posterPath) new Image().src = posterUrl(movie.posterPath, "w500");
   }, [movie]);
+
+  const starts = t.table.starts(firstPlayer, names);
 
   return (
     <div
@@ -31,20 +34,21 @@ export function TableScreen() {
         <QuitButton />
       </div>
       <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.encabezado}`}>
-        Ya lo habéis visto todos
+        {t.table.title}
       </h1>
       <p className={styles.empieza}>
-        Empieza <strong>{thePlayer(firstPlayer, names)}</strong>
+        {starts.before}
+        <strong>{starts.name}</strong>
+        {starts.after}
       </p>
       <div className={`franja ${styles.reglas}`}>
-        <p>Cada uno da una pista, sin decir el título.</p>
-        <p>Después, preguntad y votad quién disimula.</p>
-        <p>Antes de ver el resultado, el impostor puede intentar adivinar la película.</p>
-        <p>Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.</p>
+        {t.table.rules.map((rule) => (
+          <p key={rule}>{rule}</p>
+        ))}
       </div>
       <div className={styles.pie}>
         <p className={`secundario ${styles.aviso}`} role="status">
-          {tooShort ? "Deja el dedo hasta que se llene el botón." : ""}
+          {tooShort ? t.table.tooShort : ""}
         </p>
         <HoldButton
           className={`accion ${styles.mantener}`}
@@ -53,7 +57,7 @@ export function TableScreen() {
           onRelease={(completed) => setTooShort(!completed)}
           onComplete={revealImpostor}
         >
-          <span>Mantén para ver quién era</span>
+          <span>{t.table.hold}</span>
         </HoldButton>
       </div>
     </div>

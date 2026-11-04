@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { useGame } from "@/contexts/GameContext";
+import { useLocale } from "@/contexts/LocaleContext";
 import { isValidYear, MIN_YEAR } from "@/lib/filters";
 import { MAX_PLAYERS, MIN_PLAYERS } from "@/lib/game";
-import { RESERVE_MOVIES } from "@/lib/reserve";
+import { genreName, pickableGenres } from "@/lib/genres";
+import { reserveMovies } from "@/lib/reserve";
 import {
   loadSettings,
   saveSettings,
@@ -10,6 +12,7 @@ import {
   type GameSettings,
 } from "@/lib/settings";
 import type { Decade, Hint, Popularity } from "@/types";
+import type { Messages } from "@/messages/es";
 import { ChoiceSheet } from "./ChoiceSheet";
 import { MovieListScreen } from "./MovieListScreen";
 import { NamesSheet } from "./NamesSheet";
@@ -20,36 +23,15 @@ import styles from "./SetupScreen.module.css";
 const EXACT_YEAR = "YEAR";
 type EraChoice = Decade | typeof EXACT_YEAR;
 
-const ERA_OPTIONS: { value: EraChoice; label: string }[] = [
-  { value: "ALL", label: "Cualquiera" },
-  { value: "80s", label: "Los 80" },
-  { value: "90s", label: "Los 90" },
-  { value: "00s", label: "Los 2000" },
-  { value: "10s", label: "Los 2010" },
-  { value: "20s", label: "Los 2020" },
-  { value: EXACT_YEAR, label: "Un año concreto" },
-];
-const POPULARITY_OPTIONS: { value: Popularity; label: string }[] = [
-  { value: "TOP_100", label: "Muy conocidas" },
-  { value: "TOP_500", label: "Un poco de todo" },
-  { value: "HARDCORE", label: "Para cinéfilos" },
-  { value: "CLASSICS", label: "Clásicos populares" },
-];
-const HINT_OPTIONS: { value: Hint; label: string; short: string }[] = [
-  { value: "GENRE", label: "Género", short: "género" },
-  { value: "YEAR", label: "Año", short: "año" },
-  { value: "KEYWORDS", label: "Palabras clave", short: "claves" },
-];
+const ANY_GENRE = "ALL";
 
-const ERROR_MESSAGES = {
-  offline: "No hay conexión, así que no se puede buscar una película.",
-  server: "TMDB no responde, así que no se puede buscar una película.",
-  "no-movies": "No hay películas con estos filtros. Prueba con otra época.",
-};
+const ERAS: readonly EraChoice[] = ["ALL", "80s", "90s", "00s", "10s", "20s", EXACT_YEAR];
+const POPULARITIES: readonly Popularity[] = ["TOP_100", "TOP_500", "HARDCORE", "CLASSICS"];
+const HINTS: readonly Hint[] = ["GENRE", "YEAR", "KEYWORDS"];
 
-function hintsSummary(hints: Hint[]): string {
-  const names = HINT_OPTIONS.filter(({ value }) => hints.includes(value)).map(({ short }) => short);
-  if (names.length === 0) return "Ninguna";
+function hintsSummary(hints: Hint[], t: Messages): string {
+  const names = HINTS.filter((hint) => hints.includes(hint)).map((hint) => t.setup.hintShort[hint]);
+  if (names.length === 0) return t.setup.noHints;
   const text = names.join(", ");
   return text[0].toUpperCase() + text.slice(1);
 }
@@ -65,10 +47,12 @@ export function SetupScreen() {
     setCustomPool,
     gameExpired,
   } = useGame();
+  const { locale, t, setLocale } = useLocale();
   const [settings, setSettings] = useState<GameSettings>(loadSettings);
   const [showList, setShowList] = useState(false);
   const [exactYear, setExactYear] = useState(() => settings.year !== "");
   const eraSheet = useRef<HTMLDialogElement>(null);
+  const genreSheet = useRef<HTMLDialogElement>(null);
   const popularitySheet = useRef<HTMLDialogElement>(null);
   const hintsSheet = useRef<HTMLDialogElement>(null);
   const namesSheet = useRef<HTMLDialogElement>(null);
@@ -79,7 +63,7 @@ export function SetupScreen() {
   }, [settings]);
 
   const update = (changes: Partial<GameSettings>) => {
-    if ("decade" in changes || "popularity" in changes || "year" in changes) {
+    if ("decade" in changes || "popularity" in changes || "year" in changes || "genre" in changes) {
       setCustomPool([]);
       clearError();
     }
@@ -95,27 +79,28 @@ export function SetupScreen() {
   const { playerCount } = settings;
   const canStart = !isLoading && yearIsValid;
   const namedPlayers = settings.names.slice(0, playerCount).filter((name) => name.trim() !== "").length;
+  const otherLocale = locale === "es" ? "en" : "es";
   const canUseReserve = error === "offline" || error === "server";
   const eraValue = exactYear
     ? yearIsValid
       ? settings.year
-      : "Falta el año"
-    : ERA_OPTIONS.find(({ value }) => value === settings.decade)?.label;
+      : t.setup.yearMissing
+    : t.setup.eraOptions[settings.decade];
 
   return (
     <div className="pantalla">
       <div className={`franja ${styles.portada}`} data-compacta={error ? true : undefined}>
         <header>
           <h1 className={styles.nombre}>Film Impostor</h1>
-          <p className="secundario">Todos ven la misma película, menos uno.</p>
+          <p className="secundario">{t.meta.tagline}</p>
         </header>
 
         <div className={styles.jugadores} role="group" aria-labelledby="jugadores">
           <span id="jugadores" className="secundario">
-            Cuántos jugáis
+            {t.setup.players}
           </span>
           <div className={styles.contador}>
-            <output aria-live="polite" aria-label={`${playerCount} jugadores`}>
+            <output aria-live="polite" aria-label={t.setup.playersCount(playerCount)}>
               <span key={playerCount} className={`numeral ${styles.cifra}`}>
                 {playerCount}
               </span>
@@ -123,7 +108,7 @@ export function SetupScreen() {
             <span className={styles.botones}>
               <button
                 type="button"
-                aria-label="Un jugador menos"
+                aria-label={t.setup.fewerPlayers}
                 disabled={playerCount <= MIN_PLAYERS}
                 onClick={() => update({ playerCount: playerCount - 1 })}
               >
@@ -133,7 +118,7 @@ export function SetupScreen() {
               </button>
               <button
                 type="button"
-                aria-label="Un jugador más"
+                aria-label={t.setup.morePlayers}
                 disabled={playerCount >= MAX_PLAYERS}
                 onClick={() => update({ playerCount: playerCount + 1 })}
               >
@@ -153,22 +138,27 @@ export function SetupScreen() {
       </div>
 
       <ul className={styles.filas}>
-        <Row label="De qué época" value={eraValue} sheet={eraSheet} />
+        <Row label={t.setup.era} value={eraValue} sheet={eraSheet} />
         <Row
-          label="Cómo de conocidas"
-          value={POPULARITY_OPTIONS.find(({ value }) => value === settings.popularity)?.label}
+          label={t.setup.genre}
+          value={settings.genre === null ? t.setup.anyGenre : genreName(settings.genre, locale)}
+          sheet={genreSheet}
+        />
+        <Row
+          label={t.setup.popularity}
+          value={t.setup.popularityOptions[settings.popularity]}
           sheet={popularitySheet}
         />
-        <Row label="Pistas del impostor" value={hintsSummary(settings.hints)} sheet={hintsSheet} />
+        <Row label={t.setup.hints} value={hintsSummary(settings.hints, t)} sheet={hintsSheet} />
         <Row
-          label="Quitar películas"
-          value={customPool.length > 0 ? `Quedan ${customPool.length}` : undefined}
+          label={t.setup.removeMovies}
+          value={customPool.length > 0 ? t.setup.moviesLeft(customPool.length) : undefined}
           disabled={!yearIsValid}
           onClick={() => setShowList(true)}
         />
         <Row
-          label="Poner nombres"
-          value={namedPlayers > 0 ? `${namedPlayers} de ${playerCount}` : undefined}
+          label={t.setup.addNames}
+          value={namedPlayers > 0 ? t.setup.namedCount(namedPlayers, playerCount) : undefined}
           sheet={namesSheet}
         />
       </ul>
@@ -176,24 +166,21 @@ export function SetupScreen() {
       <div className={styles.pie}>
         {gameExpired && !error && (
           <p className={`secundario ${styles.caducada}`} role="status">
-            La partida anterior ha caducado.
+            {t.setup.expired}
           </p>
         )}
         {error && (
           <div className={styles.error} role="alert">
-            <p>{ERROR_MESSAGES[error]}</p>
+            <p>{t.setup.errors[error]}</p>
             {canUseReserve && (
               <>
-                <p className="secundario">
-                  La lista de reserva son {RESERVE_MOVIES.length} películas muy conocidas, sin
-                  carteles ni filtros.
-                </p>
+                <p className="secundario">{t.setup.reserveNote(reserveMovies(locale).length)}</p>
                 <button
                   type="button"
                   className="accion-sec"
                   onClick={() => startWithReserve(settings)}
                 >
-                  Jugar con la lista de reserva
+                  {t.setup.useReserve}
                 </button>
               </>
             )}
@@ -206,24 +193,34 @@ export function SetupScreen() {
           aria-busy={isLoading}
           onClick={() => void startGame(settings)}
         >
-          {isLoading ? "Buscando película…" : canUseReserve ? "Reintentar" : "Empezar"}
+          {isLoading ? t.setup.searching : canUseReserve ? t.setup.retry : t.setup.start}
         </button>
         {!error && (
-          <button
-            type="button"
-            className={`enlace ${styles.reglas}`}
-            onClick={() => rules.current?.showModal()}
-          >
-            Cómo se juega
-          </button>
+          <div className={styles.enlaces}>
+            <button type="button" className="enlace" onClick={() => rules.current?.showModal()}>
+              {t.rules.title}
+            </button>
+            {/* Cada idioma se ofrece en su propio idioma, para que lo encuentre quien no entiende el otro. */}
+            <button
+              type="button"
+              className="enlace"
+              lang={otherLocale}
+              onClick={() => {
+                setCustomPool([]);
+                setLocale(otherLocale);
+              }}
+            >
+              {t.otherLanguage}
+            </button>
+          </div>
         )}
       </div>
 
       <ChoiceSheet<EraChoice>
         ref={eraSheet}
         id="epoca"
-        title="De qué época"
-        choices={ERA_OPTIONS}
+        title={t.setup.era}
+        choices={ERAS.map((value) => ({ value, label: t.setup.eraOptions[value] }))}
         keepsOpen={EXACT_YEAR}
         isSelected={(value) =>
           value === EXACT_YEAR ? exactYear : !exactYear && settings.decade === value
@@ -240,7 +237,7 @@ export function SetupScreen() {
       >
         {exactYear && (
           <label className={styles.anio}>
-            <span>Año</span>
+            <span>{t.setup.year}</span>
             <input
               autoFocus
               inputMode="numeric"
@@ -251,28 +248,35 @@ export function SetupScreen() {
               value={settings.year}
               onChange={(event) => update({ year: event.target.value })}
             />
-            {!yearIsValid && (
-              <small>
-                Escribe un año entre {MIN_YEAR} y {new Date().getFullYear()}.
-              </small>
-            )}
+            {!yearIsValid && <small>{t.setup.yearRange(MIN_YEAR, new Date().getFullYear())}</small>}
           </label>
         )}
       </ChoiceSheet>
+      <ChoiceSheet<string>
+        ref={genreSheet}
+        id="genero"
+        title={t.setup.genre}
+        choices={[
+          { value: ANY_GENRE, label: t.setup.anyGenre },
+          ...pickableGenres(locale).map(({ id, name }) => ({ value: String(id), label: name })),
+        ]}
+        isSelected={(value) => (settings.genre === null ? value === ANY_GENRE : value === String(settings.genre))}
+        onChoose={(value) => update({ genre: value === ANY_GENRE ? null : Number(value) })}
+      />
       <ChoiceSheet<Popularity>
         ref={popularitySheet}
         id="fama"
-        title="Cómo de conocidas"
-        choices={POPULARITY_OPTIONS}
+        title={t.setup.popularity}
+        choices={POPULARITIES.map((value) => ({ value, label: t.setup.popularityOptions[value] }))}
         isSelected={(value) => settings.popularity === value}
         onChoose={(value) => update({ popularity: value })}
       />
       <ChoiceSheet<Hint>
         ref={hintsSheet}
         id="pistas"
-        title="Pistas del impostor"
+        title={t.setup.hints}
         type="checkbox"
-        choices={HINT_OPTIONS}
+        choices={HINTS.map((value) => ({ value, label: t.setup.hintOptions[value] }))}
         isSelected={(value) => settings.hints.includes(value)}
         onChoose={(value) =>
           update({

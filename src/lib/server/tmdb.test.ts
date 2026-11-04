@@ -22,6 +22,19 @@ describe('buildDiscoverParams', () => {
     });
 });
 
+describe('género', () => {
+    it('filtra por el género elegido, y sin él no filtra', () => {
+        expect(buildDiscoverParams({ decade: 'ALL', popularity: 'TOP_100', genre: 27 }, today).with_genres).toBe('27');
+        expect(buildDiscoverParams({ decade: 'ALL', popularity: 'TOP_100' }, today).with_genres).toBeUndefined();
+    });
+
+    it('da el nombre en el idioma de la partida', () => {
+        const raw = { id: 1, title: 'Alien', genre_ids: [27], poster_path: null };
+        expect(toMovie(raw, 'es').genre).toBe('Terror');
+        expect(toMovie(raw, 'en').genre).toBe('Horror');
+    });
+});
+
 describe('maxPagesFor', () => {
     it('reduce las páginas cuando se filtra por un solo año', () => {
         expect(maxPagesFor({ decade: 'ALL', popularity: 'HARDCORE' })).toBe(100);
@@ -31,12 +44,12 @@ describe('maxPagesFor', () => {
 
 describe('toMovie', () => {
     it('traduce el primer género y extrae el año', () => {
-        const movie = toMovie({ id: 1, title: 'Alien', genre_ids: [27, 878], poster_path: '/a.jpg', release_date: '1979-05-25' });
+        const movie = toMovie({ id: 1, title: 'Alien', genre_ids: [27, 878], poster_path: '/a.jpg', release_date: '1979-05-25' }, 'es');
         expect(movie).toEqual({ id: 1, title: 'Alien', genre: 'Terror', posterPath: '/a.jpg', releaseYear: '1979', keywords: [] });
     });
 
     it('tolera datos incompletos', () => {
-        const movie = toMovie({ id: 2, title: 'Sin datos', poster_path: null });
+        const movie = toMovie({ id: 2, title: 'Sin datos', poster_path: null }, 'es');
         expect(movie.genre).toBe('Género desconocido');
         expect(movie.releaseYear).toBeNull();
     });
@@ -102,4 +115,51 @@ it('pide los datos en español: de ahí salen el título y el cartel localizados
     const [movie] = await getMoviePool(filters);
     expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get('language')).toBe('es-ES');
     expect(movie).toMatchObject({ title: 'Matrix', posterPath: '/cartel-es.jpg' });
+});
+
+it('pide los datos en inglés si la partida va en inglés', async () => {
+    vi.stubEnv('TMDB_API_KEY', 'test-key');
+    const fetchMock = vi.fn().mockImplementation(async () => reply({ results: [rawMovie], total_pages: 1 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await getMoviePool(filters, 'en');
+    expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get('language')).toBe('en-US');
+});
+
+describe('no repetir películas', () => {
+    const seen = { id: 1, title: 'Vista', poster_path: null };
+    const seenBefore = { id: 2, title: 'Vista hace tiempo', poster_path: null };
+    const fresh = { id: 3, title: 'Nueva', poster_path: null };
+
+    function stubPages(pages: Record<number, unknown[]>) {
+        vi.stubEnv('TMDB_API_KEY', 'test-key');
+        const fetchMock = vi.fn().mockImplementation(async (url: string) => {
+            const { pathname, searchParams } = new URL(url);
+            if (pathname.includes('keywords')) return reply({ keywords: [] });
+            return reply({ results: pages[Number(searchParams.get('page'))] ?? [], total_pages: Object.keys(pages).length });
+        });
+        vi.stubGlobal('fetch', fetchMock);
+        return fetchMock;
+    }
+
+    it('no elige una que ya ha salido si en la página hay otra', async () => {
+        stubPages({ 1: [seen, fresh] });
+        for (let i = 0; i < 20; i++) expect((await getRandomMovie(filters, 'es', [1])).id).toBe(3);
+    });
+
+    it('sigue buscando en otras páginas si en esta ya han salido todas', async () => {
+        stubPages({ 1: [seen], 2: [seenBefore], 3: [fresh] });
+        for (let i = 0; i < 20; i++) expect((await getRandomMovie(filters, 'es', [1, 2])).id).toBe(3);
+    });
+
+    it('si se agotan, saca la que hace más tiempo que salió', async () => {
+        stubPages({ 1: [seen, seenBefore] });
+        expect((await getRandomMovie(filters, 'es', [2, 1])).id).toBe(2);
+    });
+
+    it('deja de buscar tras unas cuantas páginas', async () => {
+        const pages = Object.fromEntries(Array.from({ length: 25 }, (_, i) => [i + 1, [seen]]));
+        const fetchMock = stubPages(pages);
+        expect((await getRandomMovie({ ...filters, popularity: 'TOP_500' }, 'es', [1])).id).toBe(1);
+        expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('discover')).length).toBe(5);
+    });
 });

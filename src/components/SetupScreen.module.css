@@ -119,8 +119,14 @@ button.fila:active:not(:disabled) {
   margin-top: 4px;
 }
 
-.reglas {
+.enlaces {
+  display: flex;
+  justify-content: center;
   margin-top: 4px;
+}
+
+.enlaces button {
+  margin: 0;
 }
 
 .anio {

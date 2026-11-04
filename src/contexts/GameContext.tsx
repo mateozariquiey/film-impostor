@@ -2,12 +2,14 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
-import type { GamePhase, Hint, Movie, Player } from '@/types';
-import { createDeal, pickRandom, playersWithImpostor } from '@/lib/game';
+import type { GamePhase, Hint, Locale, Movie, Player } from '@/types';
+import { createDeal, playersWithImpostor } from '@/lib/game';
 import { ApiError, fetchKeywords, fetchRandomMovie, type ApiErrorKind } from '@/lib/api';
-import { isReserveMovie, RESERVE_MOVIES } from '@/lib/reserve';
+import { addRecentMovie, loadRecentMovies, pickFresh, saveRecentMovies } from '@/lib/recentMovies';
+import { isReserveMovie, reserveMovies } from '@/lib/reserve';
 import { canSaveGames, clearGame, loadGame, saveGame, type SavedGame } from '@/lib/savedGame';
 import { cleanName, settingsToFilters, type GameSettings } from '@/lib/settings';
+import { useLocale } from './LocaleContext';
 
 interface GameState {
     phase: GamePhase;
@@ -57,17 +59,11 @@ const INITIAL_STATE: GameState = {
 
 const GameContext = createContext<GameContextValue | null>(null);
 
-/** Elige al azar evitando repetir la película anterior si hay alternativa. */
-function pickOther(movies: readonly Movie[], previous: Movie | null): Movie {
-    const others = movies.filter((movie) => movie.id !== previous?.id);
-    return pickRandom(others.length > 0 ? others : movies);
-}
-
-async function chooseMovie(settings: GameSettings, customPool: Movie[], previous: Movie | null): Promise<Movie> {
-    if (customPool.length === 0) return fetchRandomMovie(settingsToFilters(settings));
+async function chooseMovie(settings: GameSettings, customPool: Movie[], locale: Locale, recent: readonly number[]): Promise<Movie> {
+    if (customPool.length === 0) return fetchRandomMovie(settingsToFilters(settings), locale, recent);
 
     // Las películas de la selección no traen palabras clave: se piden solo si hacen falta.
-    const movie = pickOther(customPool, previous);
+    const movie = pickFresh(customPool, recent);
     if (!settings.hints.includes('KEYWORDS')) return movie;
     // Son solo una pista: si no se pueden pedir, la partida sigue sin ellas.
     const keywords = await fetchKeywords(movie.id).catch(() => []);
@@ -86,6 +82,7 @@ function restoreState(game: SavedGame): GameState {
 }
 
 export function GameProvider({ children }: { children: ReactNode }) {
+    const { locale } = useLocale();
     const [restored] = useState(loadGame);
     const [state, setState] = useState<GameState>(() =>
         restored.status === 'ok' ? restoreState(restored.game) : INITIAL_STATE,
@@ -98,6 +95,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const [customPool, setCustomPool] = useState<Movie[]>(() =>
         restored.status === 'ok' ? restored.game.customPool : [],
     );
+
+    const [recentMovies, setRecentMovies] = useState(loadRecentMovies);
 
     const { phase } = state;
     const inGame = phase === 'TURN' || phase === 'TABLE';
@@ -153,6 +152,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }, [phase]);
 
     const deal = (settings: GameSettings, movie: Movie) => {
+        const recent = addRecentMovie(recentMovies, movie.id);
+        setRecentMovies(recent);
+        saveRecentMovies(recent);
         setGameExpired(false);
         setState({
             phase: 'TURN',
@@ -167,7 +169,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
         setError(null);
         try {
-            deal(settings, await chooseMovie(settings, customPool, state.movie));
+            deal(settings, await chooseMovie(settings, customPool, locale, recentMovies));
         } catch (err) {
             setState(INITIAL_STATE);
             setError(err instanceof ApiError ? err.kind : 'server');
@@ -178,7 +180,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     const startWithReserve = (settings: GameSettings) => {
         setError(null);
-        deal(settings, pickOther(RESERVE_MOVIES, state.movie));
+        deal(settings, pickFresh(reserveMovies(locale), recentMovies));
     };
 
     const playAgain = async () => {

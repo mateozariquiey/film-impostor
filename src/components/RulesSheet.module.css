@@ -18,6 +18,16 @@
   list-style: decimal;
 }
 
+.apartado {
+  margin-top: 20px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.instalar {
+  margin-top: 6px;
+}
+
 .credito {
   margin: 16px 0 20px;
   font-size: 13px;

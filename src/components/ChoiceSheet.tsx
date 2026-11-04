@@ -1,4 +1,5 @@
 import type { ReactNode, Ref } from "react";
+import { useLocale } from "@/contexts/LocaleContext";
 import { Sheet } from "./Sheet";
 import styles from "./ChoiceSheet.module.css";
 
@@ -34,12 +35,13 @@ export function ChoiceSheet<T extends string>({
   keepsOpen,
   children,
 }: Props<T>) {
+  const { t } = useLocale();
   return (
     <Sheet ref={ref} titleId={id}>
       <div className={styles.cabecera}>
         <h2 id={id}>{title}</h2>
         <form method="dialog">
-          <button className={styles.listo}>Listo</button>
+          <button className={styles.listo}>{t.done}</button>
         </form>
       </div>
       <fieldset className={styles.filas} aria-labelledby={id}>

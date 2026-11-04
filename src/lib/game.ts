@@ -35,18 +35,3 @@ export function playersWithImpostor(count: number, impostor: number): Player[] {
 export function createDeal(count: number, random: () => number = Math.random): { players: Player[]; firstPlayer: number } {
     return { players: createPlayers(count, random), firstPlayer: randomIndex(count, random) };
 }
-
-/** Para los títulos: «Lucía» o «Jugador 3». */
-export function playerName(index: number, names: readonly string[]): string {
-    return names[index] || `Jugador ${index + 1}`;
-}
-
-/** Para medio de una frase: «Lucía» o «el jugador 3». */
-export function thePlayer(index: number, names: readonly string[]): string {
-    return names[index] || `el jugador ${index + 1}`;
-}
-
-/** Con preposición, por la contracción: «a Lucía» o «al jugador 3». */
-export function toPlayer(index: number, names: readonly string[]): string {
-    return names[index] ? `a ${names[index]}` : `al jugador ${index + 1}`;
-}

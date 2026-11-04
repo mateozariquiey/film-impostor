@@ -1,32 +1,12 @@
-import type { Decade, Movie, MovieFilters, Popularity } from '@/types';
-import { randomIndex } from '@/lib/game';
+import type { Decade, Locale, Movie, MovieFilters, Popularity } from '@/types';
+import { pickRandom, randomIndex } from '@/lib/game';
+import { genreName } from '@/lib/genres';
+import { TMDB_LANGUAGES } from '@/lib/locale';
+import { pickFresh } from '@/lib/recentMovies';
 
 // Este módulo solo se usa desde las rutas de /api, así que la clave nunca llega al navegador.
 
 const BASE_URL = 'https://api.themoviedb.org/3';
-
-/** TMDB devuelve los géneros como IDs. Nombres en español de la lista oficial. */
-const GENRES: Record<number, string> = {
-    28: 'Acción',
-    12: 'Aventura',
-    16: 'Animación',
-    35: 'Comedia',
-    80: 'Crimen',
-    99: 'Documental',
-    18: 'Drama',
-    10751: 'Familia',
-    14: 'Fantasía',
-    36: 'Historia',
-    27: 'Terror',
-    10402: 'Música',
-    9648: 'Misterio',
-    10749: 'Romance',
-    878: 'Ciencia ficción',
-    10770: 'Película de TV',
-    53: 'Suspense',
-    10752: 'Bélica',
-    37: 'Western',
-};
 
 /** Cada página de TMDB trae 20 películas: 5 páginas son el top 100. */
 const MAX_PAGES: Record<Popularity, number> = {
@@ -38,6 +18,8 @@ const MAX_PAGES: Record<Popularity, number> = {
 
 const MAX_PAGES_FOR_SINGLE_YEAR = 10;
 const POOL_PAGES = 3;
+/** Cuántas páginas se miran, como mucho, buscando una película que no haya salido ya. */
+const MAX_PAGE_TRIES = 5;
 const MAX_KEYWORDS = 5;
 
 export class TmdbConfigError extends Error {}
@@ -69,8 +51,7 @@ function getApiKey(): string {
 }
 
 async function fetchFromTmdb<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
-    // Con este idioma, TMDB da el título en español y un poster_path que busca primero un cartel en español.
-    const query = new URLSearchParams({ api_key: getApiKey(), language: 'es-ES', ...params });
+    const query = new URLSearchParams({ api_key: getApiKey(), ...params });
     const res = await fetch(`${BASE_URL}${endpoint}?${query}`, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) });
     if (!res.ok) throw new TmdbRequestError(`TMDB respondió ${res.status} en ${endpoint}`);
     return res.json() as Promise<T>;
@@ -95,6 +76,8 @@ export function buildDiscoverParams(filters: MovieFilters, today = new Date()): 
         'vote_count.gte': '300',
     };
 
+    if (filters.genre !== undefined) params.with_genres = String(filters.genre);
+
     if (filters.year !== undefined) {
         params.primary_release_year = String(filters.year);
     } else {
@@ -110,21 +93,22 @@ export function maxPagesFor(filters: MovieFilters): number {
     return filters.year !== undefined ? Math.min(max, MAX_PAGES_FOR_SINGLE_YEAR) : max;
 }
 
-export function toMovie(raw: TmdbMovie, keywords: string[] = []): Movie {
-    const genreId = raw.genre_ids?.[0];
+export function toMovie(raw: TmdbMovie, locale: Locale, keywords: string[] = []): Movie {
     return {
         id: raw.id,
         title: raw.title,
-        genre: (genreId !== undefined && GENRES[genreId]) || 'Género desconocido',
+        genre: genreName(raw.genre_ids?.[0], locale),
         posterPath: raw.poster_path,
         releaseYear: raw.release_date ? raw.release_date.slice(0, 4) : null,
         keywords,
     };
 }
 
-function discover(filters: MovieFilters, page: number): Promise<TmdbDiscoverResponse> {
+function discover(filters: MovieFilters, page: number, locale: Locale): Promise<TmdbDiscoverResponse> {
     return fetchFromTmdb<TmdbDiscoverResponse>('/discover/movie', {
         ...buildDiscoverParams(filters),
+        // Con el idioma, TMDB da el título traducido y un poster_path que busca primero un cartel en él.
+        language: TMDB_LANGUAGES[locale],
         page: String(page),
     });
 }
@@ -139,23 +123,38 @@ export async function getKeywords(movieId: number): Promise<string[]> {
     }
 }
 
-export async function getRandomMovie(filters: MovieFilters): Promise<Movie> {
-    const maxPages = maxPagesFor(filters);
-    let data = await discover(filters, randomIndex(maxPages) + 1);
+/**
+ * Una película al azar que no esté en `recent`, ordenada de la más antigua a la más reciente.
+ * Se miran páginas hasta dar con una. Si no la hay, por filtros estrictos o tras muchas partidas,
+ * sale la que hace más tiempo que salió de entre las vistas, en lugar de quedarse sin película.
+ */
+export async function getRandomMovie(filters: MovieFilters, locale: Locale = 'es', recent: readonly number[] = []): Promise<Movie> {
+    let lastPage = maxPagesFor(filters);
+    let page = randomIndex(lastPage) + 1;
+    const tried = new Set<number>();
+    const found: TmdbMovie[] = [];
 
-    // Con filtros estrictos puede haber menos páginas de las previstas: se repite dentro del rango real.
-    if (data.results.length === 0 && data.total_pages > 0) {
-        data = await discover(filters, randomIndex(Math.min(maxPages, data.total_pages)) + 1);
+    while (true) {
+        tried.add(page);
+        const data = await discover(filters, page, locale);
+        found.push(...data.results);
+        if (found.some((movie) => !recent.includes(movie.id)) || tried.size >= MAX_PAGE_TRIES) break;
+
+        // Con filtros estrictos puede haber menos páginas de las previstas: se sigue dentro del rango real.
+        lastPage = Math.min(lastPage, data.total_pages);
+        const left = Array.from({ length: lastPage }, (_, i) => i + 1).filter((other) => !tried.has(other));
+        if (left.length === 0) break;
+        page = pickRandom(left);
     }
-    if (data.results.length === 0) throw new NoMoviesError('No hay películas con esos filtros');
+    if (found.length === 0) throw new NoMoviesError('No hay películas con esos filtros');
 
-    const raw = data.results[randomIndex(data.results.length)];
-    return toMovie(raw, await getKeywords(raw.id));
+    const raw = pickFresh(found, recent);
+    return toMovie(raw, locale, await getKeywords(raw.id));
 }
 
-export async function getMoviePool(filters: MovieFilters): Promise<Movie[]> {
-    const pages = Array.from({ length: POOL_PAGES }, (_, i) => discover(filters, i + 1));
+export async function getMoviePool(filters: MovieFilters, locale: Locale = 'es'): Promise<Movie[]> {
+    const pages = Array.from({ length: POOL_PAGES }, (_, i) => discover(filters, i + 1, locale));
     const results = (await Promise.all(pages)).flatMap((page) => page.results);
-    const unique = new Map(results.map((raw) => [raw.id, toMovie(raw)]));
+    const unique = new Map(results.map((raw) => [raw.id, toMovie(raw, locale)]));
     return [...unique.values()];
 }

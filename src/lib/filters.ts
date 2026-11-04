@@ -1,4 +1,5 @@
 import type { Decade, Hint, MovieFilters, Popularity } from '@/types';
+import { isGenreId } from '@/lib/genres';
 
 export const DECADES: readonly Decade[] = ['ALL', '80s', '90s', '00s', '10s', '20s'];
 export const POPULARITIES: readonly Popularity[] = ['TOP_100', 'TOP_500', 'HARDCORE', 'CLASSICS'];
@@ -29,6 +30,7 @@ export function filtersToSearchParams(filters: MovieFilters): URLSearchParams {
         popularity: filters.popularity,
     });
     if (filters.year !== undefined) params.set('year', String(filters.year));
+    if (filters.genre !== undefined) params.set('genre', String(filters.genre));
     return params;
 }
 
@@ -37,11 +39,20 @@ export function parseFilters(params: URLSearchParams, today = new Date()): Movie
     const decade = params.get('decade') ?? 'ALL';
     const popularity = params.get('popularity') ?? 'TOP_100';
     const yearParam = params.get('year');
+    const genreParam = params.get('genre');
 
     if (!isDecade(decade) || !isPopularity(popularity)) return null;
-    if (yearParam === null || yearParam === '') return { decade, popularity };
 
-    const year = Number(yearParam);
-    if (!isValidYear(year, today)) return null;
-    return { decade, popularity, year };
+    const filters: MovieFilters = { decade, popularity };
+    if (yearParam) {
+        const year = Number(yearParam);
+        if (!isValidYear(year, today)) return null;
+        filters.year = year;
+    }
+    if (genreParam) {
+        const genre = Number(genreParam);
+        if (!isGenreId(genre)) return null;
+        filters.genre = genre;
+    }
+    return filters;
 }

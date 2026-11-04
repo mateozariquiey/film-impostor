@@ -1,5 +1,6 @@
 import type { Decade, Hint, MovieFilters, Popularity } from '@/types';
 import { isDecade, isHint, isPopularity, isValidYear } from '@/lib/filters';
+import { isGenreId } from '@/lib/genres';
 import { MAX_PLAYERS, MIN_PLAYERS } from '@/lib/game';
 
 export interface GameSettings {
@@ -8,6 +9,8 @@ export interface GameSettings {
     popularity: Popularity;
     /** Texto del campo "año exacto"; vacío si no se usa. */
     year: string;
+    /** ID de género de TMDB, o null para cualquiera. */
+    genre: number | null;
     hints: Hint[];
     /** Nombre escrito para cada jugador, por posición. Sobrevive a bajar y subir el número de jugadores. */
     names: string[];
@@ -18,6 +21,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
     decade: 'ALL',
     popularity: 'TOP_100',
     year: '',
+    genre: null,
     hints: ['GENRE'],
     names: [],
 };
@@ -53,6 +57,7 @@ export function parseSettings(raw: string | null): GameSettings {
         decade: isDecade(data.decade) ? data.decade : DEFAULT_SETTINGS.decade,
         popularity: isPopularity(data.popularity) ? data.popularity : DEFAULT_SETTINGS.popularity,
         year: typeof data.year === 'string' ? data.year : DEFAULT_SETTINGS.year,
+        genre: isGenreId(data.genre) ? data.genre : DEFAULT_SETTINGS.genre,
         hints: Array.isArray(data.hints) ? data.hints.filter(isHint) : DEFAULT_SETTINGS.hints,
         names: Array.isArray(data.names)
             ? data.names
@@ -86,5 +91,6 @@ export function settingsToFilters(settings: GameSettings): MovieFilters {
         decade: settings.decade,
         popularity: settings.popularity,
         ...(hasYear ? { year } : {}),
+        ...(settings.genre !== null ? { genre: settings.genre } : {}),
     };
 }

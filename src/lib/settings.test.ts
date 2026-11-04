@@ -13,6 +13,7 @@ describe('parseSettings', () => {
         expect(parseSettings(raw)).toEqual({
             playerCount: DEFAULT_SETTINGS.playerCount,
             decade: '80s',
+            genre: null,
             popularity: DEFAULT_SETTINGS.popularity,
             year: '1985',
             hints: ['YEAR'],
@@ -53,5 +54,18 @@ describe('nombres', () => {
     it('se limpian al jugar', () => {
         expect(cleanName('  Ana   María ')).toBe('Ana María');
         expect(cleanName('   ')).toBe('');
+    });
+});
+
+describe('género', () => {
+    it('guarda solo géneros que existen', () => {
+        expect(parseSettings(JSON.stringify({ genre: 27 })).genre).toBe(27);
+        expect(parseSettings(JSON.stringify({ genre: 123456 })).genre).toBeNull();
+        expect(parseSettings(JSON.stringify({ genre: 'terror' })).genre).toBeNull();
+    });
+
+    it('pasa a los filtros si se ha elegido', () => {
+        expect(settingsToFilters({ ...DEFAULT_SETTINGS, genre: 35 }).genre).toBe(35);
+        expect(settingsToFilters(DEFAULT_SETTINGS)).not.toHaveProperty('genre');
     });
 });

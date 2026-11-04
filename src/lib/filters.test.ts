@@ -25,3 +25,10 @@ describe('parseFilters', () => {
         expect(parseFilters(filtersToSearchParams(filters), today)).toEqual(filters);
     });
 });
+
+it('valida el género que llega a la API', () => {
+    expect(parseFilters(new URLSearchParams('genre=27'))?.genre).toBe(27);
+    expect(parseFilters(new URLSearchParams('genre=1'))).toBeNull();
+    expect(parseFilters(new URLSearchParams('genre=abc'))).toBeNull();
+    expect(parseFilters(new URLSearchParams(''))).not.toHaveProperty('genre');
+});

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { toPlayer } from "@/lib/game";
+import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
 import { PlayerDots } from "./PlayerDots";
 import { QuitButton } from "./QuitButton";
@@ -18,6 +18,7 @@ const LONG_TITLE = 64;
  */
 export function TurnScreen() {
   const { players, currentPlayerIndex, movie, names, nextPlayer } = useGame();
+  const { t } = useLocale();
   const [held, setHeld] = useState(false);
   const [readerOpen, setReaderOpen] = useState(false);
   const [seen, setSeen] = useState(false);
@@ -45,56 +46,50 @@ export function TurnScreen() {
         <h1 ref={heading} tabIndex={-1} className={styles.quien}>
           {name ? (
             <>
-              <span className="secundario">Le toca a</span>{" "}
+              <span className="secundario">{t.turn.whoseTurn}</span>{" "}
               <span
                 className={`numeral ${styles.numero} ${styles.nombre}`}
                 style={{ "--letras": name.length } as React.CSSProperties}
               >
                 {name}
               </span>{" "}
-              <span className="solo-lector">
-                jugador {number} de {players.length}
-              </span>
+              <span className="solo-lector">{t.turn.playerOf(number, players.length)}</span>
             </>
           ) : (
             <>
-              <span className="secundario">Jugador</span>{" "}
+              <span className="secundario">{t.turn.player}</span>{" "}
               <span className={`numeral ${styles.numero}`}>{number}</span>{" "}
-              <span className="solo-lector">de {players.length}</span>
+              <span className="solo-lector">{t.turn.ofTotal(players.length)}</span>
             </>
           )}
         </h1>
         {visible && movie ? (
           <div className={styles.revelado}>
             <p className={titleClass(isImpostor ? null : movie.title)}>
-              {isImpostor ? "Eres el impostor" : <TitleLines title={movie.title} />}
+              {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} />}
             </p>
             {isImpostor ? (
               <ImpostorHints />
             ) : (
-              <p className={styles.nota}>Da pistas sin regalársela al impostor.</p>
+              <p className={styles.nota}>{t.turn.giveClues}</p>
             )}
           </div>
         ) : seen ? (
           <>
-            <p className={titleClass(null)}>Ya está oculto</p>
-            <p className={styles.nota}>Para verlo otra vez, mantén el dedo.</p>
+            <p className={titleClass(null)}>{t.turn.hidden}</p>
+            <p className={styles.nota}>{t.turn.seeAgain}</p>
           </>
         ) : (
           <>
-            <p className={titleClass(null)}>Coge el móvil</p>
-            <p className={styles.nota}>
-              {tooShort
-                ? "Mantén un momento más, hasta que te dé tiempo a leerlo."
-                : "Tu papel se ve solo mientras mantienes el dedo. Que no mire nadie más."}
-            </p>
+            <p className={titleClass(null)}>{t.turn.takePhone}</p>
+            <p className={styles.nota}>{tooShort ? t.turn.holdLonger : t.turn.holdNote}</p>
           </>
         )}
       </div>
 
       <HoldButton
         className={styles.superficie}
-        ariaLabel="Mantén pulsado para ver tu papel"
+        ariaLabel={t.turn.holdAria}
         durationMs={SEEN_AFTER_MS}
         onHoldChange={setHeld}
         onRelease={(completed) => setTooShort(!completed && !seen)}
@@ -104,12 +99,12 @@ export function TurnScreen() {
       <div className={styles.pie}>
         {seen ? (
           <button type="button" className="accion" onClick={nextPlayer}>
-            {isLast ? "Dejar el móvil en la mesa" : `Pásale el móvil ${toPlayer(number, names)}`}
+            {isLast ? t.turn.leaveOnTable : t.turn.passTo(number, names)}
           </button>
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.
           <span className="accion-sec" aria-hidden>
-            Mantén para ver tu papel
+            {t.turn.holdHint}
           </span>
         )}
       </div>
@@ -122,7 +117,7 @@ export function TurnScreen() {
           setSeen(true);
         }}
       >
-        {readerOpen ? "Ocultar mi papel" : "Mostrar mi papel sin mantener pulsado"}
+        {readerOpen ? t.turn.hideRole : t.turn.showRole}
       </button>
     </div>
   );
@@ -145,19 +140,15 @@ function TitleLines({ title }: { title: string }) {
 
 function ImpostorHints() {
   const { movie, hints } = useGame();
+  const { t } = useLocale();
   if (!movie) return null;
   if (hints.length === 0)
-    return <p className={styles.nota}>Sin pistas esta vez. Escucha y disimula.</p>;
+    return <p className={styles.nota}>{t.turn.noHints}</p>;
   return (
     <div className={styles.nota}>
-      {hints.includes("GENRE") && <p>Género: {movie.genre}</p>}
-      {hints.includes("YEAR") && <p>Año: {movie.releaseYear ?? "desconocido"}</p>}
-      {hints.includes("KEYWORDS") && (
-        <p>
-          Palabras clave:{" "}
-          {movie.keywords.length ? movie.keywords.slice(0, 3).join(", ") : "ninguna"}
-        </p>
-      )}
+      {hints.includes("GENRE") && <p>{t.turn.hintGenre(movie.genre)}</p>}
+      {hints.includes("YEAR") && <p>{t.turn.hintYear(movie.releaseYear)}</p>}
+      {hints.includes("KEYWORDS") && <p>{t.turn.hintKeywords(movie.keywords.slice(0, 3))}</p>}
     </div>
   );
 }

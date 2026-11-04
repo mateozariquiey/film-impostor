@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { toPlayer } from "@/lib/game";
+import { useLocale } from "@/contexts/LocaleContext";
 import { PlayerDots } from "./PlayerDots";
 import styles from "./ResumeScreen.module.css";
 
 /** Al volver a una partida guardada. No enseña ningún papel: solo a quién le toca. */
 export function ResumeScreen() {
   const { phase, players, currentPlayerIndex, names, continueGame, resetGame } = useGame();
+  const { t } = useLocale();
   const heading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -21,19 +22,17 @@ export function ResumeScreen() {
         <PlayerDots count={players.length} current={atTable ? players.length : currentPlayerIndex} />
       </div>
       <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.titular}`}>
-        Partida a medias
+        {t.resume.title}
       </h1>
       <p className={styles.nota}>
-        {atTable
-          ? "Ya lo habíais visto todos. Falta votar y ver quién era."
-          : `Le toca ${toPlayer(currentPlayerIndex, names)}. Los papeles siguen ocultos.`}
+        {atTable ? t.resume.atTable : t.resume.turnOf(currentPlayerIndex, names)}
       </p>
       <div className={styles.pie}>
         <button type="button" className="accion" onClick={continueGame}>
-          Seguir
+          {t.resume.continue}
         </button>
         <button type="button" className={`enlace ${styles.otra}`} onClick={resetGame}>
-          Empezar de nuevo
+          {t.resume.restart}
         </button>
       </div>
     </div>

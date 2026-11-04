@@ -14,6 +14,6 @@ describe('errores de la API propia', () => {
 
     it('trata como sin conexión una petición que no llega a ningún servidor', async () => {
         vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
-        await expect(fetchRandomMovie(FILTERS)).rejects.toEqual(new ApiError('offline'));
+        await expect(fetchRandomMovie(FILTERS, 'es', [])).rejects.toEqual(new ApiError('offline'));
     });
 });

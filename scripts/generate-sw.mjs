@@ -22,7 +22,9 @@ const publicFiles = await listFiles(join(root, "public", "icons"));
 
 const urls = [
   "/",
+  "/en",
   "/manifest.webmanifest",
+  "/en/manifest.webmanifest",
   "/icon.svg",
   "/apple-icon.png",
   ...publicFiles.map((file) => toUrl(file, join(root, "public"))),
