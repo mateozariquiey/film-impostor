@@ -33,12 +33,13 @@
   min-height: 34px;
 }
 
-/* Cuántos llevan mirado: con la fila sola no se sabe qué significa el que sobresale. */
+/* Por dónde va el reparto. Los carteles encendidos de la pared lo dicen también. */
 .cuenta {
   flex: 1;
-  margin-left: 8px;
-  font-size: 15px;
-  color: var(--ink-2);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  text-shadow: 0 0 8px #000;
 }
 
 .turno[data-held] .barra button,
@@ -72,8 +73,8 @@
 /* La misma pared, apagada: es la misma para todos y da poca luz. */
 .pared {
   position: absolute;
+  --luz-encendido: 0.6;
   inset: 0 calc(var(--margin) * -1) auto;
-  opacity: 0.8;
   /* Se apaga hacia abajo: en un móvil pequeño llega hasta el nombre, y tiene que leerse. */
   -webkit-mask-image: linear-gradient(transparent, #000 72px, #000 60%, transparent);
   mask-image: linear-gradient(transparent, #000 72px, #000 60%, transparent);
@@ -86,13 +87,12 @@
   height: 240px;
   padding: 16px;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: #000;
+  /* En reposo es un velo sobre la pared, y no una caja vacía: solo es cartel cuando se enciende. */
+  background: rgb(0 0 0 / 0.72);
 }
 
 /* Revelado: se enciende sin transición y las letras son negras. De cerca se lee bien, y de lejos no hay contraste. */
 .turno[data-held] .pieza {
-  border-color: var(--cobalto);
   background: var(--cobalto);
   color: #000;
 }
@@ -105,7 +105,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: calc(28px + 40cqw);
+  height: calc(28px + 36cqw);
   margin-top: 8px;
   /* Los carteles de detrás no deben comerse la etiqueta. */
   text-shadow: 0 0 12px #000, 0 0 2px #000;
@@ -124,7 +124,7 @@
 .nombre {
   display: block;
   margin-left: -0.02em;
-  font-size: min(44cqw, calc(235cqw / var(--letras)));
+  font-size: min(40cqw, calc(235cqw / var(--letras)));
   line-height: 0.92;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -143,10 +143,9 @@
   margin-right: 4px;
 }
 
-/* Sigue en su hueco, para que el cartel no se mueva, y abajo del todo. */
+/* Sigue en su hueco, para que el cartel no se mueva, y pegado a él. */
 .turno[data-held] .quien {
   display: block;
-  padding-top: calc(28px + 40cqw - 40px);
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */

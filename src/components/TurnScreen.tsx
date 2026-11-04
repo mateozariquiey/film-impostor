@@ -3,7 +3,6 @@ import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
 import { Icon } from "./Icon";
-import { PlayerSlots } from "./PlayerSlots";
 import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
 import { TitleLines } from "./TitleLines";
@@ -41,7 +40,6 @@ export function TurnScreen() {
   return (
     <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
       <div className={styles.barra}>
-        <PlayerSlots count={players.length} current={currentPlayerIndex} />
         <span className={styles.cuenta} aria-hidden>
           {t.turn.count(number, players.length)}
         </span>
@@ -73,7 +71,7 @@ export function TurnScreen() {
           )}
         </h1>
         <div className={styles.escena}>
-          <PosterWall className={styles.pared} />
+          <PosterWall seen={currentPlayerIndex} className={styles.pared} />
           <div className={styles.pieza} data-pieza>
             {visible && movie ? (
               <>

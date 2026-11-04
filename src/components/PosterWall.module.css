@@ -20,6 +20,10 @@
   object-fit: cover;
 }
 
+.cartel[data-estado="encendido"] img {
+  opacity: var(--luz-encendido, 1);
+}
+
 /* Un cartel sin encender está, pero no cuenta. Se enciende cuando alguien pulsa, y por eso es lo único de la pantalla que se mueve. */
 .cartel[data-estado="apagado"] {
   background-color: #000 !important;
