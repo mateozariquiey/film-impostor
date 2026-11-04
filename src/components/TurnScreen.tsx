@@ -43,7 +43,7 @@ export function TurnScreen() {
       </div>
 
       <div className={styles.papel} aria-live="polite">
-        <div className={styles.cartel}>
+        <div className={styles.cartel} data-cartel>
           {/* El nombre se ve el primero en el orden de lectura, pero va abajo: es lo grande del cartel porque no es secreto. */}
           <h1 ref={heading} tabIndex={-1} className={styles.quien}>
             {name ? (

@@ -77,9 +77,10 @@ test('el papel mide lo mismo con cualquier papel y no se lee desde lejos', async
         await page.waitForTimeout(600);
         const size = await role.evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
         const cartel = await role.evaluate((node) => {
-            const card = node.closest('[class*="cartel"]')!;
+            const card = node.closest('[data-cartel]')!;
             const box = card.getBoundingClientRect();
-            return [box.x, box.y, box.width, box.height, getComputedStyle(card).backgroundColor].join();
+            const top = node.closest('p')!.getBoundingClientRect().top;
+            return [box.x, box.y, box.width, box.height, getComputedStyle(card).backgroundColor, top].join();
         });
         roles.set((await role.textContent()) ?? '', { size, cartel });
         await finger.release();

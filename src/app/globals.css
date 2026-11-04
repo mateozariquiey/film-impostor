@@ -39,7 +39,7 @@
   --relleno: #26272a;
   --hoja: #121315;
   --ink: #c9cbcf;
-  --ink-2: #85878c;
+  --ink-2: #9a9ca1;
   --ink-3: #3f4144;
   --line: #2c2d30;
   --on-ink: #000000;
@@ -61,6 +61,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font: 400 17px/1.35 var(--fuente), system-ui, sans-serif;
+  word-spacing: 0.07em;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.25s ease;

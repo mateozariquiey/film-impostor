@@ -47,7 +47,8 @@
   container-type: inline-size;
   display: flex;
   flex-direction: column;
-  width: min(100%, calc((100dvh - 136px) * 3 / 5));
+  /* Lo que no es el cartel mide 152 px: márgenes, barra de arriba y botón de pasar el móvil. Así cabe sin scroll y no se mueve de un turno a otro. */
+  width: min(100%, calc((100dvh - 152px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 3 / 5));
   aspect-ratio: 3 / 5;
   margin: 8px auto 0;
   padding: 14px 14px 10px;
@@ -90,7 +91,7 @@
 }
 
 .turno[data-held] .nombre {
-  color: #2a439a;
+  color: #3a5bc4;
 }
 
 /* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */

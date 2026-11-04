@@ -13,7 +13,7 @@
 }
 
 .cabecera {
-  padding-top: 16px;
+  padding-top: 20px;
 }
 
 .nombre {
@@ -30,8 +30,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 12px;
-  padding-bottom: 10px;
+  margin-top: 16px;
+  padding-bottom: 12px;
   border-bottom: 2px solid var(--ink);
 }
 
@@ -53,8 +53,8 @@
 .botones button {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 60px;
+  height: 60px;
   border: 2px solid var(--ink);
 }
 
@@ -123,7 +123,7 @@
 }
 
 .pie {
-  margin-top: 6px;
+  margin-top: 10px;
   /* El botón principal llega de lado a lado y hasta abajo, como la pared arriba. */
   margin-inline: calc(var(--margin) * -1);
 }
