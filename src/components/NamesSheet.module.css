@@ -1,0 +1,36 @@
+.nota {
+  margin-bottom: 12px;
+}
+
+.fila {
+  display: block;
+  border-top: 1px solid var(--line);
+}
+
+.fila input {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  /* 16 px o más: por debajo, iOS amplía la página al enfocar. */
+  font-size: 17px;
+  font-weight: 500;
+  outline: none;
+}
+
+.fila input::placeholder {
+  color: var(--ink-2);
+  font-weight: 400;
+}
+
+.fila:has(input:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.borrar {
+  margin-top: 8px;
+}

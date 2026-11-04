@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { GameProvider, useGame } from "@/contexts/GameContext";
-import { useDimScreen, useKeepScreenOn, useWarnBeforeLeaving } from "@/lib/browser";
+import { useDimScreen, useKeepScreenOn, useServiceWorker, useWarnBeforeLeaving } from "@/lib/browser";
 import { ResultScreen } from "./ResultScreen";
+import { ResumeScreen } from "./ResumeScreen";
 import { SetupScreen } from "./SetupScreen";
 import { TableScreen } from "./TableScreen";
 import { TurnScreen } from "./TurnScreen";
@@ -17,16 +18,19 @@ export function Game() {
 }
 
 function Screens() {
-  const { phase, currentPlayerIndex } = useGame();
+  const { phase, currentPlayerIndex, isResuming, canResume } = useGame();
+  const inGame = phase === "TURN" || phase === "TABLE";
 
+  useServiceWorker();
   useKeepScreenOn(phase !== "SETUP");
-  useWarnBeforeLeaving(phase === "TURN" || phase === "TABLE");
-  useDimScreen(phase === "TURN" || phase === "TABLE");
+  useWarnBeforeLeaving(inGame && !canResume);
+  useDimScreen(inGame);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [phase]);
+  }, [phase, isResuming]);
 
+  if (isResuming) return <ResumeScreen />;
   if (phase === "SETUP") return <SetupScreen />;
   if (phase === "TABLE") return <TableScreen />;
   if (phase === "RESULT") return <ResultScreen />;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useGame } from "@/contexts/GameContext";
+import { thePlayer } from "@/lib/game";
 import { posterUrl } from "@/lib/posters";
 import { PlayerDots } from "./PlayerDots";
 import styles from "./ResultScreen.module.css";
@@ -10,7 +11,7 @@ const ARM_FALLBACK_MS = 3000;
 
 /** Vuelve la luz normal de la app, y el cartel se destapa igual que se llenó el botón que lo pidió. */
 export function ResultScreen() {
-  const { players, movie, playAgain, resetGame, isLoading } = useGame();
+  const { players, movie, names, playAgain, resetGame, isLoading } = useGame();
   const [posterFailed, setPosterFailed] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   // Se llega con el dedo aún pulsado justo donde quedan estos botones: al levantarlo no deben saltar.
@@ -56,7 +57,7 @@ export function ResultScreen() {
       )}
 
       <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.era}`}>
-        Era el jugador {impostor + 1}
+        Era {thePlayer(impostor, names)}
       </h1>
       <PlayerDots count={players.length} impostor={impostor} />
       <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>

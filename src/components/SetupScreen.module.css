@@ -105,6 +105,10 @@ button.fila:active:not(:disabled) {
   padding-top: 20px;
 }
 
+.caducada {
+  margin-bottom: 12px;
+}
+
 .error {
   display: grid;
   gap: 8px;

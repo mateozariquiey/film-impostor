@@ -6,16 +6,18 @@ interface Props {
   current?: number;
   /** Quién es el impostor: el único punto hueco de la app. */
   impostor?: number;
+  /** Quién da la primera pista en la mesa: también es «a quien le toca». */
+  starts?: number;
 }
 
 /** Un punto por jugador. Es la misma forma del icono: cuatro puntos y uno hueco. */
-export function PlayerDots({ count, current, impostor }: Props) {
+export function PlayerDots({ count, current, impostor, starts }: Props) {
   return (
     <div className={styles.puntos} aria-hidden>
       {Array.from({ length: count }, (_, index) => (
         <i
           key={index}
-          data-estado={stateOf(index, current, impostor)}
+          data-estado={index === starts ? "turno" : stateOf(index, current, impostor)}
           style={{ "--i": index, "--n": count } as React.CSSProperties}
         />
       ))}

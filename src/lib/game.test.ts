@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_PLAYERS, MIN_PLAYERS, createPlayers, pickRandom, randomIndex } from './game';
+import { MAX_PLAYERS, MIN_PLAYERS, createDeal, createPlayers, pickRandom, playerName, randomIndex, thePlayer, toPlayer } from './game';
 
 describe('createPlayers', () => {
     it('crea el número de jugadores pedido con un único impostor', () => {
@@ -32,5 +32,46 @@ describe('randomIndex y pickRandom', () => {
 
     it('falla con una lista vacía', () => {
         expect(() => pickRandom([])).toThrow();
+    });
+});
+
+describe('quién empieza', () => {
+    it('se sortea sin depender del impostor: salen todas las combinaciones por igual', () => {
+        const count = 4;
+        const seen = new Map<string, number>();
+        // Dos sorteos seguidos, con todos los valores posibles de cada uno.
+        for (let first = 0; first < count; first++) {
+            for (let second = 0; second < count; second++) {
+                const values = [first / count, second / count];
+                const { players, firstPlayer } = createDeal(count, () => values.shift()!);
+                const key = `${players.findIndex((player) => player.role === 'impostor')}-${firstPlayer}`;
+                seen.set(key, (seen.get(key) ?? 0) + 1);
+            }
+        }
+        expect(seen.size).toBe(count * count);
+        expect([...seen.values()].every((times) => times === 1)).toBe(true);
+    });
+
+    it('el impostor también puede empezar', () => {
+        const { players, firstPlayer } = createDeal(3, () => 0.5);
+        expect(players[firstPlayer].role).toBe('impostor');
+    });
+});
+
+describe('cómo se nombra a un jugador', () => {
+    const names = ['Lucía', ''];
+
+    it('usa el nombre si lo hay', () => {
+        expect(playerName(0, names)).toBe('Lucía');
+        expect(thePlayer(0, names)).toBe('Lucía');
+        expect(toPlayer(0, names)).toBe('a Lucía');
+    });
+
+    it('usa el número si está vacío o no se ha escrito', () => {
+        for (const index of [1, 2]) {
+            expect(playerName(index, names)).toBe(`Jugador ${index + 1}`);
+            expect(thePlayer(index, names)).toBe(`el jugador ${index + 1}`);
+            expect(toPlayer(index, names)).toBe(`al jugador ${index + 1}`);
+        }
     });
 });

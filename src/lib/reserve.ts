@@ -3,13 +3,14 @@ import type { Movie } from '@/types';
 /**
  * Lista de reserva para jugar cuando TMDB no responde o no hay conexión.
  * Son películas muy conocidas, con su título en España, y no llevan cartel ni palabras clave.
+ * Títulos, años y géneros contrastados con las fichas es-ES de TMDB y con Wikidata (noviembre de 2026).
  */
 const RESERVE: readonly (readonly [title: string, genre: string, year: number])[] = [
     ['El padrino', 'Drama', 1972],
     ['Tiburón', 'Suspense', 1975],
     ['La guerra de las galaxias', 'Ciencia ficción', 1977],
-    ['Grease', 'Música', 1978],
-    ['Alien, el octavo pasajero', 'Terror', 1979],
+    ['Grease', 'Romance', 1978],
+    ['Alien: El octavo pasajero', 'Terror', 1979],
     ['En busca del arca perdida', 'Aventura', 1981],
     ['E.T., el extraterrestre', 'Familia', 1982],
     ['Los Goonies', 'Aventura', 1985],
@@ -19,7 +20,7 @@ const RESERVE: readonly (readonly [title: string, genre: string, year: number])[
     ['Pretty Woman', 'Romance', 1990],
     ['Solo en casa', 'Comedia', 1990],
     ['El silencio de los corderos', 'Suspense', 1991],
-    ['Jurassic Park', 'Aventura', 1993],
+    ['Parque Jurásico', 'Aventura', 1993],
     ['El rey león', 'Animación', 1994],
     ['Forrest Gump', 'Comedia', 1994],
     ['Pulp Fiction', 'Crimen', 1994],
@@ -45,8 +46,12 @@ const RESERVE: readonly (readonly [title: string, genre: string, year: number])[
     ['Oppenheimer', 'Drama', 2023],
 ];
 
+/** Las de la reserva llevan ID negativo: nunca coinciden con los de TMDB. */
+export function isReserveMovie(movie: Movie): boolean {
+    return movie.id < 0;
+}
+
 export const RESERVE_MOVIES: readonly Movie[] = RESERVE.map(([title, genre, year], index) => ({
-    // IDs negativos: nunca coinciden con los de TMDB.
     id: -(index + 1),
     title,
     genre,

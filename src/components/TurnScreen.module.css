@@ -51,12 +51,26 @@
 }
 
 .quien {
+  --cifra: var(--numeral);
   font-size: inherit;
   font-weight: inherit;
 }
 
 .numero {
   margin: 8px 0 0 -0.04em;
+  font-size: var(--cifra);
+}
+
+/* Un nombre pesa como la cifra si cabe, y si no baja hasta llenar el ancho. Ocupa el mismo alto, y el título no se mueve. */
+.nombre {
+  display: flex;
+  align-items: flex-end;
+  min-height: calc(var(--cifra) * 0.86);
+  margin-left: -0.02em;
+  font-size: min(var(--cifra), calc((min(100vw, 480px) - var(--margin) * 2) / (var(--letras) * 0.6)));
+  line-height: 1;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
 }
 
 .turno[data-held] .numero {
@@ -127,8 +141,8 @@
     margin-top: 12px;
   }
 
-  .numero {
-    font-size: 96px;
+  .quien {
+    --cifra: 96px;
   }
 
   .titular {
@@ -137,8 +151,8 @@
 }
 
 @media (max-height: 480px) {
-  .numero {
-    font-size: 56px;
+  .quien {
+    --cifra: 56px;
   }
 
   .titular {

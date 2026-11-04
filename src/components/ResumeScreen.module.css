@@ -1,0 +1,24 @@
+.barra {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+}
+
+/* A la altura de los títulos del turno, para que al seguir no salte la vista. */
+.titular {
+  margin-top: 14dvh;
+}
+
+.nota {
+  margin-top: 12px;
+  color: var(--ink-2);
+}
+
+.pie {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.otra {
+  margin-top: 4px;
+}

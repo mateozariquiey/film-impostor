@@ -168,7 +168,7 @@ function MovieRow({
       <span className={styles.cartel}>
         {movie.posterPath && !failed && (
           <Image
-            src={posterUrl(movie.posterPath, "w342")}
+            src={posterUrl(movie.posterPath, "w185")}
             alt=""
             fill
             sizes="44px"

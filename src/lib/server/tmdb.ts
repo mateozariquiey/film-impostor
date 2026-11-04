@@ -69,6 +69,7 @@ function getApiKey(): string {
 }
 
 async function fetchFromTmdb<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+    // Con este idioma, TMDB da el título en español y un poster_path que busca primero un cartel en español.
     const query = new URLSearchParams({ api_key: getApiKey(), language: 'es-ES', ...params });
     const res = await fetch(`${BASE_URL}${endpoint}?${query}`, { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) });
     if (!res.ok) throw new TmdbRequestError(`TMDB respondió ${res.status} en ${endpoint}`);

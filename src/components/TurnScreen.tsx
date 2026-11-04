@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
+import { toPlayer } from "@/lib/game";
 import { HoldButton } from "./HoldButton";
 import { PlayerDots } from "./PlayerDots";
 import { QuitButton } from "./QuitButton";
@@ -16,7 +17,7 @@ const LONG_TITLE = 64;
  * de lejos.
  */
 export function TurnScreen() {
-  const { players, currentPlayerIndex, movie, nextPlayer } = useGame();
+  const { players, currentPlayerIndex, movie, names, nextPlayer } = useGame();
   const [held, setHeld] = useState(false);
   const [readerOpen, setReaderOpen] = useState(false);
   const [seen, setSeen] = useState(false);
@@ -28,6 +29,7 @@ export function TurnScreen() {
   }, []);
 
   const number = currentPlayerIndex + 1;
+  const name = names[currentPlayerIndex];
   const isImpostor = players[currentPlayerIndex].role === "impostor";
   const isLast = number === players.length;
   const visible = held || readerOpen;
@@ -41,9 +43,26 @@ export function TurnScreen() {
 
       <div className={styles.papel} aria-live="polite">
         <h1 ref={heading} tabIndex={-1} className={styles.quien}>
-          <span className="secundario">Jugador</span>{" "}
-          <span className={`numeral ${styles.numero}`}>{number}</span>{" "}
-          <span className="solo-lector">de {players.length}</span>
+          {name ? (
+            <>
+              <span className="secundario">Le toca a</span>{" "}
+              <span
+                className={`numeral ${styles.numero} ${styles.nombre}`}
+                style={{ "--letras": name.length } as React.CSSProperties}
+              >
+                {name}
+              </span>{" "}
+              <span className="solo-lector">
+                jugador {number} de {players.length}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="secundario">Jugador</span>{" "}
+              <span className={`numeral ${styles.numero}`}>{number}</span>{" "}
+              <span className="solo-lector">de {players.length}</span>
+            </>
+          )}
         </h1>
         {visible && movie ? (
           <div className={styles.revelado}>
@@ -85,7 +104,7 @@ export function TurnScreen() {
       <div className={styles.pie}>
         {seen ? (
           <button type="button" className="accion" onClick={nextPlayer}>
-            {isLast ? "Dejar el móvil en la mesa" : `Pasar el móvil al jugador ${number + 1}`}
+            {isLast ? "Dejar el móvil en la mesa" : `Pásale el móvil ${toPlayer(number, names)}`}
           </button>
         ) : (
           // Solo enseña dónde pulsar: el botón de verdad es toda la pantalla.

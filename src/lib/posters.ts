@@ -1,4 +1,4 @@
-export type PosterSize = 'w342' | 'w500';
+export type PosterSize = 'w185' | 'w500';
 
 /** Los carteles se piden directamente al CDN público de TMDB, que no necesita clave. */
 export function posterUrl(path: string, size: PosterSize): string {

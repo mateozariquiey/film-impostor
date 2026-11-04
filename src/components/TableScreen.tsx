@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
+import { thePlayer } from "@/lib/game";
 import { posterUrl } from "@/lib/posters";
 import { HoldButton } from "./HoldButton";
 import { PlayerDots } from "./PlayerDots";
@@ -10,7 +11,7 @@ const REVEAL_IMPOSTOR_MS = 1200;
 
 /** La conversación. El móvil descansa hasta que el grupo decide ver el resultado. */
 export function TableScreen() {
-  const { players, movie, revealImpostor } = useGame();
+  const { players, movie, names, firstPlayer, revealImpostor } = useGame();
   const [tooShort, setTooShort] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -26,12 +27,15 @@ export function TableScreen() {
       style={{ "--duracion": `${REVEAL_IMPOSTOR_MS}ms` } as React.CSSProperties}
     >
       <div className={styles.barra}>
-        <PlayerDots count={players.length} current={players.length} />
+        <PlayerDots count={players.length} current={players.length} starts={firstPlayer} />
         <QuitButton />
       </div>
       <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.encabezado}`}>
         Ya lo habéis visto todos
       </h1>
+      <p className={styles.empieza}>
+        Empieza <strong>{thePlayer(firstPlayer, names)}</strong>
+      </p>
       <div className={`franja ${styles.reglas}`}>
         <p>Cada uno da una pista, sin decir el título.</p>
         <p>Después, preguntad y votad quién disimula.</p>

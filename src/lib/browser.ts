@@ -36,7 +36,7 @@ export function useKeepScreenOn(active: boolean): void {
     }, [active]);
 }
 
-/** Pide confirmación antes de recargar o cerrar: la partida no se guarda. */
+/** Pide confirmación antes de recargar o cerrar. Solo hace falta si la partida no se puede guardar. */
 export function useWarnBeforeLeaving(active: boolean): void {
     useEffect(() => {
         if (!active) return;
@@ -44,6 +44,22 @@ export function useWarnBeforeLeaving(active: boolean): void {
         window.addEventListener('beforeunload', warn);
         return () => window.removeEventListener('beforeunload', warn);
     }, [active]);
+}
+
+/** Registra el service worker que permite abrir la app sin conexión. */
+export function useServiceWorker(): void {
+    useEffect(() => {
+        if (!('serviceWorker' in navigator)) return;
+        if (process.env.NODE_ENV === 'production') {
+            // Si falla, la app funciona igual, pero solo con conexión.
+            navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(() => {});
+        } else {
+            // En desarrollo, uno que quedara de probar `npm start` serviría una versión vieja.
+            void navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) => registrations.forEach((registration) => void registration.unregister()));
+        }
+    }, []);
 }
 
 /**

@@ -12,6 +12,7 @@ import {
 import type { Decade, Hint, Popularity } from "@/types";
 import { ChoiceSheet } from "./ChoiceSheet";
 import { MovieListScreen } from "./MovieListScreen";
+import { NamesSheet } from "./NamesSheet";
 import { RulesSheet } from "./RulesSheet";
 import { PlayerDots } from "./PlayerDots";
 import styles from "./SetupScreen.module.css";
@@ -62,6 +63,7 @@ export function SetupScreen() {
     clearError,
     customPool,
     setCustomPool,
+    gameExpired,
   } = useGame();
   const [settings, setSettings] = useState<GameSettings>(loadSettings);
   const [showList, setShowList] = useState(false);
@@ -69,6 +71,7 @@ export function SetupScreen() {
   const eraSheet = useRef<HTMLDialogElement>(null);
   const popularitySheet = useRef<HTMLDialogElement>(null);
   const hintsSheet = useRef<HTMLDialogElement>(null);
+  const namesSheet = useRef<HTMLDialogElement>(null);
   const rules = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -91,6 +94,7 @@ export function SetupScreen() {
 
   const { playerCount } = settings;
   const canStart = !isLoading && yearIsValid;
+  const namedPlayers = settings.names.slice(0, playerCount).filter((name) => name.trim() !== "").length;
   const canUseReserve = error === "offline" || error === "server";
   const eraValue = exactYear
     ? yearIsValid
@@ -162,9 +166,19 @@ export function SetupScreen() {
           disabled={!yearIsValid}
           onClick={() => setShowList(true)}
         />
+        <Row
+          label="Poner nombres"
+          value={namedPlayers > 0 ? `${namedPlayers} de ${playerCount}` : undefined}
+          sheet={namesSheet}
+        />
       </ul>
 
       <div className={styles.pie}>
+        {gameExpired && !error && (
+          <p className={`secundario ${styles.caducada}`} role="status">
+            La partida anterior ha caducado. Podéis empezar otra.
+          </p>
+        )}
         {error && (
           <div className={styles.error} role="alert">
             <p>{ERROR_MESSAGES[error]}</p>
@@ -267,6 +281,12 @@ export function SetupScreen() {
               : [...settings.hints, value],
           })
         }
+      />
+      <NamesSheet
+        ref={namesSheet}
+        playerCount={playerCount}
+        names={settings.names}
+        onChange={(names) => update({ names })}
       />
       <RulesSheet ref={rules} />
     </div>

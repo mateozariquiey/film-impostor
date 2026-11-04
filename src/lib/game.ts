@@ -18,9 +18,35 @@ export function createPlayers(count: number, random: () => number = Math.random)
     if (!Number.isInteger(count) || count < MIN_PLAYERS || count > MAX_PLAYERS) {
         throw new Error(`El número de jugadores debe estar entre ${MIN_PLAYERS} y ${MAX_PLAYERS}`);
     }
-    const impostor = randomIndex(count, random);
+    return playersWithImpostor(count, randomIndex(count, random));
+}
+
+export function playersWithImpostor(count: number, impostor: number): Player[] {
     return Array.from({ length: count }, (_, id) => ({
         id,
         role: id === impostor ? 'impostor' : 'normal',
     }));
+}
+
+/**
+ * El reparto de una partida. Quien empieza se sortea aparte y entre todos, también el impostor:
+ * si dependiera de él o lo excluyera, empezar ya sería una pista.
+ */
+export function createDeal(count: number, random: () => number = Math.random): { players: Player[]; firstPlayer: number } {
+    return { players: createPlayers(count, random), firstPlayer: randomIndex(count, random) };
+}
+
+/** Para los títulos: «Lucía» o «Jugador 3». */
+export function playerName(index: number, names: readonly string[]): string {
+    return names[index] || `Jugador ${index + 1}`;
+}
+
+/** Para medio de una frase: «Lucía» o «el jugador 3». */
+export function thePlayer(index: number, names: readonly string[]): string {
+    return names[index] || `el jugador ${index + 1}`;
+}
+
+/** Con preposición, por la contracción: «a Lucía» o «al jugador 3». */
+export function toPlayer(index: number, names: readonly string[]): string {
+    return names[index] ? `a ${names[index]}` : `al jugador ${index + 1}`;
 }

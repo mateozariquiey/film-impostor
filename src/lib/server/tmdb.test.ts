@@ -89,3 +89,17 @@ it('elimina películas duplicadas entre las páginas de la selección', async ()
     vi.stubGlobal('fetch', vi.fn().mockImplementation(async () => reply({ results: [rawMovie], total_pages: 3 })));
     expect(await getMoviePool(filters)).toHaveLength(1);
 });
+
+it('pide los datos en español: de ahí salen el título y el cartel localizados', async () => {
+    vi.stubEnv('TMDB_API_KEY', 'test-key');
+    // Forma de /discover/movie según la documentación de TMDB, con el cartel que da para ese idioma.
+    const fetchMock = vi.fn().mockImplementation(async () => reply({
+        page: 1,
+        total_pages: 1,
+        results: [{ id: 603, title: 'Matrix', genre_ids: [28, 878], poster_path: '/cartel-es.jpg', release_date: '1999-03-30' }],
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const [movie] = await getMoviePool(filters);
+    expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get('language')).toBe('es-ES');
+    expect(movie).toMatchObject({ title: 'Matrix', posterPath: '/cartel-es.jpg' });
+});

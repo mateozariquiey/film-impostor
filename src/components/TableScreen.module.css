@@ -15,6 +15,21 @@
   margin-top: 8dvh;
 }
 
+/* Ocre porque es a quien le toca, igual que en el turno. */
+.empieza {
+  margin-top: 14px;
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.empieza strong {
+  color: var(--acento);
+  font-weight: inherit;
+}
+
 .reglas {
   display: grid;
   gap: 14px;
@@ -78,6 +93,11 @@
 @media (max-height: 700px) {
   .encabezado {
     margin-top: 12px;
+  }
+
+  .empieza {
+    margin-top: 8px;
+    font-size: 22px;
   }
 
   .reglas {

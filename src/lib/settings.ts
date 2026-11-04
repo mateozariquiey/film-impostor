@@ -9,6 +9,8 @@ export interface GameSettings {
     /** Texto del campo "año exacto"; vacío si no se usa. */
     year: string;
     hints: Hint[];
+    /** Nombre escrito para cada jugador, por posición. Sobrevive a bajar y subir el número de jugadores. */
+    names: string[];
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
@@ -17,7 +19,15 @@ export const DEFAULT_SETTINGS: GameSettings = {
     popularity: 'TOP_100',
     year: '',
     hints: ['GENRE'],
+    names: [],
 };
+
+export const MAX_NAME_LENGTH = 16;
+
+/** Un nombre tal como se enseña en la partida. */
+export function cleanName(name: string): string {
+    return name.trim().replace(/\s+/g, ' ').slice(0, MAX_NAME_LENGTH).trim();
+}
 
 const STORAGE_KEY = 'film-impostor-settings';
 
@@ -44,6 +54,11 @@ export function parseSettings(raw: string | null): GameSettings {
         popularity: isPopularity(data.popularity) ? data.popularity : DEFAULT_SETTINGS.popularity,
         year: typeof data.year === 'string' ? data.year : DEFAULT_SETTINGS.year,
         hints: Array.isArray(data.hints) ? data.hints.filter(isHint) : DEFAULT_SETTINGS.hints,
+        names: Array.isArray(data.names)
+            ? data.names
+                  .slice(0, MAX_PLAYERS)
+                  .map((name) => (typeof name === 'string' ? name.slice(0, MAX_NAME_LENGTH) : ''))
+            : DEFAULT_SETTINGS.names,
     };
 }
 
