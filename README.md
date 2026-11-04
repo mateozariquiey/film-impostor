@@ -6,7 +6,7 @@ Un juego de deducción para jugar en grupo con un solo móvil. Todos reciben el 
 
 1. Elegid entre 3 y 12 jugadores y ajustad las películas por década o año, género y lo conocidas que sean. Podéis revisar una hoja de hasta 60 títulos y tachar los que no conozcáis, y poner nombres si queréis.
 2. Pasaos el móvil. Cada jugador mantiene el dedo para revelar su papel y, al soltar, desaparece.
-3. La app sortea quién empieza. Dad pistas, haced preguntas y votad quién creéis que es el impostor. Antes de revelar el resultado, el impostor puede intentar adivinar el título.
+3. La app sortea quién empieza y da el orden. Dad pistas, haced preguntas y votad quién creéis que es el impostor. Antes de revelar el resultado, el impostor puede intentar adivinar el título.
 4. Si adivina la película, gana. Si no, el grupo gana al acertar la votación; una votación incorrecta da la victoria al impostor.
 
 La conversación y la votación se hacen en persona. La aplicación reparte los roles y revela el resultado; no lleva puntuaciones ni necesita cuentas.
@@ -38,28 +38,27 @@ Abre [localhost:3000](http://localhost:3000). Sin la clave, la interfaz carga y 
 
 Next.js, React y TypeScript, con CSS Modules para los estilos, Vitest para las pruebas de la lógica y Playwright para las de navegador.
 
-- `src/components/`: pantallas (`SetupScreen`, `MovieListScreen`, `TurnScreen`, `TableScreen`, `ResultScreen`, `ResumeScreen`) y sus piezas. `HoldButton` es el gesto de mantener pulsado y `ChoiceSheet`, el selector en hoja inferior.
-- `src/app/globals.css`: tokens de color y estilos comunes. Claro y oscuro siguen al sistema, y `data-luz="baja"` atenúa la pantalla durante los turnos.
+- `src/components/`: pantallas (`SetupScreen`, `MovieListScreen`, `TurnScreen`, `TableScreen`, `ResultScreen`, `ResumeScreen`) y sus piezas. `HoldButton` es el gesto de mantener pulsado, `ChoiceSheet` el selector en hoja inferior y `PosterWall` la pared de carteles, cuya lista está en `src/lib/wall.json`.
+- `src/app/globals.css`: tokens de color y estilos comunes. Claro y oscuro siguen al sistema, y `data-luz="baja"` deja la pantalla a oscuras durante los turnos.
 - `src/contexts/GameContext.tsx`: estado de la partida y transiciones entre turnos. `LocaleContext.tsx`: el idioma y sus textos.
 - `src/messages/`: los textos de cada idioma.
 - `src/lib/`: reparto de roles, filtros, géneros, películas ya vistas, ajustes y partida guardados en el navegador, y lista de reserva.
 - `src/lib/server/`: consultas a TMDB y tratamiento de errores.
 - `src/app/api/movies/`: rutas que consulta el navegador. La clave de TMDB se utiliza en el servidor.
 - `e2e/`: la partida en un móvil de 360×640, con el dedo.
-- `scripts/`: genera `public/sw.js` al compilar, con la lista de archivos de esa compilación (ese archivo no se versiona), y, a mano, las imágenes para compartir.
+- `scripts/`: genera `public/sw.js` al compilar, con la lista de archivos de esa compilación (ese archivo no se versiona), y, a mano, los iconos y las imágenes para compartir.
 
 ## Diseño
 
-Sobria, pero con presión donde importa: una sola familia (Chivo), neutros con sombras algo verdosas y luces cálidas, y un único color, el ocre, reservado para el jugador al que le toca, lo que se está llenando y el impostor. El resto de la jerarquía la llevan dos tamaños: `.numeral` para las cifras y `.enorme` para los títulos que revela la partida.
+Una pared de carteles reales, y casi nada más. La riqueza sale de las películas, que es lo que solo tiene este juego, y no de la decoración: una sola familia (Archivo, estrecha y pesada en lo que hace de cartel, `.cartelon`, y normal en el resto), papel frío y negro de verdad, y esquinas rectas porque los carteles las tienen.
 
-- El papel solo está en la página mientras se mantiene el dedo, y desaparece sin transición al soltar, al cancelarse el gesto o al pasar la app a segundo plano.
-- Todos los estados del turno comparten el mismo esqueleto (número de jugador, título y nota), y el papel del impostor tiene el mismo sitio, tamaño y color que el título de la película, para que no se distingan desde lejos. Solo un título de más de 64 caracteres baja de tamaño, porque no cabría.
-- Durante los turnos y la conversación la pantalla pasa a un tono muy oscuro, también en tema claro, para que no ilumine caras. Al mantener sube un poco la luz de toda la pantalla. La luz normal vuelve en el resultado.
+- **El hueco.** La pared tiene doce carteles, el máximo de jugadores. Cada jugador enciende uno al pulsar + y el último de la fila es un hueco de color: el impostor (`PosterWall`). Son siempre las mismas películas, así que no dicen nada de la partida. `PlayerSlots` es la misma idea en miniatura.
+- **El cobalto** es el único color propio y marca solo lo secreto: el papel, el hueco, el impostor en la fila del resultado y lo que se está llenando. Lo demás lo ponen los carteles. El resultado toma el color de su película, con el cartel muy desenfocado detrás.
+- **El secreto.** El papel solo está en la página mientras se mantiene el dedo, y desaparece sin transición al soltar, al cancelarse el gesto o al pasar la app a segundo plano.
+- **Igual para todos.** Cada turno es un cartel de color del mismo tamaño y en el mismo sitio, sea cual sea el papel, y desde lejos se ve siempre ese rectángulo. Lo grande es el nombre del jugador, que no es secreto, y el papel va a 30 px como mucho, con letras negras sobre el cobalto: se lee de cerca, pero a partir de unos 32 px un OCR lo lee desde 2,5 m (es una simulación, no una prueba con personas). No lo subas sin medirlo: lo vigila `e2e/partida.spec.ts`.
+- **Poca luz.** Durante los turnos y la conversación el fondo es negro, también en tema claro. La luz vuelve en el inicio.
 
-Hay dos gestos propios, y conviene no añadir más:
-
-- `PlayerDots`: un punto por jugador, la misma forma del icono. El punto hueco significa siempre «impostor», así que no se usa para nada más.
-- El llenado de izquierda a derecha: el botón de la mesa se llena, los puntos se llenan con él y el cartel se destapa en la misma dirección.
+Y una regla para los botones: lo que se mantiene lleva marco y se llena de izquierda a derecha, y lo que se toca va relleno. El cartel del resultado se destapa en esa misma dirección.
 
 ```sh
 npm test
@@ -89,7 +88,7 @@ Español e inglés, sin librería. Cada texto está en `src/messages/`: `es.ts` 
 - Las películas se piden en el idioma de la partida, así que el título y el cartel son los de TMDB para ese idioma. Las palabras clave no se traducen: TMDB solo las da en inglés.
 - La lista de reserva tiene su título en cada idioma. Una película sin título en inglés es porque no es conocida fuera de España, y no sale en esa lista.
 
-Las imágenes para compartir salen de `scripts/generate-share-images.mjs`, que se ejecuta a mano si cambia el lema.
+Las imágenes para compartir salen de `scripts/generate-share-images.mjs`, y los iconos, de `scripts/generate-icons.mjs`. Se ejecutan a mano si cambia el lema o el icono.
 
 ## Partida guardada
 
@@ -106,7 +105,7 @@ Cada cambio de turno se guarda en `localStorage` (`src/lib/savedGame.ts`), así 
 La app es una PWA instalable. Android lo ofrece solo, pero iOS no avisa, y por eso «Cómo se juega» explica cómo hacerlo. En la primera visita, el service worker guarda la página y todos sus archivos, de modo que ya se abre sin red en la primera recarga. Sin conexión se juega con la lista de reserva.
 
 - La app se sirve siempre de la caché. Una versión nueva se descarga aparte y se ve la siguiente vez que se abre, así que tras un despliegue hay que abrirla dos veces.
-- La API y los carteles no pasan por el service worker: sin red fallan y la app propone la reserva o juega sin cartel.
+- La API y los carteles de cada partida no pasan por el service worker: sin red fallan y la app propone la reserva o juega sin cartel. Los doce de la pared sí se guardan, aparte y sin que su fallo impida instalar. Si falta alguno, se ve su color medio.
 - Solo funciona con `npm run build`, porque `next dev` no genera `public/sw.js`. En desarrollo, la app da de baja cualquier service worker que quedara de probar la compilación.
 
 Si TMDB no responde o no hay conexión, se puede jugar con la lista de reserva de `src/lib/reserve.ts`, que no lleva carteles ni palabras clave y no aplica los filtros. Sus títulos, años y géneros están contrastados con las fichas de TMDB y con Wikidata.

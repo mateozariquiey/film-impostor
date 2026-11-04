@@ -190,6 +190,7 @@ a {
   color: var(--ink);
 }
 
+/* Lo que se mantiene lleva marco, y lo que se toca va relleno. */
 .aviso-pulsar {
   display: flex;
   align-items: center;
