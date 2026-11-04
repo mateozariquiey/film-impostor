@@ -71,12 +71,12 @@ export function TableScreen() {
           {QUESTIONS[question][locale]}
         </p>
       </div>
-      <div className={styles.reglas}>
-        <p>{t.table.shortRule(impostorCount)}</p>
+      <p className={styles.reglas}>
+        {t.table.shortRule(impostorCount)}{" "}
         <button type="button" className="enlace" onClick={() => rules.current?.showModal()}>
           {t.table.howItEnds}
         </button>
-      </div>
+      </p>
       <Sheet ref={rules} titleId="como-acaba">
         <h2 id="como-acaba" className="titulo">
           {t.table.howItEnds}
