@@ -26,6 +26,8 @@ export function PosterWall({ players, className = "" }: Props) {
               src={posterUrl(path, "w342")}
               alt=""
               decoding="async"
+              // Con CORS, como los pide el service worker: si no, el navegador guarda una copia sin la cabecera y él no puede usarla.
+              crossOrigin="anonymous"
               // Sin esto se vería el icono de imagen rota sobre el color medio.
               onError={(event) => {
                 event.currentTarget.style.visibility = "hidden";

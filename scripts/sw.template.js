@@ -4,6 +4,20 @@ const URLS = "__URLS__";
 const PRECACHED = new Set(URLS);
 const WALL = "__WALL__";
 const WALL_SET = new Set(WALL);
+const WALL_WAIT_MS = 8000;
+
+// Los carteles de la pared van aparte: sin alguno, el inicio enseña su color medio y la app funciona igual.
+// Se reutilizan los de la versión anterior, porque nunca cambian y porque TMDB puede fallar justo al actualizar,
+// y no se espera más de la cuenta: una descarga colgada no puede dejar la app sin instalar.
+function saveWall(cache) {
+  const saving = Promise.allSettled(
+    WALL.map(async (url) => {
+      const previous = await caches.match(url, { ignoreVary: true });
+      return previous ? cache.put(url, previous) : cache.add(new Request(url, { mode: "cors", cache: "reload" }));
+    }),
+  );
+  return Promise.race([saving, new Promise((resolve) => setTimeout(resolve, WALL_WAIT_MS))]);
+}
 
 // Todo o nada: si falla un archivo, esta versión no se instala y sigue la anterior.
 self.addEventListener("install", (event) => {
@@ -11,10 +25,7 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE)
       .then((cache) =>
-        cache.addAll(URLS.map((url) => new Request(url, { cache: "reload" }))).then(() =>
-          // Los carteles de la pared se intentan aparte: sin alguno, el inicio enseña su color medio y la app funciona igual.
-          Promise.allSettled(WALL.map((url) => cache.add(new Request(url, { mode: "cors" })))),
-        ),
+        cache.addAll(URLS.map((url) => new Request(url, { cache: "reload" }))).then(() => saveWall(cache)),
       )
       .then(() => self.skipWaiting()),
   );

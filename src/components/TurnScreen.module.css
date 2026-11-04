@@ -45,6 +45,7 @@
 /* El cartel apagado: el mismo rectángulo con cualquier papel. Lo que se ve desde lejos no depende de lo que dice. */
 .cartel {
   container-type: inline-size;
+  position: relative;
   display: flex;
   flex-direction: column;
   /* Lo que no es el cartel mide 152 px: márgenes, barra de arriba y botón de pasar el móvil. Así cabe sin scroll y no se mueve de un turno a otro. */
@@ -63,9 +64,12 @@
   color: #000;
 }
 
+/* Fuera del flujo: si lo empujara el papel, su altura diría cuánto ocupa el secreto, y por tanto quién es el impostor. */
 .quien {
-  order: 2;
-  margin-top: auto;
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 10px;
   font-size: inherit;
   font-weight: inherit;
 }
@@ -106,8 +110,10 @@
   display: block;
 }
 
+/* Por encima del nombre, por si en una pantalla muy baja llegan a coincidir. */
 .revelado {
-  order: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .nota {
@@ -152,14 +158,28 @@
   color: var(--ink-2);
 }
 
-@media (max-height: 480px) {
+/* Con poca altura el cartel deja de ser vertical para que quepan las pistas, y sigue midiendo lo mismo con cualquier papel. */
+@media (max-height: 560px) {
   .cartel {
     width: 100%;
     aspect-ratio: auto;
-    flex: 1;
+    height: calc(100dvh - 152px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .titular {
+    font-size: 24px;
+  }
+
+  .nota {
+    margin-top: 4px;
+    font-size: 16px;
+  }
+
+  .etiqueta {
+    display: none;
   }
 
   .nombre {
-    font-size: 56px;
+    font-size: min(56px, calc(235cqw / var(--letras)));
   }
 }

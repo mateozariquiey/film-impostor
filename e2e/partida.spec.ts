@@ -97,6 +97,42 @@ test('el papel mide lo mismo con cualquier papel y no se lee desde lejos', async
     expect(secret!.size).toBeLessThanOrEqual(30);
 });
 
+test('en una pantalla baja y con todas las pistas, el nombre y el cartel no dependen del papel', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 481 });
+    await page.addInitScript(() => {
+        localStorage.setItem('film-impostor-settings', JSON.stringify({ playerCount: 3, names: ['Ana', 'Ana', 'Ana'], hints: ['GENRE', 'YEAR', 'KEYWORDS'] }));
+    });
+    const long = 'El señor de los anillos: El retorno del rey';
+    await fakeApi(page, () => ({ ...fakeMovie(1, long), keywords: ['elves', 'orcs', 'ring'] }));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+
+    const seen = new Map<string, string>();
+    for (let player = 1; player <= 3; player++) {
+        await expect(page.getByText('Coge el móvil')).toBeVisible();
+        const finger = await touchHold(page, TURN_SURFACE);
+        await expect(page.locator('[data-cartel] p').first()).toBeVisible();
+        await page.waitForTimeout(600);
+        const measure = await page.evaluate(() => {
+            const card = document.querySelector('[data-cartel]')!;
+            const box = (node: Element) => {
+                const { x, y, width, height } = node.getBoundingClientRect();
+                return [x, y, width, height].join();
+            };
+            const bottom = Math.max(...[...card.querySelectorAll('p')].map((node) => node.getBoundingClientRect().bottom));
+            return { role: card.querySelector('p')!.textContent!, boxes: `${box(card)}|${box(card.querySelector('h1')!)}`, overflow: bottom - card.getBoundingClientRect().bottom };
+        });
+        // Las pistas tienen que caber: el impostor no puede quedarse sin ellas.
+        expect(measure.overflow, measure.role).toBeLessThanOrEqual(0);
+        seen.set(measure.role.startsWith(IMPOSTOR_ROLE) ? 'impostor' : 'grupo', measure.boxes);
+        await finger.release();
+        await page.waitForTimeout(300);
+        await page.getByRole('button', { name: /Pásale|Dejar el móvil/ }).tap();
+    }
+    expect(seen.get('impostor')).toBeTruthy();
+    expect(seen.get('impostor')).toEqual(seen.get('grupo'));
+});
+
 test('soltar antes de tiempo oculta el papel y pide mantener un poco más', async ({ page }) => {
     await fakeApi(page, () => fakeMovie(1, SECRET));
     await page.goto('/');
