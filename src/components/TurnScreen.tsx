@@ -9,12 +9,12 @@ import styles from "./TurnScreen.module.css";
 
 /** Lo que hay que mantener para contar como visto: basta para leer un título. */
 const SEEN_AFTER_MS = 500;
-const LONG_TITLE = 64;
 
 /**
  * El turno de un jugador. Toda la pantalla es la zona de mantener y el papel solo existe en la
  * página mientras dura el gesto. Todos los estados son el mismo cartel: un rectángulo que se enciende
- * igual para todos, con el texto dentro, así que el impostor y el grupo no se distinguen de lejos.
+ * igual para todos. Lo grande es el nombre, que no es secreto, y el papel va a un tamaño que se lee
+ * de cerca pero no desde el sofá: medido con hill/herramientas/sofa.py, a partir de unos 30 px se lee a 2,5 m.
  */
 export function TurnScreen() {
   const { players, currentPlayerIndex, movie, names, nextPlayer } = useGame();
@@ -43,41 +43,47 @@ export function TurnScreen() {
       </div>
 
       <div className={styles.papel} aria-live="polite">
-        <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.quien}`}>
-          {name ? (
-            <>
-              <span>{t.turn.whoseTurn}</span> <span>{name}</span>{" "}
-              <span className="solo-lector">{t.turn.playerOf(number, players.length)}</span>
-            </>
-          ) : (
-            <>
-              <span>{t.turn.player}</span> <span>{number}</span>{" "}
-              <span className="solo-lector">{t.turn.ofTotal(players.length)}</span>
-            </>
-          )}
-        </h1>
         <div className={styles.cartel}>
+          {/* El nombre se ve el primero en el orden de lectura, pero va abajo: es lo grande del cartel porque no es secreto. */}
+          <h1 ref={heading} tabIndex={-1} className={styles.quien}>
+            {name ? (
+              <>
+                <span className={styles.etiqueta}>{t.turn.whoseTurn}</span>{" "}
+                <span
+                  className={`cartelon ${styles.nombre}`}
+                  style={{ "--letras": Math.max(name.length, 3) } as React.CSSProperties}
+                >
+                  {name}
+                </span>{" "}
+                <span className="solo-lector">{t.turn.playerOf(number, players.length)}</span>
+              </>
+            ) : (
+              <>
+                <span className={styles.etiqueta}>{t.turn.player}</span>{" "}
+                <span className={`cartelon ${styles.nombre}`} style={{ "--letras": 3 } as React.CSSProperties}>
+                  {number}
+                </span>{" "}
+                <span className="solo-lector">{t.turn.ofTotal(players.length)}</span>
+              </>
+            )}
+          </h1>
           {visible && movie ? (
             <div className={styles.revelado}>
-              <p className={`cartelon ${styles.titular}`} style={titleSize(isImpostor ? t.turn.youAreImpostor : movie.title)}>
+              <p className={`cartelon ${styles.titular}`}>
                 {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
               </p>
               {isImpostor ? <ImpostorHints /> : <p className={styles.nota}>{t.turn.giveClues}</p>}
             </div>
           ) : seen ? (
-            <>
-              <p className={`cartelon ${styles.titular}`} style={titleSize(t.turn.hidden)}>
-                {t.turn.hidden}
-              </p>
+            <div className={styles.revelado}>
+              <p className={`cartelon ${styles.titular}`}>{t.turn.hidden}</p>
               <p className={styles.nota}>{t.turn.seeAgain}</p>
-            </>
+            </div>
           ) : (
-            <>
-              <p className={`cartelon ${styles.titular}`} style={titleSize(t.turn.takePhone)}>
-                {t.turn.takePhone}
-              </p>
+            <div className={styles.revelado}>
+              <p className={`cartelon ${styles.titular}`}>{t.turn.takePhone}</p>
               <p className={styles.nota}>{tooShort ? t.turn.holdLonger : t.turn.holdNote}</p>
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -116,12 +122,6 @@ export function TurnScreen() {
       </button>
     </div>
   );
-}
-
-/** Cuanto más mide lo que dice el cartel, más pequeño va, para llenarlo sea cual sea el papel. En % del ancho del cartel. */
-function titleSize(text: string) {
-  const size = text.length <= 10 ? 24 : text.length <= 18 ? 21 : text.length <= 30 ? 18 : text.length <= LONG_TITLE ? 15.5 : 11.5;
-  return { "--tam": size } as React.CSSProperties;
 }
 
 function ImpostorHints() {

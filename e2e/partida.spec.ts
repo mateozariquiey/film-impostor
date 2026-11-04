@@ -63,6 +63,39 @@ test('la partida completa con el dedo, sin que el secreto esté en la página fu
     await expectNoSideScroll(page);
 });
 
+test('el papel mide lo mismo con cualquier papel y no se lee desde lejos', async ({ page }) => {
+    const roles = new Map<string, { size: number; cartel: string }>();
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+
+    for (let player = 1; player <= 4; player++) {
+        await expect(page.getByText('Coge el móvil')).toBeVisible();
+        const finger = await touchHold(page, TURN_SURFACE);
+        const role = page.getByText(new RegExp(`${SECRET}|${IMPOSTOR_ROLE}`));
+        await expect(role).toBeVisible();
+        await page.waitForTimeout(600);
+        const size = await role.evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
+        const cartel = await role.evaluate((node) => {
+            const card = node.closest('[class*="cartel"]')!;
+            const box = card.getBoundingClientRect();
+            return [box.x, box.y, box.width, box.height, getComputedStyle(card).backgroundColor].join();
+        });
+        roles.set((await role.textContent()) ?? '', { size, cartel });
+        await finger.release();
+        await page.waitForTimeout(300);
+        await page.getByRole('button', { name: /Pásale|Dejar el móvil/ }).tap();
+    }
+
+    const secret = roles.get(SECRET);
+    const impostor = roles.get(IMPOSTOR_ROLE);
+    expect(secret, 'alguien ve la película').toBeTruthy();
+    expect(impostor, 'alguien es el impostor').toBeTruthy();
+    expect(impostor).toEqual(secret);
+    // A partir de unos 30 px, un OCR lo lee a 2,5 m simulados.
+    expect(secret!.size).toBeLessThanOrEqual(30);
+});
+
 test('soltar antes de tiempo oculta el papel y pide mantener un poco más', async ({ page }) => {
     await fakeApi(page, () => fakeMovie(1, SECRET));
     await page.goto('/');

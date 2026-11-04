@@ -42,23 +42,15 @@
   margin-top: 8px;
 }
 
-.quien {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 0.28em;
-  font-size: 34px;
-}
-
 /* El cartel apagado: el mismo rectángulo con cualquier papel. Lo que se ve desde lejos no depende de lo que dice. */
 .cartel {
   container-type: inline-size;
   display: flex;
   flex-direction: column;
-  width: min(100%, calc((100dvh - 212px) * 2 / 3));
+  width: min(100%, calc((100dvh - 150px) * 2 / 3));
   aspect-ratio: 2 / 3;
-  margin-top: 12px;
-  padding: 14px 14px 12px;
+  margin-top: 8px;
+  padding: 14px 14px 10px;
   border: 1px solid var(--line);
   overflow: hidden;
 }
@@ -70,9 +62,43 @@
   color: #000;
 }
 
+.quien {
+  order: 2;
+  margin-top: auto;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.etiqueta {
+  display: block;
+  font-size: 17px;
+  color: var(--ink-2);
+}
+
+.turno[data-held] .etiqueta {
+  color: #000;
+}
+
+/* Llena el ancho del cartel si puede: lo grande es el nombre porque no es secreto. */
+.nombre {
+  display: block;
+  margin-left: -0.02em;
+  font-size: min(50cqw, calc(150cqw / var(--letras)));
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  text-wrap: nowrap;
+  color: var(--ink);
+}
+
+.turno[data-held] .nombre {
+  color: #000;
+}
+
+/* El mismo tamaño para todos los papeles, y el tope para que no se lea desde el sofá. Lo vigila e2e/partida.spec.ts. */
 .titular {
-  font-size: calc(var(--tam, 19) * 1cqw);
-  line-height: 0.96;
+  font-size: 28px;
+  line-height: 1.02;
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
@@ -81,14 +107,13 @@
 }
 
 .revelado {
-  display: contents;
+  order: 1;
 }
 
 .nota {
-  margin-top: auto;
-  padding-top: 8px;
-  font-size: 17px;
-  line-height: 1.25;
+  margin-top: 8px;
+  font-size: 19px;
+  line-height: 1.2;
   color: var(--ink-2);
 }
 
@@ -134,7 +159,7 @@
     flex: 1;
   }
 
-  .titular {
-    font-size: 28px;
+  .nombre {
+    font-size: 56px;
   }
 }
