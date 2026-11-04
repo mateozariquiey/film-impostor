@@ -1,16 +1,21 @@
-.barra {
-  display: flex;
-  align-items: center;
-  min-height: 34px;
+/* El mismo esqueleto que el resto de la partida: la pared arriba, lo que importa debajo y la acción abajo. */
+.reanudar {
+  padding-block: 0;
 }
 
-/* A la altura de los títulos del turno, para que al seguir no salte la vista. */
+.pared {
+  flex: none;
+  grid-template-columns: repeat(6, 1fr);
+  margin-inline: calc(var(--margin) * -1);
+  --luz-encendido: 0.6;
+}
+
 .titular {
-  margin-top: 14dvh;
+  margin-top: 24px;
 }
 
 .nota {
-  margin-top: 12px;
+  margin-top: 8px;
   color: var(--ink-2);
 }
 
@@ -20,5 +25,5 @@
 }
 
 .otra {
-  margin-top: 4px;
+  margin-bottom: 4px;
 }
