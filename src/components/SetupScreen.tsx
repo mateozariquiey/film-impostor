@@ -17,7 +17,7 @@ import { ChoiceSheet } from "./ChoiceSheet";
 import { MovieListScreen } from "./MovieListScreen";
 import { NamesSheet } from "./NamesSheet";
 import { RulesSheet } from "./RulesSheet";
-import { PlayerDots } from "./PlayerDots";
+import { PosterWall } from "./PosterWall";
 import styles from "./SetupScreen.module.css";
 
 const EXACT_YEAR = "YEAR";
@@ -97,53 +97,45 @@ export function SetupScreen() {
     : t.setup.eraOptions[settings.decade];
 
   return (
-    <div className="pantalla">
-      <div className={`franja ${styles.portada}`} data-compacta={error ? true : undefined}>
-        <header>
-          <h1 className={styles.nombre}>Film Impostor</h1>
-          <p className="secundario">{t.meta.tagline}</p>
-        </header>
+    <div className={`pantalla ${styles.inicio}`}>
+      <PosterWall players={playerCount} className={styles.pared} />
 
-        <div className={styles.jugadores} role="group" aria-labelledby="jugadores">
-          <span id="jugadores" className="secundario">
-            {t.setup.players}
+      <header className={styles.cabecera}>
+        <h1 className={`cartelon ${styles.nombre}`}>Film Impostor</h1>
+        <p className={styles.lema}>{t.meta.tagline}</p>
+      </header>
+
+      <div className={styles.jugadores} role="group" aria-labelledby="jugadores">
+        <output aria-live="polite" aria-label={t.setup.playersCount(playerCount)}>
+          <span key={playerCount} className={`cartelon ${styles.cifra}`}>
+            {playerCount}
           </span>
-          <div className={styles.contador}>
-            <output aria-live="polite" aria-label={t.setup.playersCount(playerCount)}>
-              <span key={playerCount} className={`numeral ${styles.cifra}`}>
-                {playerCount}
-              </span>
-            </output>
-            <span className={styles.botones}>
-              <button
-                type="button"
-                aria-label={t.setup.fewerPlayers}
-                disabled={playerCount <= MIN_PLAYERS}
-                onClick={() => update({ playerCount: playerCount - 1 })}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-                  <path d="M3 10h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                aria-label={t.setup.morePlayers}
-                disabled={playerCount >= MAX_PLAYERS}
-                onClick={() => update({ playerCount: playerCount + 1 })}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-                  <path
-                    d="M3 10h14M10 3v14"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            </span>
-          </div>
-          <PlayerDots count={playerCount} impostor={playerCount - 1} />
-        </div>
+        </output>
+        <span id="jugadores" className={styles.etiqueta}>
+          {t.setup.players}
+        </span>
+        <span className={styles.botones}>
+          <button
+            type="button"
+            aria-label={t.setup.fewerPlayers}
+            disabled={playerCount <= MIN_PLAYERS}
+            onClick={() => update({ playerCount: playerCount - 1 })}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
+              <path d="M3 10h14" stroke="currentColor" strokeWidth="2" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={t.setup.morePlayers}
+            disabled={playerCount >= MAX_PLAYERS}
+            onClick={() => update({ playerCount: playerCount + 1 })}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
+              <path d="M3 10h14M10 3v14" stroke="currentColor" strokeWidth="2" />
+            </svg>
+          </button>
+        </span>
       </div>
 
       <ul className={styles.filas}>
@@ -195,15 +187,6 @@ export function SetupScreen() {
             )}
           </div>
         )}
-        <button
-          type="button"
-          className="accion"
-          disabled={!canStart}
-          aria-busy={isLoading}
-          onClick={() => void startGame(settings)}
-        >
-          {isLoading ? t.setup.searching : canUseReserve ? t.setup.retry : t.setup.start}
-        </button>
         <div className={styles.enlaces}>
           {/* Con un error hay menos sitio, y lo que no puede faltar es poder leerlo en otro idioma. */}
           {!error && (
@@ -231,6 +214,15 @@ export function SetupScreen() {
             {t.otherLanguage}
           </button>
         </div>
+        <button
+          type="button"
+          className="accion accion-pie"
+          disabled={!canStart}
+          aria-busy={isLoading}
+          onClick={() => void startGame(settings)}
+        >
+          {isLoading ? t.setup.searching : canUseReserve ? t.setup.retry : t.setup.start}
+        </button>
       </div>
 
       <ChoiceSheet<EraChoice>
@@ -336,7 +328,7 @@ function Row({
         disabled={disabled}
         onClick={onClick ?? (() => sheet?.current?.showModal())}
       >
-        <span>{label}</span>
+        <span className={styles.rotulo}>{label}</span>
         <span className={styles.valor}>{value}</span>
         <svg width="7" height="12" viewBox="0 0 7 12" aria-hidden>
           <path

@@ -31,10 +31,15 @@ const urls = [
   ...nextStatic.map((file) => `/_next/static/${toUrl(file, join(nextDir, "static")).slice(1)}`),
 ];
 
+// Los carteles de la pared también, para que el inicio no pierda su cara sin red.
+const wall = JSON.parse(await readFile(join(root, "src", "lib", "wall.json"), "utf8"));
+const wallUrls = wall.map(({ path }) => `https://image.tmdb.org/t/p/w342${path}`);
+
 const template = await readFile(join(root, "scripts", "sw.template.js"), "utf8");
 const sw = template
   .replace("__VERSION__", buildId)
-  .replace('"__URLS__"', JSON.stringify(urls));
+  .replace('"__URLS__"', JSON.stringify(urls))
+  .replace('"__WALL__"', JSON.stringify(wallUrls));
 
 await writeFile(join(root, "public", "sw.js"), sw);
 console.log(`public/sw.js: ${urls.length} archivos para funcionar sin conexión (${buildId})`);

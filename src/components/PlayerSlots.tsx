@@ -1,19 +1,19 @@
-import styles from "./PlayerDots.module.css";
+import styles from "./PlayerSlots.module.css";
 
 interface Props {
   count: number;
   /** A quién le toca: los anteriores salen vistos y el acento es suyo. */
   current?: number;
-  /** Quién es el impostor: el único punto hueco de la app. */
+  /** Quién es el impostor: el único hueco de la app. */
   impostor?: number;
   /** Quién da la primera pista en la mesa: también es «a quien le toca». */
   starts?: number;
 }
 
-/** Un punto por jugador. Es la misma forma del icono: cuatro puntos y uno hueco. */
-export function PlayerDots({ count, current, impostor, starts }: Props) {
+/** Un cartel en miniatura por jugador, como la pared del inicio: el vacío es siempre el impostor. */
+export function PlayerSlots({ count, current, impostor, starts }: Props) {
   return (
-    <div className={styles.puntos} aria-hidden>
+    <div className={styles.huecos} aria-hidden>
       {Array.from({ length: count }, (_, index) => (
         <i
           key={index}

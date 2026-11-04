@@ -46,7 +46,7 @@ test('la partida completa con el dedo, sin que el secreto esté en la página fu
     expect(roles.filter((role) => role === SECRET)).toHaveLength(2);
 
     // En la mesa no hay secretos, y un toque corto no revela nada.
-    await expect(page.getByRole('heading', { name: 'Ya lo habéis visto todos' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Pistas, en este orden' })).toBeVisible();
     expect(await domText(page)).not.toContain(SECRET);
     const hold = page.getByRole('button', { name: 'Mantén para ver quién era' });
     await hold.tap();

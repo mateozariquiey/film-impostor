@@ -121,11 +121,9 @@ export const en: Messages = {
         hintKeywords: (keywords) => `Keywords: ${keywords.length ? keywords.join(', ') : 'none'}`,
     },
     table: {
-        title: 'You’ve all seen it',
-        starts: (index, names) => ({ before: '', name: player(index, names), after: ' goes first' }),
+        title: 'Clues, in this order',
         rules: [
-            'Each of you gives a clue, without saying the title.',
-            'Then ask questions and vote on who’s faking it.',
+            'Each of you gives one, without saying the title. Then ask questions and vote on who’s faking it.',
             'Before seeing the result, the impostor can try to guess the movie.',
             'If they guess it or the group votes wrong, the impostor wins. If not, the group wins.',
         ],

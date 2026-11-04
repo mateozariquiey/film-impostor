@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
-import { PlayerDots } from "./PlayerDots";
+import { PlayerSlots } from "./PlayerSlots";
 import styles from "./ResumeScreen.module.css";
 
 /** Al volver a una partida guardada. No enseña ningún papel: solo a quién le toca. */
@@ -19,9 +19,9 @@ export function ResumeScreen() {
   return (
     <div className="pantalla">
       <div className={styles.barra}>
-        <PlayerDots count={players.length} current={atTable ? players.length : currentPlayerIndex} />
+        <PlayerSlots count={players.length} current={atTable ? players.length : currentPlayerIndex} />
       </div>
-      <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.titular}`}>
+      <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.titular}`}>
         {t.resume.title}
       </h1>
       <p className={styles.nota}>

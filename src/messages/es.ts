@@ -129,16 +129,9 @@ export const es = {
             `Palabras clave: ${keywords.length ? keywords.join(', ') : 'ninguna'}`,
     },
     table: {
-        title: 'Ya lo habéis visto todos',
-        /** El nombre va en negrita, así que la frase llega partida en lo que va antes y después. */
-        starts: (index: number, names: readonly string[]) => ({
-            before: 'Empieza ',
-            name: player(index, names) || `el jugador ${index + 1}`,
-            after: '',
-        }),
+        title: 'Pistas, en este orden',
         rules: [
-            'Cada uno da una pista, sin decir el título.',
-            'Después, preguntad y votad quién disimula.',
+            'Cada uno da una, sin decir el título. Después, preguntad y votad quién disimula.',
             'Antes de ver el resultado, el impostor puede intentar adivinar la película.',
             'Si la adivina o el grupo falla la votación, gana el impostor. Si no, gana el grupo.',
         ],

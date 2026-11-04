@@ -1,57 +1,51 @@
 :root {
   color-scheme: light dark;
-  /* Sombras con un punto de verde y luces cálidas, como el etalonaje de una película. */
-  --bg: #eeeee8;
-  --zona: #e1e1d9;
-  --relleno: #d3d4cb;
-  --hoja: #f7f7f2;
-  --ink: #181e1c;
-  --ink-2: #565c57;
-  --ink-3: #b2b4ab;
-  --line: #d6d6cd;
-  --on-ink: #f5f4ee;
-  /* El único color: marca al impostor y lo que se está llenando. */
-  --acento: #8a5e0c;
-  --relleno-acento: #d4a44c;
-  --tinta-acento: #181e1c;
-  --radius: 12px;
-  --margin: 20px;
-  --numeral: clamp(112px, 34vw, 148px);
-  --enorme: clamp(38px, 11.6vw, 46px);
+  /* Sin color propio: el color lo ponen los carteles. Papel frío y negro de verdad, como un pase en una sala blanca. */
+  --bg: #f2f3f5;
+  --zona: #e5e7ea;
+  --relleno: #d8dade;
+  --hoja: #ffffff;
+  --ink: #000000;
+  --ink-2: #5b5f66;
+  --ink-3: #b4b7bd;
+  --line: #d3d5da;
+  --on-ink: #ffffff;
+  --hueco: #000000;
+  --apagado: 0.22;
+  --cartel: #6b6d72;
+  --margin: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1b2220;
-    --zona: #252d2a;
-    --relleno: #343d39;
-    --hoja: #252d2a;
-    --ink: #eeeae0;
-    --ink-2: #b0b4aa;
-    --ink-3: #59625d;
-    --line: #343d39;
-    --on-ink: #1b2220;
-    --acento: #d4a44c;
-    --relleno-acento: #d4a44c;
-    --tinta-acento: #1b2220;
+    --bg: #000000;
+    --zona: #17181a;
+    --relleno: #2a2b2e;
+    --hoja: #17181a;
+    --ink: #ffffff;
+    --ink-2: #a7a9ae;
+    --ink-3: #55575c;
+    --line: #2a2b2e;
+    --on-ink: #000000;
+    --hueco: #17181a;
+    --apagado: 0.32;
   }
 }
 
 /* Mientras el móvil pasa de mano, la pantalla da poca luz, sea cual sea el tema. */
 :root[data-luz="baja"] {
   color-scheme: dark;
-  --bg: #141b19;
-  --zona: #1d2623;
-  --relleno: #2b3633;
-  --hoja: #1d2623;
-  --ink: #e8e4d9;
-  --ink-2: #a8ada3;
-  --ink-3: #3e4946;
-  --line: #2b3633;
-  --on-ink: #141b19;
-  --acento: #d4a44c;
-  --relleno-acento: #d4a44c;
-  --tinta-acento: #141b19;
+  --bg: #000000;
+  --zona: #121315;
+  --relleno: #26272a;
+  --hoja: #121315;
+  --ink: #c9cbcf;
+  --ink-2: #85878c;
+  --ink-3: #3f4144;
+  --line: #2c2d30;
+  --on-ink: #000000;
+  --hueco: #121315;
+  --apagado: 0.3;
 }
 
 *,
@@ -68,7 +62,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 400 17px/1.4 var(--fuente), system-ui, sans-serif;
+  font: 400 17px/1.35 var(--fuente), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.25s ease;
@@ -140,10 +134,11 @@ a {
 }
 
 .titulo {
-  font-size: 32px;
-  line-height: 1.08;
-  font-weight: 600;
-  letter-spacing: -0.022em;
+  font-size: 34px;
+  line-height: 1;
+  font-stretch: 62%;
+  font-weight: 800;
+  letter-spacing: -0.012em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
@@ -153,30 +148,17 @@ a {
   color: var(--ink-2);
 }
 
-/* Los momentos que mandan en cada pantalla comparten estos dos tamaños. */
-.enorme {
-  font-size: var(--enorme);
-  line-height: 1.03;
-  font-weight: 600;
-  letter-spacing: -0.028em;
+/* La voz de los carteles: estrecha y pesada. Los tamaños los pone cada pantalla. */
+.cartelon {
+  font-size: 58px;
+  line-height: 0.94;
+  font-stretch: 62%;
+  font-weight: 800;
+  letter-spacing: -0.012em;
+  /* A esta anchura el espacio se queda corto y las palabras se juntan. */
+  word-spacing: 0.08em;
   text-wrap: balance;
   overflow-wrap: anywhere;
-}
-
-.numeral {
-  display: block;
-  font-size: var(--numeral);
-  line-height: 0.86;
-  font-weight: 500;
-  letter-spacing: -0.055em;
-  font-variant-numeric: lining-nums;
-}
-
-/* Una franja de lado a lado de la ventana separa sin recuadrar. */
-.franja {
-  background: var(--zona);
-  box-shadow: 0 0 0 100vmax var(--zona);
-  clip-path: inset(0 -100vmax);
 }
 
 .accion,
@@ -185,9 +167,17 @@ a {
   width: 100%;
   min-height: 56px;
   padding: 12px 16px;
-  border-radius: var(--radius);
   font-weight: 600;
   text-align: center;
+}
+
+/* La acción principal del inicio llega de lado a lado y hasta abajo, y deja sitio a la barra del sistema. */
+.accion-pie {
+  min-height: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  font-size: 30px;
+  font-stretch: 62%;
+  font-weight: 800;
 }
 
 .accion {

@@ -3,7 +3,8 @@ import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
 import { HoldButton } from "./HoldButton";
-import { PlayerDots } from "./PlayerDots";
+import { PlayerSlots } from "./PlayerSlots";
+import { PosterWall } from "./PosterWall";
 import { QuitButton } from "./QuitButton";
 import styles from "./TableScreen.module.css";
 
@@ -22,26 +23,41 @@ export function TableScreen() {
     if (movie?.posterPath) new Image().src = posterUrl(movie.posterPath, "w500");
   }, [movie]);
 
-  const starts = t.table.starts(firstPlayer, names);
+  // Empieza quien ha tocado en el sorteo y sigue en el orden en que se han pasado el móvil.
+  const order = players.map((_, index) => (firstPlayer + index) % players.length);
+  const columns = order.length > 6 ? 2 : 1;
 
   return (
     <div
       className={`pantalla ${styles.mesa}`}
       style={{ "--duracion": `${REVEAL_IMPOSTOR_MS}ms` } as React.CSSProperties}
     >
+      <PosterWall className={styles.pared} />
       <div className={styles.barra}>
-        <PlayerDots count={players.length} current={players.length} starts={firstPlayer} />
+        <PlayerSlots count={players.length} current={players.length} starts={firstPlayer} />
         <QuitButton />
       </div>
-      <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.encabezado}`}>
+      <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.encabezado}`}>
         {t.table.title}
       </h1>
-      <p className={styles.empieza}>
-        {starts.before}
-        <strong>{starts.name}</strong>
-        {starts.after}
-      </p>
-      <div className={`franja ${styles.reglas}`}>
+      <ol
+        className={`cartelon ${styles.orden}`}
+        style={
+          {
+            "--columnas": columns,
+            "--filas": Math.ceil(order.length / columns),
+            "--tam-orden": columns === 2 ? "26px" : "clamp(26px, 8vw, 32px)",
+          } as React.CSSProperties
+        }
+      >
+        {order.map((index, position) => (
+          <li key={index}>
+            <span aria-hidden>{position + 1}</span>
+            <span>{t.playerName(index, names)}</span>
+          </li>
+        ))}
+      </ol>
+      <div className={styles.reglas}>
         {t.table.rules.map((rule) => (
           <p key={rule}>{rule}</p>
         ))}

@@ -19,15 +19,6 @@
   -webkit-touch-callout: none;
 }
 
-/* Al mantener sube la luz de toda la pantalla, igual para todos los papeles y sin transición. */
-.turno[data-held]::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: var(--zona);
-}
-
 .barra {
   position: relative;
   z-index: 1;
@@ -47,69 +38,70 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: 28px;
+  min-height: 0;
+  margin-top: 8px;
 }
 
 .quien {
-  --cifra: var(--numeral);
-  font-size: inherit;
-  font-weight: inherit;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.28em;
+  font-size: 34px;
 }
 
-.numero {
-  margin: 8px 0 0 -0.04em;
-  font-size: var(--cifra);
+/* El cartel apagado: el mismo rectángulo con cualquier papel. Lo que se ve desde lejos no depende de lo que dice. */
+.cartel {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, calc((100dvh - 212px) * 2 / 3));
+  aspect-ratio: 2 / 3;
+  margin-top: 12px;
+  padding: 14px 14px 12px;
+  border: 1px solid var(--line);
+  overflow: hidden;
 }
 
-/* Un nombre pesa como la cifra si cabe, y si no baja hasta llenar el ancho. Reserva el alto de la cifra, y el título no se mueve. */
-.nombre {
-  min-height: calc(var(--cifra) * 0.86);
-  margin-left: -0.02em;
-  /* El aire de arriba es para las tildes de las mayúsculas, que aquí no caben en la línea. */
-  padding-top: 0.1em;
-  font-size: min(var(--cifra) * 0.86, calc((min(100vw, 480px) - var(--margin) * 2) / (var(--letras) * 0.6)));
-  letter-spacing: -0.04em;
-  overflow-wrap: anywhere;
+/* Revelado: sube la luz del cartel, sin transición, y las letras son negras. De cerca se lee bien, y de lejos no hay contraste. */
+.turno[data-held] .cartel {
+  background: var(--cartel);
+  border-color: var(--cartel);
+  color: #000;
 }
 
-.turno[data-held] .numero {
-  color: var(--ink-3);
-}
-
-/* El título arranca siempre a la misma altura, sea cual sea el papel o lo que mida. */
 .titular {
-  margin-top: 14dvh;
+  font-size: calc(var(--tam, 19) * 1cqw);
+  line-height: 0.96;
+  overflow-wrap: anywhere;
 }
 
 .parte {
   display: block;
 }
 
+.revelado {
+  display: contents;
+}
+
 .nota {
-  margin-top: 12px;
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: 17px;
+  line-height: 1.25;
   color: var(--ink-2);
 }
 
-.revelado {
-  animation: aparece 0.1s ease-out;
-}
-
-/* Las pistas son lo único que tiene el impostor: se leen como el resto del papel, sin apagarlas. */
-.revelado .nota {
-  color: var(--ink);
-}
-
-@keyframes aparece {
-  from {
-    opacity: 0;
-  }
+.turno[data-held] .nota {
+  font-weight: 600;
+  color: #000;
 }
 
 .pie {
   position: relative;
   z-index: 1;
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 12px;
   /* Deja pasar el toque a la superficie, salvo en el botón de pasar el móvil. */
   pointer-events: none;
 }
@@ -135,27 +127,14 @@
   color: var(--ink-2);
 }
 
-@media (max-height: 700px) {
-  .papel {
-    margin-top: 12px;
-  }
-
-  .quien {
-    --cifra: 96px;
-  }
-
-  .titular {
-    margin-top: 6dvh;
-  }
-}
-
 @media (max-height: 480px) {
-  .quien {
-    --cifra: 56px;
+  .cartel {
+    width: 100%;
+    aspect-ratio: auto;
+    flex: 1;
   }
 
   .titular {
-    margin-top: 12px;
     font-size: 28px;
   }
 }

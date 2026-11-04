@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Chivo } from "next/font/google";
+import { Archivo } from "next/font/google";
 import type { ReactNode } from "react";
 import { LOCALE_PATHS, MANIFEST_PATHS } from "@/lib/locale";
 import { MESSAGES } from "@/messages";
 import type { Locale } from "@/types";
 import "@/app/globals.css";
 
-const fuente = Chivo({ subsets: ["latin"], variable: "--fuente" });
+// Variable también en anchura: la misma familia hace el texto normal y los titulares estrechos de cartel.
+const fuente = Archivo({ subsets: ["latin"], variable: "--fuente", axes: ["wdth"] });
 
 const title = "Film Impostor";
 
@@ -44,8 +45,8 @@ export const siteViewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#eeeee8" },
-    { media: "(prefers-color-scheme: dark)", color: "#1b2220" },
+    { media: "(prefers-color-scheme: light)", color: "#f2f3f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };
 

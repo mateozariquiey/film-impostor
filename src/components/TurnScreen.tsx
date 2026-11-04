@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
-import { PlayerDots } from "./PlayerDots";
+import { PlayerSlots } from "./PlayerSlots";
 import { QuitButton } from "./QuitButton";
 import { TitleLines } from "./TitleLines";
 import styles from "./TurnScreen.module.css";
@@ -13,9 +13,8 @@ const LONG_TITLE = 64;
 
 /**
  * El turno de un jugador. Toda la pantalla es la zona de mantener y el papel solo existe en la
- * página mientras dura el gesto. Todos los estados comparten el mismo esqueleto: el número del
- * jugador, un título en el mismo sitio y una nota, así que el impostor y el grupo no se distinguen
- * de lejos.
+ * página mientras dura el gesto. Todos los estados son el mismo cartel: un rectángulo que se enciende
+ * igual para todos, con el texto dentro, así que el impostor y el grupo no se distinguen de lejos.
  */
 export function TurnScreen() {
   const { players, currentPlayerIndex, movie, names, nextPlayer } = useGame();
@@ -39,53 +38,48 @@ export function TurnScreen() {
   return (
     <div className={`pantalla ${styles.turno}`} data-held={visible || undefined}>
       <div className={styles.barra}>
-        <PlayerDots count={players.length} current={currentPlayerIndex} />
+        <PlayerSlots count={players.length} current={currentPlayerIndex} />
         <QuitButton />
       </div>
 
       <div className={styles.papel} aria-live="polite">
-        <h1 ref={heading} tabIndex={-1} className={styles.quien}>
+        <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.quien}`}>
           {name ? (
             <>
-              <span className="secundario">{t.turn.whoseTurn}</span>{" "}
-              <span
-                className={`numeral ${styles.numero} ${styles.nombre}`}
-                style={{ "--letras": name.length } as React.CSSProperties}
-              >
-                {name}
-              </span>{" "}
+              <span>{t.turn.whoseTurn}</span> <span>{name}</span>{" "}
               <span className="solo-lector">{t.turn.playerOf(number, players.length)}</span>
             </>
           ) : (
             <>
-              <span className="secundario">{t.turn.player}</span>{" "}
-              <span className={`numeral ${styles.numero}`}>{number}</span>{" "}
+              <span>{t.turn.player}</span> <span>{number}</span>{" "}
               <span className="solo-lector">{t.turn.ofTotal(players.length)}</span>
             </>
           )}
         </h1>
-        {visible && movie ? (
-          <div className={styles.revelado}>
-            <p className={titleClass(isImpostor ? null : movie.title)}>
-              {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
-            </p>
-            {isImpostor ? (
-              <ImpostorHints />
-            ) : (
-              <p className={styles.nota}>{t.turn.giveClues}</p>
-            )}
-          </div>
-        ) : seen ? (
-          <>
-            <p className={titleClass(null)}>{t.turn.hidden}</p>
-            <p className={styles.nota}>{t.turn.seeAgain}</p>
-          </>
-        ) : (
-          <>
-            <p className={titleClass(null)}>{t.turn.takePhone}</p>
-            <p className={styles.nota}>{tooShort ? t.turn.holdLonger : t.turn.holdNote}</p>
-          </>
-        )}
+        <div className={styles.cartel}>
+          {visible && movie ? (
+            <div className={styles.revelado}>
+              <p className={`cartelon ${styles.titular}`} style={titleSize(isImpostor ? t.turn.youAreImpostor : movie.title)}>
+                {isImpostor ? t.turn.youAreImpostor : <TitleLines title={movie.title} partClassName={styles.parte} />}
+              </p>
+              {isImpostor ? <ImpostorHints /> : <p className={styles.nota}>{t.turn.giveClues}</p>}
+            </div>
+          ) : seen ? (
+            <>
+              <p className={`cartelon ${styles.titular}`} style={titleSize(t.turn.hidden)}>
+                {t.turn.hidden}
+              </p>
+              <p className={styles.nota}>{t.turn.seeAgain}</p>
+            </>
+          ) : (
+            <>
+              <p className={`cartelon ${styles.titular}`} style={titleSize(t.turn.takePhone)}>
+                {t.turn.takePhone}
+              </p>
+              <p className={styles.nota}>{tooShort ? t.turn.holdLonger : t.turn.holdNote}</p>
+            </>
+          )}
+        </div>
       </div>
 
       <HoldButton
@@ -124,10 +118,10 @@ export function TurnScreen() {
   );
 }
 
-/** El mismo tamaño para todos los papeles. Solo cede un título que no cabría. */
-function titleClass(title: string | null) {
-  const tooLong = title !== null && title.length > LONG_TITLE;
-  return `${styles.titular} ${tooLong ? "titulo" : "enorme"}`;
+/** Cuanto más mide lo que dice el cartel, más pequeño va, para llenarlo sea cual sea el papel. En % del ancho del cartel. */
+function titleSize(text: string) {
+  const size = text.length <= 10 ? 24 : text.length <= 18 ? 21 : text.length <= 30 ? 18 : text.length <= LONG_TITLE ? 15.5 : 11.5;
+  return { "--tam": size } as React.CSSProperties;
 }
 
 function ImpostorHints() {

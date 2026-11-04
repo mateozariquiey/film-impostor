@@ -8,7 +8,6 @@ describe('cómo se nombra a un jugador', () => {
     it('usa el nombre si lo hay', () => {
         expect(es.playerName(0, names)).toBe('Lucía');
         expect(es.turn.passTo(0, names)).toBe('Pásale el móvil a Lucía');
-        expect(es.table.starts(0, names).name).toBe('Lucía');
         expect(en.turn.passTo(0, names)).toBe('Pass the phone to Lucía');
         expect(en.resume.turnOf(0, names)).toBe('It’s Lucía’s turn. Roles are still hidden.');
     });
@@ -18,7 +17,6 @@ describe('cómo se nombra a un jugador', () => {
             const number = index + 1;
             expect(es.playerName(index, names)).toBe(`Jugador ${number}`);
             expect(es.turn.passTo(index, names)).toBe(`Pásale el móvil al jugador ${number}`);
-            expect(es.table.starts(index, names).name).toBe(`el jugador ${number}`);
             expect(es.result.was(index, names)).toBe(`Era el jugador ${number}`);
             expect(en.playerName(index, names)).toBe(`Player ${number}`);
             expect(en.result.was(index, names)).toBe(`It was Player ${number}`);

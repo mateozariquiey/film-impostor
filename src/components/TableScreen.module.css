@@ -1,55 +1,92 @@
+.mesa {
+  padding-top: 0;
+}
+
+.pared {
+  flex: none;
+  height: 19dvh;
+  margin-inline: calc(var(--margin) * -1);
+  overflow: hidden;
+  grid-template-rows: repeat(3, 19dvh);
+  -webkit-mask-image: linear-gradient(#000 30%, transparent);
+  mask-image: linear-gradient(#000 30%, transparent);
+}
+
 .barra {
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 34px;
+  margin-top: calc(env(safe-area-inset-top) * -1);
 }
 
-/* Mientras se mantiene, los puntos se llenan uno a uno sin señalar a nadie. Al soltar vuelven de golpe. */
+/* Mientras se mantiene, los huecos se llenan uno a uno sin señalar a nadie. Al soltar vuelven de golpe. */
 .mesa:has(.mantener[data-held]) .barra i {
-  background: var(--relleno-acento);
+  background: var(--ink);
   transition: background-color 0.08s linear calc(var(--duracion) * var(--i) / var(--n));
 }
 
 .encabezado {
-  margin-top: 8dvh;
+  margin-top: 8px;
+  font-size: clamp(44px, 14vw, 58px);
 }
 
-/* Ocre porque es a quien le toca, igual que en el turno. */
-.empieza {
-  margin-top: 14px;
-  font-size: 26px;
-  line-height: 1.15;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
+.orden {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--filas), auto);
+  grid-template-columns: repeat(var(--columnas), minmax(0, 1fr));
+  column-gap: 16px;
+  margin-top: 10px;
+  font-size: var(--tam-orden);
 }
 
-.empieza strong {
-  color: var(--acento);
-  font-weight: inherit;
+.orden li {
+  display: flex;
+  gap: 0.5em;
+  align-items: baseline;
+  padding: 0.14em 0;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+
+.orden li > span:first-child {
+  flex: none;
+  width: 1.05em;
+  color: var(--ink-2);
+}
+
+.orden li > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .reglas {
-  display: grid;
-  gap: 14px;
-  margin-top: 24px;
-  padding-block: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--ink-2);
 }
 
 .pie {
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 8px;
 }
 
 .aviso {
   min-height: 22px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .mantener {
   position: relative;
   overflow: hidden;
+  background: var(--relleno);
+  color: var(--ink);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -58,20 +95,22 @@
 
 .mantener span {
   position: relative;
+  transition: color 0.2s linear;
 }
 
-/* El acento se llena de izquierda a derecha mientras se mantiene, y vuelve de golpe al soltar. */
+/* Se llena de izquierda a derecha mientras se mantiene, y vuelve de golpe al soltar. */
 .mantener::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--relleno-acento);
+  background: var(--ink);
   transform: scaleX(0);
   transform-origin: left;
 }
 
-.mantener[data-held] {
-  color: var(--tinta-acento);
+.mantener[data-held] span {
+  color: var(--on-ink);
+  mix-blend-mode: normal;
 }
 
 .mantener[data-held]::before {
@@ -91,19 +130,26 @@
 }
 
 @media (max-height: 700px) {
-  .encabezado {
-    margin-top: 12px;
+  .pared {
+    display: none;
   }
 
-  .empieza {
-    margin-top: 8px;
-    font-size: 22px;
+  .mesa {
+    padding-top: calc(env(safe-area-inset-top) + 12px);
+  }
+
+  .barra {
+    margin-top: 0;
+  }
+
+  .encabezado {
+    font-size: 40px;
+    margin-top: 4px;
   }
 
   .reglas {
-    gap: 10px;
-    margin-top: 14px;
-    padding-block: 14px;
-    font-size: 16px;
+    font-size: 15px;
+    gap: 4px;
+    margin-top: 8px;
   }
 }

@@ -1,15 +1,15 @@
-/* El cartel llega hasta el borde. Si la pantalla es baja, se recorta por abajo y el título del cartel sigue a la vista. */
+.resultado {
+  padding-top: 0;
+}
+
+/* El cartel llega de lado a lado y arriba, y se destapa de izquierda a derecha, como se llenó el botón que lo pidió. */
 .cartel {
   position: relative;
-  flex: none;
-  aspect-ratio: 2 / 3;
-  max-height: max(220px, calc(100dvh - 300px));
-  width: calc(100% + var(--margin) * 2);
-  margin: calc((env(safe-area-inset-top) + 20px) * -1) calc(var(--margin) * -1) 0;
+  flex: 1 1 0;
+  min-height: 200px;
+  margin-inline: calc(var(--margin) * -1);
   overflow: hidden;
-  background: var(--zona);
-  /* Se destapa en la misma dirección en la que se llenó el botón que lo ha pedido. */
-  animation: destapa 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: destapa 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .cartel img {
@@ -21,61 +21,66 @@
   from {
     clip-path: inset(0 100% 0 0);
   }
+
   to {
-    clip-path: inset(0);
+    clip-path: inset(0 0 0 0);
   }
 }
 
 .era {
-  margin: 18px 0 12px;
+  margin-top: 14px;
+  font-size: clamp(52px, 19vw, 76px);
+}
+
+.resultado:not(:has(.cartel)) .era {
+  margin-top: 16dvh;
+}
+
+.huecos {
+  margin-top: 10px;
 }
 
 .peli {
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--ink-2);
 }
 
 .peli strong {
   color: var(--ink);
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* Sin cartel, el título ocupa su lugar: el resultado no se queda sin nada que mirar. */
-.resultado:not(:has(.cartel)) .era {
-  margin-top: 8dvh;
-}
-
+/* Sin cartel, el título hace de cartel. */
 .peli[data-sin-cartel] {
-  margin-top: 8dvh;
+  margin-top: 24px;
 }
 
 .peli[data-sin-cartel] strong {
   display: block;
-  margin: 6px 0;
-  font-size: var(--enorme);
-  line-height: 1.03;
-  font-weight: 600;
-  letter-spacing: -0.028em;
-  text-wrap: balance;
-  overflow-wrap: anywhere;
+  margin-top: 4px;
+  font-size: clamp(38px, 12vw, 50px);
+  line-height: 0.98;
+  font-stretch: 62%;
+  font-weight: 800;
 }
 
 .parte {
   display: block;
 }
 
-/* El aro aparece cuando el cartel ya está destapado. */
-.resultado i[data-estado="impostor"] {
-  animation: aro 0.26s ease-out 0.42s backwards;
-}
-
-@keyframes aro {
-  from {
-    transform: scale(0);
-  }
-}
-
 .acciones {
   margin-top: auto;
-  padding-top: 18px;
+  padding-top: 12px;
+}
+
+@media (max-height: 700px) {
+  .era {
+    font-size: 46px;
+    margin-top: 10px;
+  }
+
+  .peli {
+    font-size: 15px;
+    margin-top: 6px;
+  }
 }

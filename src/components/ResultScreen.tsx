@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { posterUrl } from "@/lib/posters";
-import { PlayerDots } from "./PlayerDots";
+import { PlayerSlots } from "./PlayerSlots";
 import { TitleLines } from "./TitleLines";
 import styles from "./ResultScreen.module.css";
 
@@ -58,10 +58,12 @@ export function ResultScreen() {
         </div>
       )}
 
-      <h1 ref={heading} tabIndex={-1} className={`enorme ${styles.era}`}>
+      <h1 ref={heading} tabIndex={-1} className={`cartelon ${styles.era}`}>
         {t.result.was(impostor, names)}
       </h1>
-      <PlayerDots count={players.length} impostor={impostor} />
+      <div className={styles.huecos}>
+        <PlayerSlots count={players.length} impostor={impostor} />
+      </div>
       <p className={styles.peli} data-sin-cartel={hasPoster ? undefined : true}>
         {t.result.movieWas}
         <strong>{hasPoster ? movie.title : <TitleLines title={movie.title} partClassName={styles.parte} />}</strong>

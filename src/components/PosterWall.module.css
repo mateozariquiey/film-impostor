@@ -1,0 +1,41 @@
+.pared {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  background: var(--bg);
+}
+
+.cartel {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cartel img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Un cartel sin encender está, pero no cuenta. Se enciende cuando alguien pulsa, y por eso es lo único de la pantalla que se mueve. */
+.cartel[data-estado="apagado"] {
+  opacity: var(--apagado);
+  filter: grayscale(1);
+  transition: opacity 0.18s ease-out, filter 0.18s ease-out;
+}
+
+.cartel[data-estado="encendido"] {
+  transition: opacity 0.18s ease-out, filter 0.18s ease-out;
+}
+
+/* El hueco: falta un cartel, y es lo único de la pared que no se ve. */
+.cartel[data-estado="hueco"] {
+  background-color: var(--hueco) !important;
+}
+
+.cartel[data-estado="hueco"] img {
+  visibility: hidden;
+}
