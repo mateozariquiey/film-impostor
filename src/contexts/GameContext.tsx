@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import type { GamePhase, Hint, Movie, Player } from '@/types';
 import { createDeal, pickRandom, playersWithImpostor } from '@/lib/game';
 import { ApiError, fetchKeywords, fetchRandomMovie, type ApiErrorKind } from '@/lib/api';
@@ -98,16 +99,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
         restored.status === 'ok' ? restored.game.customPool : [],
     );
 
-    const inGame = state.phase === 'TURN' || state.phase === 'TABLE';
+    const { phase } = state;
+    const inGame = phase === 'TURN' || phase === 'TABLE';
 
     // Cada cambio de turno queda guardado. Al llegar al resultado se borra: ya no hay nada que retomar.
     useEffect(() => {
         // Mientras se decide si seguir, no se guarda: recargar en bucle no debe alargar el plazo.
         if (isResuming) return;
-        const { phase, movie, settings } = state;
-        if ((phase === 'TURN' || phase === 'TABLE') && movie && settings) {
+        const { phase: savedPhase, movie, settings } = state;
+        if ((savedPhase === 'TURN' || savedPhase === 'TABLE') && movie && settings) {
             saveGame({
-                phase,
+                phase: savedPhase,
                 currentPlayerIndex: state.currentPlayerIndex,
                 impostor: state.players.findIndex((player) => player.role === 'impostor'),
                 firstPlayer: state.firstPlayer,
@@ -130,8 +132,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
             setGameExpired(true);
         };
         document.addEventListener('visibilitychange', checkExpiry);
-        return () => document.removeEventListener('visibilitychange', checkExpiry);
+        window.addEventListener('pageshow', checkExpiry);
+        return () => {
+            document.removeEventListener('visibilitychange', checkExpiry);
+            window.removeEventListener('pageshow', checkExpiry);
+        };
     }, [inGame]);
+
+    // Al volver atrás, el navegador puede restaurar la página tal como quedó, sin recargarla. Por eso
+    // se deja ya sin secretos al salir, igual que quedaría al recargar. Tiene que ser síncrono: justo
+    // después, la página se congela.
+    useEffect(() => {
+        const hideSecrets = () =>
+            flushSync(() => {
+                if (phase === 'RESULT') setState(INITIAL_STATE);
+                else if (phase === 'TURN' || phase === 'TABLE') setIsResuming(true);
+            });
+        window.addEventListener('pagehide', hideSecrets);
+        return () => window.removeEventListener('pagehide', hideSecrets);
+    }, [phase]);
 
     const deal = (settings: GameSettings, movie: Movie) => {
         setGameExpired(false);
