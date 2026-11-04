@@ -83,8 +83,8 @@
 /* El cartel es una pieza más de la pared. Mide lo mismo con cualquier papel, y lo que se ve desde lejos no depende de lo que dice. */
 .pieza {
   position: relative;
-  /* Lo justo para el papel más largo: tres líneas de título o todas las pistas. Lo vigila e2e/partida.spec.ts. */
-  height: 240px;
+  /* Lo justo para el papel más largo: todas las pistas con palabras clave largas y dos impostores. Lo vigila e2e/partida.spec.ts. */
+  height: 276px;
   padding: 16px;
   overflow: hidden;
   /* En reposo es un velo sobre la pared, y no una caja vacía: solo es cartel cuando se enciende. */
@@ -212,6 +212,13 @@
   white-space: normal;
   font-size: 15px;
   color: var(--ink-2);
+}
+
+/* En un móvil estrecho las pistas ocupan más líneas, y todas tienen que caber. */
+@media (max-width: 389px) {
+  .nota {
+    font-size: 15px;
+  }
 }
 
 /* Con poca altura, el cartel ocupa lo que quede para que quepan las pistas, y sigue midiendo lo mismo con cualquier papel. */

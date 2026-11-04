@@ -334,7 +334,7 @@ test('nada del papel se corta en el móvil más pequeño, ni con el título más
         localStorage.setItem('film-impostor-settings', JSON.stringify({ playerCount: 7, twoImpostors: true, hints: ['GENRE', 'YEAR', 'KEYWORDS'] }));
     });
     const long = 'Doctor Strange en el multiverso de la locura: la película completa';
-    await fakeApi(page, () => ({ ...fakeMovie(1, long), keywords: ['time travel', 'alternate universe', 'superhero'] }));
+    await fakeApi(page, () => ({ ...fakeMovie(1, long), keywords: ['based on young adult novel', 'based on novel or book', 'post-apocalyptic future'] }));
     await page.goto('/');
     await page.getByRole('button', { name: 'Empezar' }).tap();
     const heights = new Set<number>();
