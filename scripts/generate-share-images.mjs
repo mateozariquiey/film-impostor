@@ -5,7 +5,7 @@ import { chromium } from "@playwright/test";
 
 const TAGLINES = {
   "src/app/(es)": { lang: "es", text: "Todos ven la misma película, menos uno." },
-  "src/app/en": { lang: "en", text: "Everyone sees the same movie, except one." },
+  "src/app/en": { lang: "en", text: "All but one see the same movie." },
 };
 
 const html = ({ lang, text }) => `<!doctype html>

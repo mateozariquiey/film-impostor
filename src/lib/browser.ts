@@ -46,6 +46,12 @@ export function useWarnBeforeLeaving(active: boolean): void {
     }, [active]);
 }
 
+/** Si la app se ha abierto ya instalada. `standalone` es como lo dice iOS. */
+export function isInstalled(): boolean {
+    const { standalone } = navigator as Navigator & { standalone?: boolean };
+    return standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+}
+
 /** Registra el service worker que permite abrir la app sin conexión. */
 export function useServiceWorker(): void {
     useEffect(() => {

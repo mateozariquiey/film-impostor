@@ -4,9 +4,9 @@ const player = (index: number, names: readonly string[]) => names[index] || `Pla
 
 export const en: Messages = {
     meta: {
-        tagline: 'Everyone sees the same movie, except one.',
+        tagline: 'All but one see the same movie.',
         description:
-            'Everyone sees the same movie, except one. A party game of deduction, played on a single phone.',
+            'All but one see the same movie. A party game of deduction, played on a single phone.',
     },
     loading: 'Loading…',
     playerName: player,
@@ -69,8 +69,8 @@ export const en: Messages = {
         ],
         installTitle: 'Install it',
         installIntro: 'It opens full screen and works offline.',
-        installIos: 'On iPhone, in Safari: Share, then “Add to Home Screen”.',
-        installAndroid: 'On Android, in the browser menu: “Install app” or “Add to Home screen”.',
+        installIos: 'On iPhone: Share, then “Add to Home Screen”.',
+        installAndroid: 'On Android: browser menu, then “Install app” or “Add to Home screen”.',
         creditBefore: 'Titles, genres and posters from ',
         creditAfter: '. This product uses the TMDB API but is not endorsed or certified by TMDB.',
         understood: 'Got it',

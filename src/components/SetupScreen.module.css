@@ -202,3 +202,36 @@ button.fila:active:not(:disabled) {
     padding-top: 12px;
   }
 }
+
+/* En 360×640 no sobra nada: la cifra cede lo que necesitan las filas, sin bajar de los 44 px de un dedo. */
+@media (max-height: 660px) {
+  .portada {
+    padding-top: calc(env(safe-area-inset-top) + 16px);
+    padding-bottom: 12px;
+  }
+
+  .jugadores {
+    margin-top: 10px;
+  }
+
+  .cifra {
+    font-size: 72px;
+  }
+
+  .botones button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .filas {
+    margin-top: 2px;
+  }
+
+  .fila {
+    min-height: 44px;
+  }
+
+  .pie {
+    padding-top: 8px;
+  }
+}

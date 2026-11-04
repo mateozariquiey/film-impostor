@@ -197,7 +197,14 @@ export function SetupScreen() {
         </button>
         {!error && (
           <div className={styles.enlaces}>
-            <button type="button" className="enlace" onClick={() => rules.current?.showModal()}>
+            <button
+              type="button"
+              className="enlace"
+              onClick={() => {
+                rules.current?.showModal();
+                rules.current?.querySelector("h2")?.focus();
+              }}
+            >
               {t.rules.title}
             </button>
             {/* Cada idioma se ofrece en su propio idioma, para que lo encuentre quien no entiende el otro. */}

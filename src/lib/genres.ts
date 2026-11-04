@@ -38,7 +38,7 @@ export function translateGenre(spanishName: string, locale: Locale): string {
     return genreName(GENRES.find(({ es }) => es === spanishName)?.id, locale);
 }
 
-/** Los que se ofrecen al elegir, por orden alfabético. Las películas de TV no pintan nada en este juego. */
+/** Los que se ofrecen al elegir, por orden alfabético. «Película de TV» se deja fuera: no es algo que se busque para jugar. */
 export function pickableGenres(locale: Locale): { id: number; name: string }[] {
     return GENRES.filter(({ id }) => id !== TV_MOVIE)
         .map((genre) => ({ id: genre.id as number, name: genre[locale] as string }))
