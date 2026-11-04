@@ -22,7 +22,15 @@ export function PosterWall({ players, className = "" }: Props) {
         return (
           <div key={path} className={styles.cartel} data-estado={state} style={{ backgroundColor: color }}>
             {/* eslint-disable-next-line @next/next/no-img-element -- son archivos ya pequeños de TMDB, sin optimizar como los demás carteles */}
-            <img src={posterUrl(path, "w342")} alt="" decoding="async" />
+            <img
+              src={posterUrl(path, "w342")}
+              alt=""
+              decoding="async"
+              // Sin esto se vería el icono de imagen rota sobre el color medio.
+              onError={(event) => {
+                event.currentTarget.style.visibility = "hidden";
+              }}
+            />
           </div>
         );
       })}
