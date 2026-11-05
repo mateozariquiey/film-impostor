@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import type { GamePhase, Hint, Locale, Movie, Player } from '@/types';
 import { createDeal, impostorCountFor, impostorsOf, playersWithImpostors } from '@/lib/game';
@@ -115,6 +115,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     const [recentMovies, setRecentMovies] = useState(loadRecentMovies);
     const [recentQuestions, setRecentQuestions] = useState(loadRecentQuestions);
+    // La última búsqueda de película: si el grupo se va mientras espera, su respuesta ya no cuenta.
+    const search = useRef(0);
 
     const { phase } = state;
     const inGame = phase === 'TURN' || phase === 'TABLE';
@@ -197,15 +199,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
 
     const startGame = async (settings: GameSettings) => {
+        const current = ++search.current;
         setIsLoading(true);
         setError(null);
         try {
-            deal(settings, await chooseMovie(settings, customPool, locale, recentMovies));
+            const movie = await chooseMovie(settings, customPool, locale, recentMovies);
+            if (current === search.current) deal(settings, movie);
         } catch (err) {
+            if (current !== search.current) return;
             setState(INITIAL_STATE);
             setError(err instanceof ApiError ? err.kind : 'server');
         } finally {
-            setIsLoading(false);
+            if (current === search.current) setIsLoading(false);
         }
     };
 
@@ -244,6 +249,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const revealImpostor = () => setState((prev) => ({ ...prev, phase: 'RESULT' }));
 
     const resetGame = () => {
+        search.current += 1;
+        setIsLoading(false);
         setState(INITIAL_STATE);
         setIsResuming(false);
         setGameExpired(false);

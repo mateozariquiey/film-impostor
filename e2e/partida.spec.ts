@@ -365,3 +365,41 @@ test('el dedo sobre el texto del cartel también enseña el papel', async ({ pag
     await expect(page.getByText('Tu papel', { exact: true })).toBeVisible();
     await finger.release();
 });
+
+/** Juega hasta el resultado con 3 jugadores. */
+async function playToResult(page: Page) {
+    await page.getByRole('button', { name: 'Un jugador menos' }).tap();
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    for (const player of [1, 2, 3]) {
+        await expect(page.getByRole('heading', { level: 1 })).toContainText(`Jugador ${player}`);
+        const finger = await touchHold(page, TURN_SURFACE);
+        await page.waitForTimeout(600);
+        await finger.release();
+        await page.getByRole('button', { name: player === 3 ? 'Dejar el móvil en la mesa' : `Pásale el móvil al jugador ${player + 1}` }).tap();
+    }
+    const finger = await touchHold(page, 'button:has-text("Mantén para ver quién era")');
+    await expect(page.getByRole('heading', { name: /^Era el jugador \d$/ })).toBeVisible({ timeout: 3000 });
+    await finger.release();
+}
+
+test('«Cambiar ajustes» mientras se busca otra película se queda en los ajustes', async ({ page }) => {
+    let answer = () => {};
+    let slow = false;
+    await page.route('**/api/movies/random**', async (route) => {
+        if (slow) await new Promise<void>((resolve) => (answer = resolve));
+        await route.fulfill({ json: fakeMovie(1, SECRET) });
+    });
+    await page.goto('/');
+    await playToResult(page);
+
+    slow = true;
+    await page.getByRole('button', { name: 'Otra película' }).tap();
+    await expect(page.getByRole('button', { name: 'Buscando película…' })).toBeVisible();
+    await page.getByRole('button', { name: 'Cambiar ajustes' }).tap();
+    await expect(page.getByRole('button', { name: 'Empezar' })).toBeEnabled();
+
+    answer();
+    await page.waitForTimeout(300);
+    await expect(page.getByRole('button', { name: 'Empezar' })).toBeEnabled();
+    await expect(page.getByText('Coge el móvil')).toBeHidden();
+});
