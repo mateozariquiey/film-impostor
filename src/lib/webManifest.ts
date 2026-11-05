@@ -13,8 +13,8 @@ export function webManifest(locale: Locale): MetadataRoute.Manifest {
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#1b2220',
-        theme_color: '#1b2220',
+        background_color: '#000000',
+        theme_color: '#000000',
         lang: locale,
         icons: [
             { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },

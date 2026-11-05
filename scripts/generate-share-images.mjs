@@ -18,7 +18,7 @@ const html = ({ lang, text }) => `<!doctype html>
   p { position: absolute; left: 76px; bottom: 58px; font-size: 42px; line-height: 1.2; }
   .huecos { position: absolute; right: 76px; top: 76px; display: flex; gap: 12px; }
   .huecos i { width: 44px; height: 66px; background: #fff; }
-  .huecos i:last-child { background: #4f74e0; }
+  .huecos i:last-child { background: #3f6ff2; }
 </style></head>
 <body><h1>Film<br>Impostor</h1><div class="huecos"><i></i><i></i><i></i><i></i><i></i></div><p>${text}</p></body></html>`;
 

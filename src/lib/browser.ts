@@ -1,9 +1,5 @@
 import { useEffect } from 'react';
 
-export function prefersReducedMotion(): boolean {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
 /** Evita que la pantalla se apague durante la partida, si el navegador lo permite. */
 export function useKeepScreenOn(active: boolean): void {
     useEffect(() => {
@@ -80,7 +76,7 @@ export function useDimScreen(active: boolean): void {
         const colors = bars.map((bar) => bar.content);
 
         root.dataset.luz = 'baja';
-        bars.forEach((bar) => (bar.content = '#141b19'));
+        bars.forEach((bar) => (bar.content = '#000000'));
         return () => {
             delete root.dataset.luz;
             bars.forEach((bar, index) => (bar.content = colors[index]));
