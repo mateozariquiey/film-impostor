@@ -403,3 +403,12 @@ test('«Cambiar ajustes» mientras se busca otra película se queda en los ajust
     await expect(page.getByRole('button', { name: 'Empezar' })).toBeEnabled();
     await expect(page.getByText('Coge el móvil')).toBeHidden();
 });
+
+test('con la red colgada se deja de esperar y se ofrece la lista de reserva', async ({ page }) => {
+    test.setTimeout(45_000);
+    await page.route('**/api/movies/random**', () => {});
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    await expect(page.getByRole('button', { name: 'Buscando película…' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Jugar con la lista de reserva' })).toBeVisible({ timeout: 25_000 });
+});

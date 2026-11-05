@@ -16,12 +16,15 @@ export function errorKindFromStatus(status: number): ApiErrorKind {
     return status === 404 ? 'no-movies' : 'server';
 }
 
+/** Una red colgada no rechaza nunca: sin este límite el grupo se quedaría esperando, sin llegar a la reserva. */
+const REQUEST_TIMEOUT_MS = 20_000;
+
 async function getJson<T>(url: string): Promise<T> {
     let res: Response;
     try {
-        res = await fetch(url);
+        res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
     } catch {
-        // fetch solo rechaza si la petición no llega a ningún servidor.
+        // fetch solo rechaza si la petición no llega a ningún servidor, o si se ha agotado el tiempo.
         throw new ApiError('offline');
     }
     if (!res.ok) throw new ApiError(errorKindFromStatus(res.status));
