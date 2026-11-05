@@ -412,3 +412,18 @@ test('con la red colgada se deja de esperar y se ofrece la lista de reserva', as
     await expect(page.getByRole('button', { name: 'Buscando película…' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Jugar con la lista de reserva' })).toBeVisible({ timeout: 25_000 });
 });
+
+test('el papel abierto con el botón para lectores de pantalla también se oculta en segundo plano', async ({ page }) => {
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    await page.getByRole('button', { name: 'Mostrar mi papel sin mantener pulsado' }).evaluate((button: HTMLElement) => button.click());
+    await expect(page.getByText(new RegExp(`${SECRET}|${IMPOSTOR_ROLE}`))).toBeVisible();
+
+    await page.evaluate(() => {
+        Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+        document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect.poll(() => domText(page)).not.toContain(SECRET);
+    expect(await domText(page)).not.toContain(IMPOSTOR_ROLE);
+});

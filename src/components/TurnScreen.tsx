@@ -30,6 +30,15 @@ export function TurnScreen() {
     heading.current?.focus({ preventScroll: true });
   }, []);
 
+  // El gesto se suelta solo al pasar a segundo plano. El botón para lectores de pantalla no es un gesto, y hay que cerrarlo.
+  useEffect(() => {
+    const closeReader = () => {
+      if (document.visibilityState === "hidden") setReaderOpen(false);
+    };
+    document.addEventListener("visibilitychange", closeReader);
+    return () => document.removeEventListener("visibilitychange", closeReader);
+  }, []);
+
   const number = currentPlayerIndex + 1;
   const name = names[currentPlayerIndex];
   const isImpostor = players[currentPlayerIndex].role === "impostor";
