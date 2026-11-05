@@ -366,6 +366,14 @@ test('el dedo sobre el texto del cartel también enseña el papel', async ({ pag
     await finger.release();
 });
 
+/** Pasa a segundo plano y lee la página sin dejar que corra nada más: justo después, el navegador puede congelarla. */
+const hideAndReadPage = (page: Page) =>
+    page.evaluate(() => {
+        Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+        document.dispatchEvent(new Event('visibilitychange'));
+        return document.documentElement.textContent ?? '';
+    });
+
 /** Juega hasta el resultado con 3 jugadores. */
 async function playToResult(page: Page) {
     await page.getByRole('button', { name: 'Un jugador menos' }).tap();
@@ -420,10 +428,21 @@ test('el papel abierto con el botón para lectores de pantalla también se ocult
     await page.getByRole('button', { name: 'Mostrar mi papel sin mantener pulsado' }).evaluate((button: HTMLElement) => button.click());
     await expect(page.getByText(new RegExp(`${SECRET}|${IMPOSTOR_ROLE}`))).toBeVisible();
 
-    await page.evaluate(() => {
-        Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
-        document.dispatchEvent(new Event('visibilitychange'));
-    });
-    await expect.poll(() => domText(page)).not.toContain(SECRET);
-    expect(await domText(page)).not.toContain(IMPOSTOR_ROLE);
+    const text = await hideAndReadPage(page);
+    expect(text).not.toContain(SECRET);
+    expect(text).not.toContain(IMPOSTOR_ROLE);
+});
+
+test('con el dedo puesto, el papel sale de la página en el mismo instante en que pasa a segundo plano', async ({ page }) => {
+    await fakeApi(page, () => fakeMovie(1, SECRET));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Empezar' }).tap();
+    await expect(page.getByText('Coge el móvil')).toBeVisible();
+    const finger = await touchHold(page, TURN_SURFACE);
+    await expect(page.getByText(new RegExp(`${SECRET}|${IMPOSTOR_ROLE}`))).toBeVisible();
+
+    const text = await hideAndReadPage(page);
+    expect(text).not.toContain(SECRET);
+    expect(text).not.toContain(IMPOSTOR_ROLE);
+    await finger.release();
 });

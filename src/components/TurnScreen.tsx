@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
 import { HoldButton } from "./HoldButton";
@@ -31,9 +32,10 @@ export function TurnScreen() {
   }, []);
 
   // El gesto se suelta solo al pasar a segundo plano. El botón para lectores de pantalla no es un gesto, y hay que cerrarlo.
+  // Es síncrono por lo mismo que en HoldButton.
   useEffect(() => {
     const closeReader = () => {
-      if (document.visibilityState === "hidden") setReaderOpen(false);
+      if (document.visibilityState === "hidden") flushSync(() => setReaderOpen(false));
     };
     document.addEventListener("visibilitychange", closeReader);
     return () => document.removeEventListener("visibilitychange", closeReader);

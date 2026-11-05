@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 
 interface Props {
   className?: string;
@@ -59,7 +60,8 @@ export function HoldButton({
 
   useEffect(() => {
     const onHidden = () => {
-      if (document.visibilityState === "hidden") stopFromWindow();
+      // Tiene que ser síncrono: React dejaría este cambio para luego, y justo después la página puede congelarse con el papel a la vista.
+      if (document.visibilityState === "hidden") flushSync(stopFromWindow);
     };
     const onBlur = () => stopFromWindow();
     document.addEventListener("visibilitychange", onHidden);
