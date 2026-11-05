@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useLocale } from "@/contexts/LocaleContext";
-import { isValidYear, MIN_YEAR } from "@/lib/filters";
+import { HINTS, isValidYear, MIN_YEAR, POPULARITIES } from "@/lib/filters";
 import { impostorCountFor, MAX_PLAYERS, MIN_PLAYERS, MIN_PLAYERS_FOR_TWO_IMPOSTORS } from "@/lib/game";
 import { genreName, pickableGenres } from "@/lib/genres";
 import { reserveMovies } from "@/lib/reserve";
@@ -30,8 +30,6 @@ type EraChoice = Decade | typeof EXACT_YEAR;
 const ANY_GENRE = "ALL";
 
 const ERAS: readonly EraChoice[] = ["ALL", "80s", "90s", "00s", "10s", "20s", EXACT_YEAR];
-const POPULARITIES: readonly Popularity[] = ["TOP_100", "TOP_500", "HARDCORE", "CLASSICS"];
-const HINTS: readonly Hint[] = ["GENRE", "YEAR", "KEYWORDS"];
 
 function hintsSummary(hints: Hint[], t: Messages): string {
   const names = HINTS.filter((hint) => hints.includes(hint)).map((hint) => t.setup.hintShort[hint]);

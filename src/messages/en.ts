@@ -156,7 +156,7 @@ export const en: Messages = {
         shortRule: (impostors: number) =>
             impostors === 2
                 ? 'There are two impostors, and neither knows the other. After the clues, vote for one person.'
-                : "Don't say the title. Then vote on who's faking.",
+                : 'Don’t say the title. Then vote on who’s faking.',
         howItEnds: 'How it ends',
         starter: 'To get you started',
         anotherQuestion: 'Another question',

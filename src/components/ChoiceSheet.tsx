@@ -45,7 +45,7 @@ export function ChoiceSheet<T extends string>({
           <button className={styles.listo}>{t.done}</button>
         </form>
       </div>
-      <fieldset className={styles.filas} aria-labelledby={id}>
+      <fieldset aria-labelledby={id}>
         {choices.map(({ value, label }) => (
           <label
             key={value}

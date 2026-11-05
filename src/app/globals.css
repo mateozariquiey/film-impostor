@@ -198,7 +198,6 @@ a {
 }
 
 .aviso-pulsar.accion-pie {
-  border: 0;
   background: var(--ink);
   color: var(--on-ink);
 }
@@ -229,13 +228,12 @@ a {
   color: var(--ink);
 }
 
-/* Lo que se mantiene lleva marco y el círculo del dedo, y lo que se toca va relleno. */
+/* Lo que se mantiene lleva además el círculo del dedo. */
 .aviso-pulsar {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--ink);
 }
 
 .aviso-pulsar > svg,
