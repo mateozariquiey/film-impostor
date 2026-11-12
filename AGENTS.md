@@ -1,3 +1,7 @@
+# Film Impostor
+
+- **Publicar.** Subir a `main` publica la web en Vercel, así que pregunta antes.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
